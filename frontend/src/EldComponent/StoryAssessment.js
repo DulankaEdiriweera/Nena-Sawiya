@@ -75,15 +75,31 @@ function StoryAssessment() {
   };
 
   const sendResponses = async () => {
+    // Helper function to clean text
+    const normalizeText = (text) =>
+      text
+        .replace(/[.,!?]/g, " ") // remove punctuation
+        .replace(/\s+/g, " ") // collapse multiple spaces
+        .trim();
+
     const payload = {
-      story1: transcripts[0],
-      story2: transcripts[1],
-      story3: transcripts[2],
-      story4: transcripts[3],
+      story1: normalizeText(transcripts[0]),
+      story2: normalizeText(transcripts[1]),
+      story3: normalizeText(transcripts[2]),
+      story4: normalizeText(transcripts[3]),
     };
 
+    //Check if all stories are empty
+    if (Object.values(payload).every((s) => !s || s.trim() === "")) {
+      alert(
+        "⚠️ ඔබේ දරුවා කිසිඳු කතා නොකියා ඇත. කරුණාකර සෑම කතාවක්ම පටිගත කර පසුව ඉදිරිපත් කරන්න."
+      );
+      navigate("/");
+      return; // Stop sending
+    }
+
     try {
-      const res = await fetch("http://127.0.0.1:5000/predict", {
+      const res = await fetch("http://127.0.0.1:5000/predict_eld", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
