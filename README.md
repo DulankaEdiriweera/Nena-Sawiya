@@ -13,6 +13,9 @@ Nena Sawiya is a technology-assisted detection and early intervention system des
 The platform integrates machine learning models, interactive web-based assessments, and child-friendly Sinhala interfaces to provide quantitative scores, performance levels, and personalized feedback.
 The primary goal is to support teachers, parents, and clinicians by offering an accessible, objective, and scalable screening tool suitable for the Sri Lankan educational context.
 
+# 🏗️ System Architecture
+![image alt](https://github.com/DulankaEdiriweera/Nena-Sawiya/blob/00cdaff4070e1b362658322e5ba73bacf57b6953/Copy%20of%20full%20system%20overview.jpg)
+
 # 🔗 Technologies & Dependencies
 ## 🧱 Tech Stack
 ###Frontend
