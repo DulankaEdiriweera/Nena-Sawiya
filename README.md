@@ -1,4 +1,16 @@
-# Nena-Sawiya
-Early detection and intervention system for Sinhala-medium students with language and visual processing disorders
+# 📘 Project Overview – Nena Sawiya
 
-This project develops a system to detect and support Sinhala-medium students in Grades 3–5 with Language and Visual Processing Disorders. It aims to enable early diagnosis and targeted intervention to promote inclusive education in Sri Lanka
+Nena Sawiya is a technology-assisted detection and early intervention system designed to identify learning-related difficulties among Sri Lankan primary school children(grade 3- 5. The system focuses on four key learning disability domains:
+
+1. Receptive Language Disorder (RLD)
+
+2. Expressive Language Disorder (ELD)
+
+3. Visual Discrimination and Visual Memory
+
+4. Visual Closure
+
+The platform integrates machine learning models, interactive web-based assessments, and child-friendly Sinhala interfaces to provide quantitative scores, performance levels, and personalized feedback.
+The primary goal is to support teachers, parents, and clinicians by offering an accessible, objective, and scalable screening tool suitable for the Sri Lankan educational context.
+
+# 🔗 Technologies & Dependencies
