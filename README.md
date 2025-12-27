@@ -14,3 +14,40 @@ The platform integrates machine learning models, interactive web-based assessmen
 The primary goal is to support teachers, parents, and clinicians by offering an accessible, objective, and scalable screening tool suitable for the Sri Lankan educational context.
 
 # 🔗 Technologies & Dependencies
+## 🧱 Tech Stack
+
+### Frontend
+- React
+- Web Speech API
+- Tailwind CSS
+
+Install dependencies:
+```bash
+cd frontend
+npm install
+
+run --> npm start
+
+### Backend
+- Python
+- Flask
+
+Install dependencies:
+```bash
+pip install
+cd backend
+python app.py
+
+### Database
+- MongoDB
+
+### Model Development
+- Jupyter Notebook
+- Google Colab
+
+### Development & Tools
+- Git & GitHub
+- VS Code
+- Postman (API testing)
+
+
