@@ -29,6 +29,13 @@ feedback_map_eld = {
     "Normal": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා සාමාන්‍යයෙන් සෞඛ්‍ය සම්පන්න ලෙස පවතී."
 }
 
+eld_level_sinhala_map = {
+    "Normal": "ඉතා හොදයි",
+    "Average": "සාමාන්‍ය",
+    "Weak": "දුර්වල"
+}
+
+
 # -------------------------------
 # Prediction Function (ELD)
 # -------------------------------
@@ -40,13 +47,15 @@ def predict_new_eld(story1_eld, story2_eld, story3_eld, story4_eld):
     X_new_eld = hstack(features_list_eld)
     
     percentage_pred_eld = regressor_eld.predict(X_new_eld)[0]
-    level_pred_eld = classifier_eld.predict(X_new_eld)[0]
+    level_pred_eld_en = classifier_eld.predict(X_new_eld)[0]
+    level_pred_eld_si = eld_level_sinhala_map.get(level_pred_eld_en, level_pred_eld_en)
+
     
-    feedback_eld = feedback_map_eld.get(level_pred_eld, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
+    feedback_eld = feedback_map_eld.get(level_pred_eld_en, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
     
     return {
         "Overall_Percentage": round(percentage_pred_eld, 2),
-        "ELD_Level": level_pred_eld,
+        "ELD_Level": level_pred_eld_si,
         "Feedback": feedback_eld
     }
 
