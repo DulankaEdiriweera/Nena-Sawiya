@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+import os
 import joblib
 from scipy.sparse import hstack
 from flask_cors import CORS
@@ -16,9 +17,10 @@ CORS(app)  # allow all origins; for development only
 # -------------------------------
 # Load Saved Models and Vectorizers (ELD)
 # -------------------------------
-regressor_eld = joblib.load("percentage_model_eld.pkl")
-classifier_eld = joblib.load("eld_model_eld.pkl")
-vectorizers_eld = joblib.load("vectorizers_eld.pkl")
+folder_path = "eld_models"
+regressor_eld = joblib.load(os.path.join(folder_path,"percentage_model_eld.pkl"))
+classifier_eld = joblib.load(os.path.join(folder_path,"eld_model_eld.pkl"))
+vectorizers_eld = joblib.load(os.path.join(folder_path,"vectorizers_eld.pkl"))
 
 # -------------------------------
 # Feedback Mapping (ELD)
