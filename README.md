@@ -15,8 +15,7 @@ The primary goal is to support teachers, parents, and clinicians by offering an 
 
 # 🔗 Technologies & Dependencies
 ## 🧱 Tech Stack
-
-### Frontend
+###Frontend
 - React
 - Web Speech API
 - Tailwind CSS
@@ -25,7 +24,6 @@ Install dependencies:
 ```bash
 cd frontend
 npm install
-
 run --> npm start
 
 ### Backend
