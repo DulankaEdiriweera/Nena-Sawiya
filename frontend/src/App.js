@@ -13,8 +13,6 @@ import Level3Choices from "./pages/visualDiscriminationPages/DiscriminationL3P2"
 import FinalSummary from "./pages/visualDiscriminationPages/DiscrminationSummary";
 import Home from "./Components/Home";
 
-import StoryAssessment from "./EldComponent/StoryAssessment";
-import EldResults from "./EldComponent/EldResults";
 import RLDTest from "./RldComponent/RLDTest";
 
 function App() {
@@ -35,6 +33,7 @@ function App() {
         <Route path="/discriminationL3P1" element={<Level3ShapeMemory />} />
         <Route path="/discriminationL3p2" element={<Level3Choices />} />
         <Route path="/summary" element={<FinalSummary />} />
+        <Route path="/RLDTest" element={<RLDTest />} />
       </Routes>
     </Router>
   );

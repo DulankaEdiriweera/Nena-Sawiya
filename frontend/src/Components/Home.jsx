@@ -27,6 +27,7 @@ const Home = () => {
       color: "from-purple-400 to-indigo-500",
       bgColor: "bg-gradient-to-br from-purple-100 to-indigo-100",
       emoji: "🔊",
+      path: "/RLDTest"
     },
     {
       id: 3,
