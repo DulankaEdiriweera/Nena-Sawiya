@@ -3,6 +3,8 @@ import os
 import joblib
 from scipy.sparse import hstack
 from flask_cors import CORS
+import pandas as pd
+from visualDiscrimination import preprocess_dataframe
 
 # -------------------------------
 # Flask App Setup
@@ -74,6 +76,63 @@ def predict_eld():
     
     result_eld = predict_new_eld(story1_eld, story2_eld, story3_eld, story4_eld)
     return jsonify(result_eld)
+
+
+
+
+
+
+
+
+# ---------- VD Model ----------
+# Added at the END for safe integration
+# -------------------------------
+
+# Load VD model
+vd_folder_path = "visualD_models"
+VD_model = joblib.load(os.path.join(vd_folder_path, "VD_model.pkl"))
+
+# Map numeric prediction to readable Sinhala labels
+visual_D = {
+    0: "දුර්වල",
+    1: "සාමාන්‍ය",
+    2: "ඉතා හොඳයි"
+}
+
+@app.route('/predictVDH', methods=['POST'])
+def predict_vdh():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "No JSON received"}), 400
+
+        # Convert JSON to DataFrame
+        df = pd.DataFrame(data)
+
+        # Ensure columns match the model's training columns
+        expected_columns = VD_model.feature_names_in_
+        missing_cols = [c for c in expected_columns if c not in df.columns]
+        if missing_cols:
+            return jsonify({"error": f"Missing columns: {missing_cols}"}), 400
+
+        # Reorder and preprocess
+        df = df[expected_columns]
+        df = preprocess_dataframe(df, has_target=False)
+
+        predictions = VD_model.predict(df)
+        readable = [visual_D[p] for p in predictions]
+
+        return jsonify({"predictions": readable})
+
+    except Exception as e:
+        print("ERROR:", e)
+        return jsonify({"error": str(e)}), 500
+
+
+
+
+
+
 
 # =====================================================
 # ======================= RLD =========================
