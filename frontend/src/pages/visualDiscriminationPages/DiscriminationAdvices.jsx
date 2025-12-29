@@ -9,16 +9,14 @@ function StudentAdvicePageDis() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 flex items-center justify-center p-4">
-      {/* Floating decorative elements */}
-      <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-50 animate-bounce"></div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 flex items-center justify-center p-4 relative">
+      {/* Static decorative elements */}
+      <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-50"></div>
       <div
-        className="absolute bottom-20 right-20 w-16 h-16 bg-pink-400 rounded-full opacity-50 animate-bounce"
-        style={{ animationDelay: "0.5s" }}
+        className="absolute bottom-20 right-20 w-16 h-16 bg-pink-400 rounded-full opacity-50"
       ></div>
       <div
-        className="absolute top-1/3 right-10 w-12 h-12 bg-blue-300 rounded-full opacity-50 animate-bounce"
-        style={{ animationDelay: "1s" }}
+        className="absolute top-1/3 right-10 w-12 h-12 bg-blue-300 rounded-full opacity-50"
       ></div>
 
       <div className="bg-white shadow-2xl rounded-3xl p-8 max-w-4xl w-full relative overflow-hidden">

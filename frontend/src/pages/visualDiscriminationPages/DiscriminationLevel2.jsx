@@ -59,87 +59,111 @@ export default function ObjectCountingPageDiscrimination() {
 
   return (
     <div className="min-h-screen w-screen bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-100 p-4 relative overflow-x-auto">
-      {/* Floating decorations */}
-      <div className="absolute top-10 left-10 text-6xl animate-bounce opacity-30">🦑</div>
-      <div className="absolute top-20 right-20 text-6xl animate-bounce opacity-30" style={{ animationDelay: "0.5s" }}>🐟</div>
-      <div className="absolute bottom-20 left-20 text-6xl animate-bounce opacity-30" style={{ animationDelay: "1s" }}>🐸</div>
-      <div className="absolute bottom-32 right-16 text-6xl animate-bounce opacity-30" style={{ animationDelay: "1.2s" }}>🦎</div>
+      
+      {/* 🔽 ZOOM-OUT WRAPPER */}
+      <div className="scale-90 origin-top">
 
-      {/* Landscape layout: Question left (3/4), Answers right (1/4) */}
-      <div className="flex max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl p-8 md:p-12 relative z-10">
-        
-        {/* Left column: Question (3/4 width) */}
-        <div className="flex-[3_3_0%] mr-6">
-          <div className="text-center mb-4">
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="text-4xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 w-full text-center p-2 border-2 border-transparent hover:border-purple-200 rounded focus:outline-none mb-2"
-            />
-            <input
-              type="text"
-              value={subtitle}
-              onChange={(e) => setSubtitle(e.target.value)}
-              className="text-xl text-purple-500 font-semibold w-full text-center p-2 border-2 border-transparent hover:border-purple-200 rounded focus:outline-none"
-            />
-          </div>
+        {/* Floating decorations */}
+        <div className="absolute top-10 left-10 text-5xl animate-bounce opacity-30">🦑</div>
+        <div className="absolute top-20 right-20 text-5xl animate-bounce opacity-30" style={{ animationDelay: "0.5s" }}>🐟</div>
+        <div className="absolute bottom-20 left-20 text-5xl animate-bounce opacity-30" style={{ animationDelay: "1s" }}>🐸</div>
+        <div className="absolute bottom-32 right-16 text-5xl animate-bounce opacity-30" style={{ animationDelay: "1.2s" }}>🦎</div>
 
-          <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-6 mb-4 text-center border-4 border-blue-300">
-            <textarea
-              value={instruction}
-              onChange={(e) => setInstruction(e.target.value)}
-              className="w-full bg-transparent text-2xl text-gray-800 font-bold focus:outline-none resize-none text-center"
-              rows="2"
-            />
-          </div>
-
-          <div className="mb-6 p-4 bg-green-100 rounded-xl text-green-800 font-bold text-lg shadow-md text-center">
-            🎯 Level 2 සම්පූර්ණ ලකුණු: {totalScore} / 12
-          </div>
-
-          <div className="bg-gradient-to-br from-yellow-200 to-orange-200 rounded-3xl p-6 shadow-xl">
-            <h3 className="text-2xl font-bold text-center mb-4 text-orange-700">📷 මෙම රූපය බලන්න!</h3>
-            <div className="bg-white rounded-2xl p-4 shadow-inner flex justify-center">
-              <img src={loadedQuestionImage} alt="Question" className="w-full h-auto rounded-xl border-4 border-orange-300"/>
-            </div>
-          </div>
-        </div>
-
-        {/* Right column: Answers (1/4 width) */}
-        <div className="flex-1 grid grid-cols-1 gap-6 justify-items-center">
-          {answers.map((item, index) => (
-            <div key={index} className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-5 shadow-lg border-4 border-purple-200 hover:border-purple-400 transition-all transform hover:scale-105 w-56">
-              <div className="bg-white rounded-2xl p-3 mb-4 shadow flex justify-center">
-                <img src={loadedAnswerImages[index]} alt={`Answer ${index + 1}`} className="w-48 h-48 object-contain rounded-xl"/>
-              </div>
-
+        {/* Landscape layout */}
+        <div className="flex max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10 relative z-10">
+          
+          {/* Left column */}
+          <div className="flex-[3_3_0%] mr-5">
+            <div className="text-center mb-3">
               <input
-                type="number"
-                placeholder="පිළිතුර"
-                value={item}
-                onChange={(e) => handleAnswerChange(index, e.target.value)}
-                className="w-full p-3 text-xl font-bold text-center border-4 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-500 bg-white shadow-inner"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 w-full text-center p-1 border-2 border-transparent hover:border-purple-200 rounded focus:outline-none mb-1"
               />
-              <div className="text-center mt-1 text-purple-600 font-semibold">පිළිතුර {index + 1}</div>
+              <input
+                type="text"
+                value={subtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
+                className="text-lg text-purple-500 font-semibold w-full text-center p-1 border-2 border-transparent hover:border-purple-200 rounded focus:outline-none"
+              />
             </div>
-          ))}
+
+            <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-4 mb-3 text-center border-4 border-blue-300">
+              <textarea
+                value={instruction}
+                onChange={(e) => setInstruction(e.target.value)}
+                className="w-full bg-transparent text-xl text-gray-800 font-bold focus:outline-none resize-none text-center"
+                rows="2"
+              />
+            </div>
+
+            <div className="mb-4 p-3 bg-green-100 rounded-xl text-green-800 font-bold text-base shadow-md text-center">
+              🎯 Level 2 සම්පූර්ණ ලකුණු: {totalScore} / 12
+            </div>
+
+            <div className="bg-gradient-to-br from-yellow-200 to-orange-200 rounded-3xl p-4 shadow-xl">
+              <h3 className="text-xl font-bold text-center mb-3 text-orange-700">📷 මෙම රූපය බලන්න!</h3>
+              <div className="bg-white rounded-2xl p-3 shadow-inner flex justify-center">
+                {/* ✅ Question image restored */}
+                <img
+                  src={loadedQuestionImage}
+                  alt="Question"
+                  className="w-full h-auto rounded-xl border-4 border-orange-300"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Right column */}
+          <div className="flex-1 grid grid-cols-1 gap-4 justify-items-center">
+            {answers.map((item, index) => (
+              <div
+                key={index}
+                className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-4 shadow-lg border-4 border-purple-200 hover:border-purple-400 transition-all transform hover:scale-105 w-52"
+              >
+                <div className="bg-white rounded-2xl p-2 mb-3 shadow flex justify-center">
+                  {/* ✅ Smaller answer images */}
+                  <img
+                    src={loadedAnswerImages[index]}
+                    alt={`Answer ${index + 1}`}
+                    className="w-32 h-32 object-contain rounded-xl"
+                  />
+                </div>
+
+                <input
+                  type="number"
+                  placeholder="පිළිතුර"
+                  value={item}
+                  onChange={(e) => handleAnswerChange(index, e.target.value)}
+                  className="w-full p-2 text-lg font-bold text-center border-4 border-purple-300 rounded-2xl focus:outline-none focus:border-purple-500 bg-white shadow-inner"
+                />
+                <div className="text-center mt-1 text-purple-600 font-semibold text-sm">
+                  පිළිතුර {index + 1}
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Next Button */}
-      <div className="flex justify-center mt-6">
-        <button onClick={goNext} className="px-12 py-5 bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white text-2xl font-bold rounded-full shadow-2xl transform hover:scale-110 transition-all">
-          ඊළඟට යන්න 🚀
-        </button>
-      </div>
+        {/* Next Button */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={goNext}
+            className="px-10 py-4 bg-gradient-to-r from-green-400 to-blue-500 hover:from-green-500 hover:to-blue-600 text-white text-xl font-bold rounded-full shadow-2xl transform hover:scale-105 transition-all"
+          >
+            ඊළඟට යන්න 🚀
+          </button>
+        </div>
 
-      {/* Bottom Decorations */}
-      <div className="flex justify-center gap-6 mt-8 text-5xl">
-        <span className="animate-bounce">🦑</span>
-        <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🐟</span>
-        <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>🐸</span>
-        <span className="animate-bounce" style={{ animationDelay: "0.6s" }}>🦎</span>
+        {/* Bottom Decorations */}
+        <div className="flex justify-center gap-4 mt-6 text-4xl">
+          <span className="animate-bounce">🦑</span>
+          <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🐟</span>
+          <span className="animate-bounce" style={{ animationDelay: "0.4s" }}>🐸</span>
+          <span className="animate-bounce" style={{ animationDelay: "0.6s" }}>🦎</span>
+        </div>
+
       </div>
     </div>
   );

@@ -19,19 +19,16 @@ export default function VisualDiscriminationHome() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
       
-      {/* Animated floating elements */}
-      <div className="absolute top-20 left-20 w-24 h-24 bg-yellow-300 rounded-full opacity-60 animate-bounce"></div>
+      {/* Static background elements */}
+      <div className="absolute top-20 left-20 w-24 h-24 bg-yellow-300 rounded-full opacity-60"></div>
       <div
-        className="absolute top-40 right-32 w-16 h-16 bg-pink-400 rounded-full opacity-60 animate-bounce"
-        style={{ animationDelay: "0.3s" }}
+        className="absolute top-40 right-32 w-16 h-16 bg-pink-400 rounded-full opacity-60"
       ></div>
       <div
-        className="absolute bottom-32 left-40 w-20 h-20 bg-blue-400 rounded-full opacity-60 animate-bounce"
-        style={{ animationDelay: "0.6s" }}
+        className="absolute bottom-32 left-40 w-20 h-20 bg-blue-400 rounded-full opacity-60"
       ></div>
       <div
-        className="absolute bottom-20 right-20 w-28 h-28 bg-green-300 rounded-full opacity-60 animate-bounce"
-        style={{ animationDelay: "0.9s" }}
+        className="absolute bottom-20 right-20 w-28 h-28 bg-green-300 rounded-full opacity-60"
       ></div>
       
       {/* Stars decoration */}

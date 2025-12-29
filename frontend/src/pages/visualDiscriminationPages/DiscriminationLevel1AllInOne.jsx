@@ -40,7 +40,6 @@ import L1Q6A2 from "../../Assets/visualD/L1Q6A2.jpg";
 import L1Q6A3 from "../../Assets/visualD/L1Q6A3.jpg";
 import L1Q6A4 from "../../Assets/visualD/L1Q6A4.jpg";
 
-
 // ✅ Level 1 questions
 const level1Questions = [
   { questionImg: L1Q1, answers: [L1Q1A1, L1Q1A2, L1Q1A3, L1Q1A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },
@@ -72,7 +71,6 @@ export default function DiscriminationQuestionLevel1() {
     const newTotal = totalScore + score;
     setTotalScore(newTotal);
 
-    // Store answer
     const updatedAnswers = [...allAnswers, selectedAnswer];
     setAllAnswers(updatedAnswers);
 
@@ -80,10 +78,8 @@ export default function DiscriminationQuestionLevel1() {
       setCurrentIndex(currentIndex + 1);
       setSelectedAnswer(null);
     } else {
-      // ✅ All questions answered - save Level 1 data
       const submissionData = JSON.parse(localStorage.getItem("submissionData") || "{}");
       
-      // Save individual answers (0-indexed)
       submissionData.L1Q1 = updatedAnswers[0];
       submissionData.L1Q2 = updatedAnswers[1];
       submissionData.L1Q3 = updatedAnswers[2];
@@ -91,7 +87,6 @@ export default function DiscriminationQuestionLevel1() {
       submissionData.L1Q5 = updatedAnswers[4];
       submissionData.L1Q6 = updatedAnswers[5];
       
-      // Save total marks
       submissionData["Total Marks"] = newTotal;
       submissionData["Marks(Level 1)"] = newTotal;
       
@@ -115,7 +110,11 @@ export default function DiscriminationQuestionLevel1() {
         <p className="text-lg text-gray-700 mb-6">{current.instruction}</p>
 
         <div className="mb-6 flex justify-center">
-          <img src={current.questionImg} alt="Question" className="max-w-sm h-auto rounded-xl shadow-lg" />
+          <img
+            src={current.questionImg}
+            alt="Question"
+            className={`max-w-sm h-48 rounded-xl shadow-lg ${currentIndex === 0 ? "border-2 border-black" : ""}`}
+          />
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
