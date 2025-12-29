@@ -134,6 +134,55 @@ def predict_vdh():
 
 
 
+# =====================================================
+# ======================= RLD =========================
+# =====================================================
+# Load RLD models
+folder_path = "rld_models"
+regressor_rld = joblib.load(os.path.join(folder_path,"rld_ridge_percentage_model.pkl"))
+classifier_rld = joblib.load(os.path.join(folder_path,"rld_rf_level_model.pkl"))
+vectorizers_rld = joblib.load(os.path.join(folder_path,"rld_vectorizers.pkl"))
+
+question_cols_rld = [
+    "Q1_i","Q1_ii","Q1_iii","Q1_iv",
+    "Q2_i","Q2_ii","Q3_i","Q3_ii",
+    "Q4","Q5_i","Q5_ii","Q5_iii",
+    "Q6_i","Q6_ii","Q7"
+]
+
+feedback_map_rld = {
+    "Weak": "දරුවාගේ අවබෝධභාෂා කුසලතා අඩුයි. අඛණ්ඩ පුහුණු කිරීම අවශ්‍යයි.",
+    "Average": "දරුවාගේ අවබෝධභාෂා කුසලතා සාමාන්‍ය මට්ටමක පවතී.",
+    "Normal": "දරුවාගේ අවබෝධභාෂා කුසලතා සෞඛ්‍ය සම්පන්නයි."
+}
+
+def predict_new_rld(responses: dict):
+    features = []
+    for i, q in enumerate(question_cols_rld):
+        text = responses.get(q, "")
+        features.append(vectorizers_rld[i].transform([text]))
+    X_new = hstack(features)
+
+    percentage = regressor_rld.predict(X_new)[0]
+    level = classifier_rld.predict(X_new)[0]
+
+    return {
+        "Overall_Percentage": round(float(percentage), 2),
+        "RLD_Level": level,
+        "Feedback": feedback_map_rld.get(level, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
+    }
+
+@app.route("/predict_rld", methods=["POST"])
+def predict_rld():
+    data = request.get_json()
+    prediction = predict_new_rld(data)
+    return jsonify({
+        "Percentage": prediction["Overall_Percentage"],   # matches React
+        "RLD_level": prediction["RLD_Level"],             # matches React
+        "Feedback": prediction["Feedback"],
+        "answers": data                                   # return submitted answers
+    })
+
 # -------------------------------
 # Run Flask App
 # -------------------------------
