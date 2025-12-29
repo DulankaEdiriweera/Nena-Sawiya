@@ -89,7 +89,8 @@ def predict_eld():
 # -------------------------------
 
 # Load VD model
-VD_model = joblib.load('VD_model.pkl')
+vd_folder_path = "visualD_models"
+VD_model = joblib.load(os.path.join(vd_folder_path, "VD_model.pkl"))
 
 # Map numeric prediction to readable Sinhala labels
 visual_D = {
