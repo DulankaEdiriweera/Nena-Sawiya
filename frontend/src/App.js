@@ -13,12 +13,14 @@ import ObjectCountingPageDiscrimination from './pages/visualDiscriminationPages/
 import Level3ShapeMemory from './pages/visualDiscriminationPages/DiscriminationL3P1';
 import Level3Choices from './pages/visualDiscriminationPages/DiscriminationL3P2';
 import FinalSummary from './pages/visualDiscriminationPages/DiscrminationSummary';
+import Home from "./Components/Home";
 
 
 function App() {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Home/>}/>
         <Route path="/story" element={<StoryAssessment />} />
         <Route path="/eldResults" element={<EldResults />} />
 
