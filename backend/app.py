@@ -79,9 +79,10 @@ def predict_eld():
 # ======================= RLD =========================
 # =====================================================
 # Load RLD models
-regressor_rld = joblib.load("rld_ridge_percentage_model.pkl")
-classifier_rld = joblib.load("rld_rf_level_model.pkl")
-vectorizers_rld = joblib.load("rld_vectorizers.pkl")
+folder_path = "rld_models"
+regressor_rld = joblib.load(os.path.join(folder_path,"rld_ridge_percentage_model.pkl"))
+classifier_rld = joblib.load(os.path.join(folder_path,"rld_rf_level_model.pkl"))
+vectorizers_rld = joblib.load(os.path.join(folder_path,"rld_vectorizers.pkl"))
 
 question_cols_rld = [
     "Q1_i","Q1_ii","Q1_iii","Q1_iv",
