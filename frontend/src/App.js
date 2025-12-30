@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StoryAssessment from "./EldComponent/StoryAssessment";
 import EldResults from "./EldComponent/EldResults";
-
+import ELDUserGuide from "./EldComponent/EldUserGuide";
 import VisualDiscriminationHome from "./pages/visualDiscriminationPages/VisualDisciminationHome";
 import StudentAdvicePageDis from "./pages/visualDiscriminationPages/DiscriminationAdvices";
 import Level1Discrimination from "./pages/visualDiscriminationPages/DiscriminationLevel1AllInOne";
@@ -22,7 +22,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/story" element={<StoryAssessment />} />
         <Route path="/eldResults" element={<EldResults />} />
-
+        <Route path="/elduserguide" element={<ELDUserGuide/>}/>
         <Route path="/visual" element={<VisualDiscriminationHome />} />
         <Route path="/visualDisAdvices" element={<StudentAdvicePageDis />} />
         <Route path="/level1allin1" element={<Level1Discrimination />} />

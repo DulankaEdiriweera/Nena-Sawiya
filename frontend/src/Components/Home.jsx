@@ -17,7 +17,7 @@ const Home = () => {
       color: "from-pink-400 to-rose-500",
       bgColor: "bg-gradient-to-br from-pink-100 to-rose-100",
       emoji: "💬",
-      path: "/story"
+      path: "/elduserguide"
     },
     {
       id: 2,
