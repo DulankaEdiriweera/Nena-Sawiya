@@ -47,6 +47,7 @@ const Home = () => {
       color: "from-yellow-400 to-orange-500",
       bgColor: "bg-gradient-to-br from-yellow-100 to-orange-100",
       emoji: "🔷",
+      path: "/vcDashboard"
     },
   ];
 
