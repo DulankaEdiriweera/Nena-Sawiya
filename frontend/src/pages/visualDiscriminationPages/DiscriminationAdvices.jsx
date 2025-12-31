@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../Components/Header";
 
 function StudentAdvicePageDis() {
   const navigate = useNavigate();
@@ -9,7 +10,10 @@ function StudentAdvicePageDis() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 flex items-center justify-center p-4 relative">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 flex items-center justify-center p-4 relative">
       {/* Static decorative elements */}
       <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-50"></div>
       <div
@@ -134,6 +138,8 @@ function StudentAdvicePageDis() {
 
         {/* Bottom decoration */}
         <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400"></div>
+      </div>
+    </div>
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../Components/Header";
 
 export default function Level3ShapeMemory() {
   const [timeLeft, setTimeLeft] = useState(30);
@@ -44,7 +45,10 @@ export default function Level3ShapeMemory() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
 
       {/* Floating Decorations */}
       <div className="absolute top-10 left-10 text-5xl animate-bounce opacity-20">🎨</div>
@@ -136,6 +140,8 @@ export default function Level3ShapeMemory() {
           Next ➜
         </button>
 
+      </div>
+    </div>
       </div>
     </div>
   );

@@ -15,6 +15,10 @@ import Home from "./Components/Home";
 
 import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 
+import VCDashboard from "./VCcomponent/VCDashboard";
+import VCAssessment from "./VCcomponent/VCAssessment";
+import VCResults from "./VCcomponent/VCResults";
+
 function App() {
   return (
     <Router>
@@ -37,6 +41,9 @@ function App() {
           path="/RLDTestInstructionsPage"
           element={<RLDTestInstructionsPage />}
         />
+        <Route path="/vcDashboard" element={<VCDashboard />} />
+        <Route path="/vcAssessment" element={<VCAssessment />} />
+        <Route path="/vcResults" element={<VCResults />} />
       </Routes>
     </Router>
   );

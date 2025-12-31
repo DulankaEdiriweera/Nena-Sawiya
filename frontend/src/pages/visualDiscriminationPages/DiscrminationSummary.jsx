@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Header from "../../Components/Header";
 
 export default function FinalSummary() {
   const [scores, setScores] = useState({
@@ -84,7 +85,10 @@ export default function FinalSummary() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-4">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-2xl w-full">
         {/* Header with friendly stars */}
         <div className="text-center mb-6">
@@ -205,6 +209,8 @@ export default function FinalSummary() {
           <span className="text-3xl mr-2">🏠</span>
           නැවත ආරම්භ කරන්න / Restart
         </button>
+      </div>
+    </div>
       </div>
     </div>
   );

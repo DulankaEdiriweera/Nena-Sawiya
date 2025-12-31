@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../../Components/Header";
 
 export default function VisualDiscriminationHome() {
   const navigate = useNavigate();
@@ -17,7 +18,10 @@ export default function VisualDiscriminationHome() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
       
       {/* Static background elements */}
       <div className="absolute top-20 left-20 w-24 h-24 bg-yellow-300 rounded-full opacity-60"></div>
@@ -157,6 +161,8 @@ export default function VisualDiscriminationHome() {
         {/* Bottom colorful stripe */}
         <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-b-3xl"></div>
 
+      </div>
+    </div>
       </div>
     </div>
   );
