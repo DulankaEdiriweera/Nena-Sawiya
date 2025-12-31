@@ -3,7 +3,7 @@ import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import StoryAssessment from "./EldComponent/StoryAssessment";
 import EldResults from "./EldComponent/EldResults";
-
+import ELDUserGuide from "./EldComponent/EldUserGuide";
 import VisualDiscriminationHome from "./pages/visualDiscriminationPages/VisualDisciminationHome";
 import StudentAdvicePageDis from "./pages/visualDiscriminationPages/DiscriminationAdvices";
 import Level1Discrimination from "./pages/visualDiscriminationPages/DiscriminationLevel1AllInOne";
@@ -13,11 +13,7 @@ import Level3Choices from "./pages/visualDiscriminationPages/DiscriminationL3P2"
 import FinalSummary from "./pages/visualDiscriminationPages/DiscrminationSummary";
 import Home from "./Components/Home";
 
-import RLDTest from "./RldComponent/RLDTest";
-
-import VCDashboard from "./VCcomponent/VCDashboard";
-import VCAssessment from "./VCcomponent/VCAssessment";
-import VCResults from "./VCcomponent/VCResults";
+import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 
 function App() {
   return (
@@ -26,7 +22,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/story" element={<StoryAssessment />} />
         <Route path="/eldResults" element={<EldResults />} />
-
+        <Route path="/elduserguide" element={<ELDUserGuide />} />
         <Route path="/visual" element={<VisualDiscriminationHome />} />
         <Route path="/visualDisAdvices" element={<StudentAdvicePageDis />} />
         <Route path="/level1allin1" element={<Level1Discrimination />} />
@@ -37,11 +33,10 @@ function App() {
         <Route path="/discriminationL3P1" element={<Level3ShapeMemory />} />
         <Route path="/discriminationL3p2" element={<Level3Choices />} />
         <Route path="/summary" element={<FinalSummary />} />
-        <Route path="/RLDTest" element={<RLDTest />} />
-
-        <Route path="/vcDashboard" element={<VCDashboard />} />
-        <Route path="/vcAssessment" element={<VCAssessment />} />
-        <Route path="/vcResults" element={<VCResults />} />
+        <Route
+          path="/RLDTestInstructionsPage"
+          element={<RLDTestInstructionsPage />}
+        />
       </Routes>
     </Router>
   );
