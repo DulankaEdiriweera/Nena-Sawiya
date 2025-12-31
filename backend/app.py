@@ -5,6 +5,9 @@ from scipy.sparse import hstack
 from flask_cors import CORS
 import pandas as pd
 from visualDiscrimination import preprocess_dataframe
+import json
+from datetime import datetime
+import numpy as np
 
 # -------------------------------
 # Flask App Setup
@@ -199,13 +202,13 @@ with open(os.path.join(VC_MODEL_DIR, "feature_columns.json")) as f:
 # VC Feedback Mapping
 # -------------------------------
 vc_feedback_map = {
-    "Low": "දෘශ්‍ය වසා ගැනීමේ කුසලතාව දුර්වලයි. අතිරේක පුහුණුව අවශ්‍ය වේ.",
-    "Average": "දෘශ්‍ය වසා ගැනීමේ කුසලතාව සාමාන්‍ය මට්ටමින් පවතී.",
-    "High": "දෘශ්‍ය වසා ගැනීමේ කුසලතාව ඉතා හොඳයි."
+    "Weak": "දෘශ්‍ය සම්පූර්ණතා හැකියාව දුර්වලයි. අතිරේක පුහුණුව අවශ්‍ය වේ.",
+    "Average": "දෘශ්‍ය සම්පූර්ණතා හැකියාව සාමාන්‍ය මට්ටමින් පවතී.",
+    "High": "දෘශ්‍ය සම්පූර්ණතා හැකියාව ඉතා හොඳයි."
 }
 
 vc_level_sinhala_map = {
-    "Low": "දුර්වල",
+    "Weak": "දුර්වල",
     "Average": "සාමාන්‍ය",
     "High": "ඉතා හොදයි"
 }

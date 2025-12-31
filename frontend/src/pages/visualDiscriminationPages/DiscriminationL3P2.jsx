@@ -12,6 +12,7 @@ import L3A7 from "../../Assets/visualD/level3/L3A7.jpg";
 import L3A8 from "../../Assets/visualD/level3/L3A8.jpg";
 import L3A9 from "../../Assets/visualD/level3/L3A9.jpg";
 import L3A10 from "../../Assets/visualD/level3/L3A10.jpg";
+import Header from "../../Components/Header";
 
 export default function DiscriminationL3p2() {
   const navigate = useNavigate();
@@ -67,7 +68,10 @@ export default function DiscriminationL3p2() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-yellow-100 p-6 flex items-center justify-center">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-yellow-100 p-6 flex items-center justify-center">
       <div className="bg-white w-full max-w-5xl p-10 rounded-3xl shadow-2xl">
         <input
           type="text"
@@ -120,6 +124,8 @@ export default function DiscriminationL3p2() {
             Submit ✔️
           </button>
         </div>
+      </div>
+    </div>
       </div>
     </div>
   );

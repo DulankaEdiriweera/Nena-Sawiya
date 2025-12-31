@@ -17,9 +17,9 @@ sns.set_style('whitegrid')
 plt.rcParams['figure.dpi'] = 300
 
 
-# ============================================================================
-# CONFIGURATION - RESEARCH OPTIMIZED FOR 90% ACCURACY
-# ============================================================================
+# ==========================
+# CONFIGURATION  
+# ==========================
 
 class Config:
     N_ESTIMATORS = 100           
