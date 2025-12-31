@@ -59,33 +59,21 @@ const Home = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="flex justify-center mb-6">
+        <div className="text-center mb-5">
+          <div className="flex justify-center mb-2">
             <img
               src={Owl}
               alt="Mascot"
-              className="w-32 h-32 object-contain animate-bounce rounded-3xl"
+              className="w-40 h-40 object-contain animate-bounce rounded-3xl"
               style={{ animationDuration: "2s" }}
             />
           </div>
-
-          <h2 className="text-3xl sm:text-5xl md:text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 via-pink-600 to-yellow-600 mb-4">
-            ආයුබෝවන්!
-          </h2>
-          <p className="text-xl sm:text-2xl md:text-3xl text-gray-800 font-bold max-w-3xl mx-auto mb-3">
-            👉 ඉගෙනීම කියන්නේ දැනුම ලබමින් සතුටු වෙන්න පුළුවන් සුන්දර ගමනක්!
-            🌈📘
-          </p>
-          <p className="text-base sm:text-lg md:text-xl text-gray-700 font-medium">
-            ඔබ කැමති ක්‍රියාකාරකමක් තෝරාගන්න
-          </p>
         </div>
 
         {/* Call to Action */}
         <div className="bg-gradient-to-r from-purple-200 via-pink-200 to-yellow-100 rounded-3xl p-10 sm:p-14 text-center shadow-2xl border-4 border-purple-300 pb-2">
-          <div className="text-6xl mb-4 animate-bounce">🚀</div>
           <h3 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-5 text-purple-800">
-            අද ඔබේ ගමන ආරම්භ කරන්න!
+            ආයුබෝවන්!
           </h3>
 
           {/* Description Section */}
@@ -97,17 +85,17 @@ const Home = () => {
               </strong>
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-3 leading-relaxed">
-              📚 ඉගෙනීමේ අපහසුතා ඇති දරුවන් සඳහා විශේෂයෙන් නිර්මාණය කර ඇත
+              📚 ඉගෙනීමේ අපහසුතා ඇති දරුවන් සඳහා විශේෂයෙන් නිර්මාණය කර ඇත.
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-3 leading-relaxed">
               👨‍⚕️ වෛද්‍යවරුන්ගේ උපදෙස් මත සකස් කර, බලපත්‍රලාභී වෛද්‍යවරුන් විසින්
-              සහතික කර ඇත
+              සහතික කර ඇත.
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-3 leading-relaxed">
-              ✅ ප්‍රාථමික පාසල් ළමුන් සමග සාර්ථකව පරීක්ෂා කර ඇත
+              ✅ ප්‍රාථමික පාසල් ළමුන් සමග සාර්ථකව පරීක්ෂා කර ඇත.
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 leading-relaxed">
-              💖 ඔබේ දරුවා සතුටින්, ආරක්ෂිතව ඉගෙන ගැනීමට උපකාර වේ
+              💖 ඔබේ දරුවාට සතුටින්, ආරක්ෂිතව ඉගෙන ගැනීමට උපකාර වේ.
             </p>
           </div>
 
@@ -130,6 +118,16 @@ const Home = () => {
               ✓ ආරක්ෂිත ඉගෙනීම
             </span>
           </div>
+        </div>
+
+        <div className="text-center mb-2 pt-12 ">
+          <p className="text-xl sm:text-2xl md:text-3xl text-gray-800 font-bold max-w-3xl mx-auto mb-3">
+            👉 ඉගෙනීම කියන්නේ දැනුම ලබමින් සතුටු වෙන්න පුළුවන් සුන්දර ගමනක්!
+            🌈📘
+          </p>
+          <p className="text-base sm:text-lg md:text-xl text-gray-700 font-medium">
+            ඔබ කැමති ක්‍රියාකාරකමක් තෝරාගන්න
+          </p>
         </div>
 
         {/* Cards */}
