@@ -1,5 +1,6 @@
 import React from "react";
 import { FaStar, FaRegStar } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import Logo from "../Assets/Logo.png";
 
 const Header = () => {
@@ -11,15 +12,27 @@ const Header = () => {
           <div className="flex items-center space-x-6 flex-1">
             {/* Logo */}
             <div>
-              <img
-                src={Logo}
-                alt="Nena Sawiya Logo"
-                className="w-24 h-24 object-contain"
-              />
+              <Link to="/" className="cursor-pointer">
+                <img
+                  src={Logo}
+                  alt="Nena Sawiya Logo"
+                  className="w-24 h-24 object-contain hover:scale-105 transition-transform"
+                />
+              </Link>
             </div>
 
             {/* Project Name */}
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#0A1F44] tracking-wide drop-shadow-md">
+            <h1
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-wide text-[#0A1F44]"
+              style={{
+                textShadow: `
+      1px 1px 0 #cbd5e1,
+      2px 2px 0 #b6c3d6,
+      3px 3px 0 #a1b1cd,
+      4px 4px 0 #8fa1c4,
+      6px 6px 12px rgba(0, 0, 0, 0.35)`,
+              }}
+            >
               නැණ සවිය
             </h1>
           </div>

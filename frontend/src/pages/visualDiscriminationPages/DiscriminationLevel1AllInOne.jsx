@@ -39,6 +39,7 @@ import L1Q6A1 from "../../Assets/visualD/L1Q6A1.jpg";
 import L1Q6A2 from "../../Assets/visualD/L1Q6A2.jpg";
 import L1Q6A3 from "../../Assets/visualD/L1Q6A3.jpg";
 import L1Q6A4 from "../../Assets/visualD/L1Q6A4.jpg";
+import Header from "../../Components/Header";
 
 // ✅ Level 1 questions
 const level1Questions = [
@@ -101,7 +102,10 @@ export default function DiscriminationQuestionLevel1() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100 flex items-center justify-center p-4">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100 flex items-center justify-center p-4">
       <div className="bg-white shadow-2xl rounded-3xl p-8 md:p-12 max-w-3xl w-full">
         <h1 className="text-3xl font-bold text-blue-700 mb-2">🎯 Level 1 Discrimination Test</h1>
         <p className="text-xs text-gray-400 mb-4">
@@ -166,6 +170,8 @@ export default function DiscriminationQuestionLevel1() {
           </div>
         </div>
       )}
+    </div>
+      </div>
     </div>
   );
 }

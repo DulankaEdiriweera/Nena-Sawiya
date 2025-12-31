@@ -5,6 +5,9 @@ from scipy.sparse import hstack
 from flask_cors import CORS
 import pandas as pd
 from visualDiscrimination import preprocess_dataframe
+import json
+from datetime import datetime
+import numpy as np
 
 # -------------------------------
 # Flask App Setup
@@ -182,6 +185,79 @@ def predict_rld():
         "Feedback": prediction["Feedback"],
         "answers": data                                   # return submitted answers
     })
+
+# =========================================================
+# ===================== VISUAL CLOSURE ====================
+# =========================================================
+
+VC_MODEL_DIR = "vc_models"
+
+vc_model = joblib.load(os.path.join(VC_MODEL_DIR, "visual_closure_model.pkl"))
+vc_label_encoder = joblib.load(os.path.join(VC_MODEL_DIR, "label_encoder.pkl"))
+
+with open(os.path.join(VC_MODEL_DIR, "feature_columns.json")) as f:
+    vc_feature_columns = json.load(f)
+
+# -------------------------------
+# VC Feedback Mapping
+# -------------------------------
+vc_feedback_map = {
+    "Weak": "දෘශ්‍ය සම්පූර්ණතා හැකියාව දුර්වලයි. අතිරේක පුහුණුව අවශ්‍ය වේ.",
+    "Average": "දෘශ්‍ය සම්පූර්ණතා හැකියාව සාමාන්‍ය මට්ටමින් පවතී.",
+    "High": "දෘශ්‍ය සම්පූර්ණතා හැකියාව ඉතා හොඳයි."
+}
+
+vc_level_sinhala_map = {
+    "Weak": "දුර්වල",
+    "Average": "සාමාන්‍ය",
+    "High": "ඉතා හොදයි"
+}
+
+# -------------------------------
+# VC Prediction Function
+# -------------------------------
+def predict_new_vc(vc_input_data):
+    """
+    vc_input_data = {
+        "Time Taken(level1)": 12,
+        "marks(level1)": 5,
+        ...
+    }
+    """
+
+    # Create DataFrame with correct column order
+    X_new = pd.DataFrame([vc_input_data])
+
+    # Ensure all required features exist
+    for col in vc_feature_columns:
+        if col not in X_new:
+            X_new[col] = 0
+
+    X_new = X_new[vc_feature_columns]
+
+    # Prediction
+    pred_class = vc_model.predict(X_new)[0]
+    pred_proba = vc_model.predict_proba(X_new).max()
+
+    level_en = vc_label_encoder.inverse_transform([pred_class])[0]
+    level_si = vc_level_sinhala_map.get(level_en, level_en)
+    feedback = vc_feedback_map.get(level_en, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
+
+    return {
+        "VC_Level": level_si,
+        "Confidence": round(float(pred_proba) * 100, 2),
+        "Feedback": feedback
+    }
+
+# -------------------------------
+# VC Flask Route
+# -------------------------------
+@app.route("/predict_vc", methods=["POST"])
+def predict_vc():
+    data = request.get_json()
+    result = predict_new_vc(data)
+    return jsonify(result)
+
 
 # -------------------------------
 # Run Flask App
