@@ -7,6 +7,7 @@ import L2A1 from "../../Assets/visualD/level2/L2A1.jpg";
 import L2A2 from "../../Assets/visualD/level2/L2A2.jpg";
 import L2A3 from "../../Assets/visualD/level2/L2A3.jpg";
 import L2A4 from "../../Assets/visualD/level2/L2A4.jpg";
+import Header from "../../Components/Header";
 
 export default function ObjectCountingPageDiscrimination() {
   const navigate = useNavigate();
@@ -58,7 +59,10 @@ export default function ObjectCountingPageDiscrimination() {
   };
 
   return (
-    <div className="min-h-screen w-screen bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-100 p-4 relative overflow-x-auto">
+    <div>
+      <Header/>
+      <div>
+        <div className="min-h-screen w-screen bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-100 p-4 relative overflow-x-auto">
       
       {/* 🔽 ZOOM-OUT WRAPPER */}
       <div className="scale-90 origin-top">
@@ -164,6 +168,8 @@ export default function ObjectCountingPageDiscrimination() {
           <span className="animate-bounce" style={{ animationDelay: "0.6s" }}>🦎</span>
         </div>
 
+      </div>
+    </div>
       </div>
     </div>
   );
