@@ -22,7 +22,7 @@ const VCDashboard = () => {
         <Heart className="w-8 h-8 text-red-400 opacity-60" />
       </div>
 
-      {/* Header with fun animation */}
+      {/* Header with animation */}
       <div className="text-center mb-6 animate-bounce">
         <div className="inline-block bg-white rounded-full p-5 shadow-2xl border-4 border-purple-300">
           <Eye className="w-12 h-12 md:w-16 md:h-16 text-purple-600 animate-pulse" />
@@ -50,7 +50,7 @@ const VCDashboard = () => {
           </p>
         </div>
 
-        {/* Instructions card - more playful */}
+        {/* Instructions card */}
         <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-5 mb-5 border-4 border-yellow-400 shadow-lg">
           <div className="flex items-center justify-center mb-4">
             <Sparkles className="w-8 h-8 text-orange-500 mr-3 animate-spin" />
@@ -77,7 +77,6 @@ const VCDashboard = () => {
           </ul>
         </div>
 
-        {/* What you'll do section - more colorful */}
         <div className="bg-gradient-to-r from-pink-100 to-purple-100 rounded-2xl p-5 mb-6 border-4 border-pink-300 shadow-lg">
           <div className="flex items-center justify-center mb-4">
             <Star className="w-8 h-8 text-pink-600 mr-3 animate-pulse" />
@@ -106,7 +105,7 @@ const VCDashboard = () => {
           </div>
         </div>
 
-        {/* Ready message - more exciting */}
+        {/* Ready message */}
         <div className="text-center mb-6">
           <div className="inline-flex items-center bg-gradient-to-r from-green-200 to-emerald-200 text-green-800 px-6 py-4 rounded-full text-lg font-bold shadow-lg border-4 border-green-300 animate-pulse">
             <Zap className="w-7 h-7 mr-2 text-yellow-500" />
@@ -125,7 +124,7 @@ const VCDashboard = () => {
           </button>
         </div>
 
-        {/* Tips section - more encouraging */}
+        {/* Tips section */}
         <div className="mt-6 bg-gradient-to-r from-red-100 to-pink-100 rounded-2xl p-5 border-4 border-pink-300 shadow-lg">
           <h3 className="text-lg md:text-xl font-bold text-pink-700 mb-3 flex items-center justify-center">
             <span className="mr-2 text-2xl">💡</span> 
