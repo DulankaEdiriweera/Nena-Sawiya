@@ -10,7 +10,7 @@ const VCResults = () => {
   const [showConfetti, setShowConfetti] = useState(true);
 
   useEffect(() => {
-    // Try to get results from location state first (React Router)
+    // Try to get results
     if (location.state) {
       console.log('Results from location.state:', location.state);
       setResults(location.state);
@@ -41,7 +41,6 @@ const VCResults = () => {
       }
     }
 
-    // Hide confetti after 3 seconds
     setTimeout(() => setShowConfetti(false), 3000);
   }, [location, navigate]);
 
@@ -58,10 +57,10 @@ const VCResults = () => {
 
   const { VC_Level, Confidence, Feedback, levelMarks, totalMarks } = results;
 
-  // Calculate percentage
+
   const percentage = ((totalMarks / 25) * 100).toFixed(1);
 
-  // Determine performance level for styling
+
   const getPerformanceColor = () => {
     if (VC_Level === 'ඉතා හොදයි') return 'green';
     if (VC_Level === 'සාමාන්‍ය') return 'yellow';

@@ -23,7 +23,7 @@ const VCAssessment = () => {
 
   // Questions configuration
   const questions = [
-    // Level 1
+    
     {
       id: 1,
       level: 1,
@@ -51,7 +51,7 @@ const VCAssessment = () => {
       correctAnswer: 2,
       marks: 1
     },
-    // Level 2
+    
     {
       id: 4,
       level: 2,
@@ -79,7 +79,7 @@ const VCAssessment = () => {
       correctAnswer: 0,
       marks: 3
     },
-    // Level 3
+    
     {
       id: 7,
       level: 3,
@@ -176,7 +176,7 @@ const VCAssessment = () => {
     const currentLevelQuestionIndex = levelQuestions.findIndex(q => q.id === currentQ.id);
 
     if (currentLevelQuestionIndex === levelQuestions.length - 1) {
-      // End of level - calculate marks
+      // calculate marks
       const levelResults = calculateLevelMarks();
       setLevelMarks(prev => ({
         ...prev,
@@ -189,7 +189,7 @@ const VCAssessment = () => {
         setCurrentQuestion(currentQuestion + 1);
         setLevelTimer(0);
       } else {
-        // End of assessment - submit
+        // submit
         submitResults(levelResults);
       }
     } else {
