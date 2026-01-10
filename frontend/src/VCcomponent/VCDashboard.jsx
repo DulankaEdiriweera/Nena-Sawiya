@@ -153,7 +153,7 @@ const VCDashboard = () => {
         </div>
       </div>
 
-      {/* Footer decoration - more playful */}
+      {/* Footer decoration */}
       <div className="text-center mt-6">
         <div className="inline-block bg-white rounded-full px-8 py-3 shadow-lg border-4 border-purple-300">
           <p className="text-purple-700 text-lg md:text-xl font-bold flex items-center">
