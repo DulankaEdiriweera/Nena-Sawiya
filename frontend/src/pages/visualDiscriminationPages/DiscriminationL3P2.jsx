@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Correct static imports (matching folder structure)
+
 import L3A1 from "../../Assets/visualD/level3/L3A1.jpg";
 import L3A2 from "../../Assets/visualD/level3/L3A2.jpg";
 import L3A3 from "../../Assets/visualD/level3/L3A3.jpg";
@@ -95,7 +95,7 @@ export default function DiscriminationL3p2() {
           />
         </div>
 
-        {/* Timer display */}
+        
         <div className="text-center mb-4 text-2xl font-bold text-blue-600">
           ⏱️ Time: {secondsElapsed}s
         </div>

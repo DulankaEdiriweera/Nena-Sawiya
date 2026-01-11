@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Import all images statically
-// Q1–Q4 (PNG)
+
 import L1Q1 from "../../Assets/visualD/L1Q1.png";
 import L1Q1A1 from "../../Assets/visualD/L1Q1A1.png";
 import L1Q1A2 from "../../Assets/visualD/L1Q1A2.png";
@@ -27,7 +26,6 @@ import L1Q4A2 from "../../Assets/visualD/L1Q4A2.png";
 import L1Q4A3 from "../../Assets/visualD/L1Q4A3.png";
 import L1Q4A4 from "../../Assets/visualD/L1Q4A4.png";
 
-// Q5–Q6 (JPG)
 import L1Q5Q5 from "../../Assets/visualD/L1Q5Q5.jpg";
 import L1Q5A1 from "../../Assets/visualD/L1Q5A1.jpg";
 import L1Q5A2 from "../../Assets/visualD/L1Q5A2.jpg";
@@ -41,7 +39,7 @@ import L1Q6A3 from "../../Assets/visualD/L1Q6A3.jpg";
 import L1Q6A4 from "../../Assets/visualD/L1Q6A4.jpg";
 import Header from "../../Components/Header";
 
-// ✅ Level 1 questions
+
 const level1Questions = [
   { questionImg: L1Q1, answers: [L1Q1A1, L1Q1A2, L1Q1A3, L1Q1A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },
   { questionImg: L1Q2, answers: [L1Q2A1, L1Q2A2, L1Q2A3, L1Q2A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },

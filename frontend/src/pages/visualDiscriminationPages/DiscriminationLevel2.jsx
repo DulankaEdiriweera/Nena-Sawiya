@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// ✅ Static imports for Level 2 images
+
 import L2Q1 from "../../Assets/visualD/level2/L2Q1.jpg";
 import L2A1 from "../../Assets/visualD/level2/L2A1.jpg";
 import L2A2 from "../../Assets/visualD/level2/L2A2.jpg";
@@ -64,19 +64,19 @@ export default function ObjectCountingPageDiscrimination() {
       <div>
         <div className="min-h-screen w-screen bg-gradient-to-br from-yellow-100 via-orange-100 to-pink-100 p-4 relative overflow-x-auto">
       
-      {/* 🔽 ZOOM-OUT WRAPPER */}
+      
       <div className="scale-90 origin-top">
 
-        {/* Floating decorations */}
+        
         <div className="absolute top-10 left-10 text-5xl animate-bounce opacity-30">🦑</div>
         <div className="absolute top-20 right-20 text-5xl animate-bounce opacity-30" style={{ animationDelay: "0.5s" }}>🐟</div>
         <div className="absolute bottom-20 left-20 text-5xl animate-bounce opacity-30" style={{ animationDelay: "1s" }}>🐸</div>
         <div className="absolute bottom-32 right-16 text-5xl animate-bounce opacity-30" style={{ animationDelay: "1.2s" }}>🦎</div>
 
-        {/* Landscape layout */}
+        
         <div className="flex max-w-7xl mx-auto bg-white rounded-3xl shadow-2xl p-6 md:p-10 relative z-10">
           
-          {/* Left column */}
+          
           <div className="flex-[3_3_0%] mr-5">
             <div className="text-center mb-3">
               <input
@@ -109,7 +109,7 @@ export default function ObjectCountingPageDiscrimination() {
             <div className="bg-gradient-to-br from-yellow-200 to-orange-200 rounded-3xl p-4 shadow-xl">
               <h3 className="text-xl font-bold text-center mb-3 text-orange-700">📷 මෙම රූපය බලන්න!</h3>
               <div className="bg-white rounded-2xl p-3 shadow-inner flex justify-center">
-                {/* ✅ Question image restored */}
+                
                 <img
                   src={loadedQuestionImage}
                   alt="Question"
@@ -119,7 +119,7 @@ export default function ObjectCountingPageDiscrimination() {
             </div>
           </div>
 
-          {/* Right column */}
+          
           <div className="flex-1 grid grid-cols-1 gap-4 justify-items-center">
             {answers.map((item, index) => (
               <div
@@ -127,7 +127,7 @@ export default function ObjectCountingPageDiscrimination() {
                 className="bg-gradient-to-br from-pink-50 to-purple-50 rounded-3xl p-4 shadow-lg border-4 border-purple-200 hover:border-purple-400 transition-all transform hover:scale-105 w-52"
               >
                 <div className="bg-white rounded-2xl p-2 mb-3 shadow flex justify-center">
-                  {/* ✅ Smaller answer images */}
+                  
                   <img
                     src={loadedAnswerImages[index]}
                     alt={`Answer ${index + 1}`}
@@ -150,7 +150,7 @@ export default function ObjectCountingPageDiscrimination() {
           </div>
         </div>
 
-        {/* Next Button */}
+        
         <div className="flex justify-center mt-4">
           <button
             onClick={goNext}
@@ -160,7 +160,7 @@ export default function ObjectCountingPageDiscrimination() {
           </button>
         </div>
 
-        {/* Bottom Decorations */}
+        
         <div className="flex justify-center gap-4 mt-6 text-4xl">
           <span className="animate-bounce">🦑</span>
           <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🐟</span>
