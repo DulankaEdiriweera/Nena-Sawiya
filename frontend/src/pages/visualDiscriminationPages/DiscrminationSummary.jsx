@@ -27,10 +27,10 @@ export default function FinalSummary() {
 
     setScores({ L1, L2, L3, time, total });
 
-    // ✅ Build complete payload matching EXACT backend format
+    
     const payload = [
       {
-        // Level 1 answers (0-indexed from user selection)
+        
         L1Q1: parseScore(submissionData.L1Q1),
         L1Q2: parseScore(submissionData.L1Q2),
         L1Q3: parseScore(submissionData.L1Q3),
@@ -38,17 +38,17 @@ export default function FinalSummary() {
         L1Q5: parseScore(submissionData.L1Q5),
         L1Q6: parseScore(submissionData.L1Q6),
 
-        // Level 1 total marks
+        
         "Total Marks": L1,
 
-        // Level 2 - Shape counts (EXACT field names)
+        
         "Shape 1": parseScore(submissionData["Shape 1"]),
         "shape 2": parseScore(submissionData["shape 2"]),
         "shape 3": parseScore(submissionData["shape 3"]),
         "shape 4": parseScore(submissionData["shape 4"]),
         "Marks(Level 2)": L2,
 
-        // Level 3 (EXACT field names)
+        
         "Level 3 Question": submissionData["Level 3 Question"] || "",
         "Marks (Level 3)": L3,
         "Marks For Time": parseScore(submissionData["Marks For Time"]),
@@ -59,7 +59,7 @@ export default function FinalSummary() {
 
     console.log("📤 Sending payload to backend:", JSON.stringify(payload, null, 2));
 
-    // Send payload to backend
+    
     fetch("http://127.0.0.1:5000/predictVDH", {
       method: "POST",
       headers: {
@@ -90,14 +90,14 @@ export default function FinalSummary() {
       <div>
         <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center p-4">
       <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-2xl w-full">
-        {/* Header with friendly stars */}
+        
         <div className="text-center mb-6">
           <div className="text-6xl mb-3">🌟</div>
           <h1 className="text-4xl font-bold text-purple-600 mb-2">ඔබේ ප්‍රතිඵල</h1>
           <p className="text-lg text-gray-600">Your Results</p>
         </div>
 
-        {/* Score Cards */}
+        
         <div className="space-y-4 mb-6">
           {/* Level 1 */}
           <div className="bg-gradient-to-r from-green-100 to-green-200 p-5 rounded-2xl border-4 border-green-300">

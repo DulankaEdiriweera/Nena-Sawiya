@@ -14,7 +14,7 @@ function StudentAdvicePageDis() {
       <Header/>
       <div>
         <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-300 to-yellow-300 flex items-center justify-center p-4 relative">
-      {/* Static decorative elements */}
+      
       <div className="absolute top-10 left-10 w-20 h-20 bg-yellow-300 rounded-full opacity-50"></div>
       <div
         className="absolute bottom-20 right-20 w-16 h-16 bg-pink-400 rounded-full opacity-50"
@@ -25,10 +25,10 @@ function StudentAdvicePageDis() {
 
       <div className="bg-white shadow-2xl rounded-3xl p-8 max-w-4xl w-full relative overflow-hidden">
         
-        {/* Colorful top decoration */}
+        
         <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400"></div>
 
-        {/* Title */}
+        
         <div className="text-center mb-8">
           <div className="text-6xl mb-3">🎮✨</div>
           <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600 mb-2">
@@ -39,7 +39,7 @@ function StudentAdvicePageDis() {
           </p>
         </div>
 
-        {/* Instructions */}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           
           <div className="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-5 transform hover:scale-105 transition-transform duration-200">
@@ -110,7 +110,7 @@ function StudentAdvicePageDis() {
 
         </div>
 
-        {/* Time note */}
+        
         <div className="bg-gradient-to-r from-indigo-100 to-cyan-100 border-4 border-indigo-300 rounded-2xl p-5 mb-8">
           <div className="flex items-center gap-3">
             <div className="text-4xl">⏱️</div>
@@ -126,7 +126,7 @@ function StudentAdvicePageDis() {
           </div>
         </div>
 
-        {/* Start Button */}
+        
         <div className="text-center">
           <button
             onClick={handleStart}
@@ -136,7 +136,7 @@ function StudentAdvicePageDis() {
           </button>
         </div>
 
-        {/* Bottom decoration */}
+        
         <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400"></div>
       </div>
     </div>

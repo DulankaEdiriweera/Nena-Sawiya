@@ -50,16 +50,16 @@ export default function Level3ShapeMemory() {
       <div>
         <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-purple-100 flex flex-col items-center justify-center p-4 relative overflow-hidden">
 
-      {/* Floating Decorations */}
+      
       <div className="absolute top-10 left-10 text-5xl animate-bounce opacity-20">🎨</div>
       <div className="absolute top-20 right-10 text-5xl animate-bounce opacity-20" style={{ animationDelay: '0.3s' }}>⭐</div>
       <div className="absolute bottom-20 right-20 text-5xl animate-bounce opacity-20" style={{ animationDelay: '0.6s' }}>🌟</div>
       <div className="absolute bottom-10 left-20 text-5xl animate-bounce opacity-20" style={{ animationDelay: '0.9s' }}>🎯</div>
 
-      {/* 🔹 WIDER CARD */}
+      
       <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10 max-w-5xl w-full text-center relative z-10">
 
-        {/* Title */}
+        
         <div className="mb-5">
           <div className="text-5xl mb-2">🧠💭</div>
           <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-1">
@@ -70,7 +70,7 @@ export default function Level3ShapeMemory() {
           </h2>
         </div>
 
-        {/* Instructions */}
+        
         <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-5 mb-5 border-4 border-blue-300">
           <p className="text-base md:text-lg text-gray-800 font-semibold leading-relaxed">
             📸 මෙම පින්තූරය හොඳින් බලන්න!<br />
@@ -80,7 +80,7 @@ export default function Level3ShapeMemory() {
           </p>
         </div>
 
-        {/* Timer */}
+        
         <div className="mb-5">
           <div
             className={`inline-block px-6 py-3 rounded-full shadow-lg transition-all ${
@@ -98,7 +98,7 @@ export default function Level3ShapeMemory() {
           </div>
         </div>
 
-        {/* Progress bar */}
+        
         <div className="mb-5 bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
           <div
             className="h-full bg-gradient-to-r from-green-400 via-blue-400 to-purple-400 transition-all duration-1000 ease-linear"
@@ -106,7 +106,7 @@ export default function Level3ShapeMemory() {
           ></div>
         </div>
 
-        {/* Question Image */}
+        
         <div className="bg-gradient-to-br from-yellow-200 to-pink-200 rounded-3xl p-5 shadow-xl">
           <div className="bg-white rounded-2xl p-3 shadow-inner">
             {questionImage ? (
@@ -124,7 +124,7 @@ export default function Level3ShapeMemory() {
           </div>
         </div>
 
-        {/* Fun emojis */}
+        
         <div className="mt-5 flex justify-center gap-3 text-3xl">
           <span className="animate-bounce">🎈</span>
           <span className="animate-bounce" style={{ animationDelay: "0.2s" }}>🌈</span>
@@ -132,7 +132,7 @@ export default function Level3ShapeMemory() {
           <span className="animate-bounce" style={{ animationDelay: "0.6s" }}>🎨</span>
         </div>
 
-        {/* NEXT BUTTON */}
+        
         <button
           onClick={handleNext}
           className="mt-6 px-8 py-3 bg-purple-600 text-white rounded-2xl text-xl font-bold shadow-lg hover:bg-purple-700 transition-all"
