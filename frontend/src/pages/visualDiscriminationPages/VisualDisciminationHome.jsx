@@ -10,11 +10,11 @@ export default function VisualDiscriminationHome() {
   };
 
   const handleProgress = () => {
-    // Future feature: progress report
+    
   };
 
   const handleHelp = () => {
-    // Future feature: help & tips
+    
   };
 
   return (
@@ -23,7 +23,7 @@ export default function VisualDiscriminationHome() {
       <div>
         <div className="min-h-screen bg-gradient-to-br from-pink-300 via-purple-300 to-blue-300 flex items-center justify-center p-4 relative overflow-hidden">
       
-      {/* Static background elements */}
+      
       <div className="absolute top-20 left-20 w-24 h-24 bg-yellow-300 rounded-full opacity-60"></div>
       <div
         className="absolute top-40 right-32 w-16 h-16 bg-pink-400 rounded-full opacity-60"
@@ -35,7 +35,7 @@ export default function VisualDiscriminationHome() {
         className="absolute bottom-20 right-20 w-28 h-28 bg-green-300 rounded-full opacity-60"
       ></div>
       
-      {/* Stars decoration */}
+      
       <div className="absolute top-10 right-10 text-yellow-400 text-4xl animate-pulse">⭐</div>
       <div
         className="absolute top-1/4 left-10 text-yellow-300 text-3xl animate-pulse"
@@ -52,10 +52,10 @@ export default function VisualDiscriminationHome() {
 
       <div className="bg-white shadow-2xl rounded-3xl p-8 md:p-12 max-w-3xl w-full relative z-10 border-8 border-purple-200">
         
-        {/* Colorful top stripe */}
+        
         <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 rounded-t-3xl"></div>
 
-        {/* Fun emoji header */}
+        
         <div className="text-center mb-6">
           <div className="text-7xl mb-4 animate-bounce">🎨🧠✨</div>
           <h1 className="text-5xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-3 leading-tight">
@@ -69,14 +69,14 @@ export default function VisualDiscriminationHome() {
           </p>
         </div>
 
-        {/* Fun description box */}
+        
         <div className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-2xl p-6 mb-8 border-4 border-yellow-300">
           <p className="text-gray-800 text-lg leading-relaxed text-center font-semibold">
             🎯 ප්‍රාථමික ශිෂ්‍යයන්ගේ දෘශ්‍ය සහ මනෝවිද්‍යාත්මක හැකියාවන් වර්ධනය කිරීමට නිර්මාණය කරන ලද ක්‍රීඩාවකි. 🎯
           </p>
         </div>
 
-        {/* Colorful feature cards */}
+        
         <div className="space-y-4 mb-10">
           
           <div className="bg-gradient-to-r from-blue-100 to-cyan-100 rounded-2xl p-5 border-4 border-blue-300 transform hover:scale-105 transition-transform duration-200">
@@ -132,7 +132,7 @@ export default function VisualDiscriminationHome() {
 
         </div>
 
-        {/* Big colorful buttons */}
+        
         <div className="space-y-4">
           
           <button
@@ -158,7 +158,7 @@ export default function VisualDiscriminationHome() {
 
         </div>
 
-        {/* Bottom colorful stripe */}
+        
         <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-b-3xl"></div>
 
       </div>
