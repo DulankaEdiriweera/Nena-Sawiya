@@ -1,17 +1,13 @@
-from flask import Flask, request, jsonify,send_from_directory
+from flask import Flask, request, jsonify
 import os
 import joblib
 from scipy.sparse import hstack
 from flask_cors import CORS
-from database.db import init_db
 import pandas as pd
 from visualDiscrimination import preprocess_dataframe
 import json
 from datetime import datetime
 import numpy as np
-from routes.eld_routes import eld_bp
-from routes.eld_storyClozeRoutes import story_bp
-from routes.eld_picture_mcq_routes import picture_bp
 
 # -------------------------------
 # Flask App Setup
@@ -19,25 +15,73 @@ from routes.eld_picture_mcq_routes import picture_bp
 app = Flask(__name__)
 CORS(app)  # allow all origins; for development only
 
-# Initialize MongoDB
-init_db(app)
+# -------------------------------
+# ELD
+# -------------------------------
+
+# -------------------------------
+# Load Saved Models and Vectorizers (ELD)
+# -------------------------------
+folder_path = "eld_models"
+regressor_eld = joblib.load(os.path.join(folder_path,"percentage_model_eld.pkl"))
+classifier_eld = joblib.load(os.path.join(folder_path,"eld_model_eld.pkl"))
+vectorizers_eld = joblib.load(os.path.join(folder_path,"vectorizers_eld.pkl"))
+
+# -------------------------------
+# Feedback Mapping (ELD)
+# -------------------------------
+feedback_map_eld = {
+    "Weak": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා දුර්වලතාවයේ සලකුණු පෙන්නුම් කරයි. වැඩි දුර නිරීක්ෂණය හා උපකාරය අවශ්‍ය වේ.",
+    "Average": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා සාමාන්‍ය මට්ටමින් පවතින අතර වැඩි දියුණු කිරීම අවශ්‍ය විය හැක.",
+    "Normal": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා සාමාන්‍යයෙන් සෞඛ්‍ය සම්පන්න ලෙස පවතී."
+}
+
+eld_level_sinhala_map = {
+    "Normal": "ඉතා හොදයි",
+    "Average": "සාමාන්‍ය",
+    "Weak": "දුර්වල"
+}
 
 
-# Configure uploads folder
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# -------------------------------
+# Prediction Function (ELD)
+# -------------------------------
+def predict_new_eld(story1_eld, story2_eld, story3_eld, story4_eld):
+    features_list_eld = []
+    for i, story_eld in enumerate([story1_eld, story2_eld, story3_eld, story4_eld]):
+        features_eld = vectorizers_eld[i].transform([story_eld])
+        features_list_eld.append(features_eld)
+    X_new_eld = hstack(features_list_eld)
+    
+    percentage_pred_eld = regressor_eld.predict(X_new_eld)[0]
+    level_pred_eld_en = classifier_eld.predict(X_new_eld)[0]
+    level_pred_eld_si = eld_level_sinhala_map.get(level_pred_eld_en, level_pred_eld_en)
 
-# Register Blueprints
-app.register_blueprint(eld_bp)
-app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
-app.register_blueprint(story_bp, url_prefix="/api/story_bp")
+    
+    feedback_eld = feedback_map_eld.get(level_pred_eld_en, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
+    
+    return {
+        "Overall_Percentage": round(percentage_pred_eld, 2),
+        "ELD_Level": level_pred_eld_si,
+        "Feedback": feedback_eld
+    }
+
+# -------------------------------
+# Flask Route (ELD)
+# -------------------------------
+@app.route("/predict_eld", methods=["POST"])
+def predict_eld():
+    data_eld = request.get_json()
+    story1_eld = data_eld.get("story1", "")
+    story2_eld = data_eld.get("story2", "")
+    story3_eld = data_eld.get("story3", "")
+    story4_eld = data_eld.get("story4", "")
+    
+    result_eld = predict_new_eld(story1_eld, story2_eld, story3_eld, story4_eld)
+    return jsonify(result_eld)
 
 
-# Serve uploaded audio files
-@app.route('/uploads/<path:filename>')
-def serve_audio(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 
