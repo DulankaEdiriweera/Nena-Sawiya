@@ -12,6 +12,8 @@ import numpy as np
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
 from routes.eld_picture_mcq_routes import picture_bp
+from routes.rld_routes import rld_bp
+from routes.rld_direction_routes import rld_direction_bp
 
 # -------------------------------
 # Flask App Setup
@@ -19,27 +21,45 @@ from routes.eld_picture_mcq_routes import picture_bp
 app = Flask(__name__)
 CORS(app)  # allow all origins; for development only
 
+
 # Initialize MongoDB
 init_db(app)
 
 
 # Configure uploads folder
+#ELD Uploads Folder
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# -------------------------------
+# RLD Uploads Folder
+# -------------------------------
+RLD_UPLOAD_FOLDER = "rld_uploads"
+if not os.path.exists(RLD_UPLOAD_FOLDER):
+    os.makedirs(RLD_UPLOAD_FOLDER)
+app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
+
 # Register Blueprints
+#ELD
 app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
 
+#RLD
+app.register_blueprint(rld_bp)
+app.register_blueprint(rld_direction_bp, url_prefix="/rld")
 
 # Serve uploaded audio files
+#ELD
 @app.route('/uploads/<path:filename>')
 def serve_audio(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
+# RLD
+@app.route('/rld_uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['RLD_UPLOAD_FOLDER'], filename)
 
 
 
@@ -86,61 +106,6 @@ def predict_vdh():
     except Exception as e:
         print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
-
-
-
-
-
-
-
-# =====================================================
-# ======================= RLD =========================
-# =====================================================
-# Load RLD models
-folder_path = "rld_models"
-regressor_rld = joblib.load(os.path.join(folder_path,"rld_ridge_percentage_model.pkl"))
-classifier_rld = joblib.load(os.path.join(folder_path,"rld_rf_level_model.pkl"))
-vectorizers_rld = joblib.load(os.path.join(folder_path,"rld_vectorizers.pkl"))
-
-question_cols_rld = [
-    "Q1_i","Q1_ii","Q1_iii","Q1_iv",
-    "Q2_i","Q2_ii","Q3_i","Q3_ii",
-    "Q4","Q5_i","Q5_ii","Q5_iii",
-    "Q6_i","Q6_ii","Q7"
-]
-
-feedback_map_rld = {
-   "Weak": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා අඩුයි. අඛණ්ඩ පුහුණු කිරීම අවශ්‍යයි.",
-   "Average": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා සාමාන්‍ය මට්ටමක පවතී. වැඩිදියුණු කිරීමට මග පෙන්වීම් අවශ්‍යයි.",
-   "Normal": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා සෞඛ්‍ය සම්පන්නයි. නිතර පුහුණු කිරීමෙන් තවත් ශක්තිමත් කළ හැක."
-}
-
-def predict_new_rld(responses: dict):
-    features = []
-    for i, q in enumerate(question_cols_rld):
-        text = responses.get(q, "")
-        features.append(vectorizers_rld[i].transform([text]))
-    X_new = hstack(features)
-
-    percentage = regressor_rld.predict(X_new)[0]
-    level = classifier_rld.predict(X_new)[0]
-
-    return {
-        "Overall_Percentage": round(float(percentage), 2),
-        "RLD_Level": level,
-        "Feedback": feedback_map_rld.get(level, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
-    }
-
-@app.route("/predict_rld", methods=["POST"])
-def predict_rld():
-    data = request.get_json()
-    prediction = predict_new_rld(data)
-    return jsonify({
-        "Percentage": prediction["Overall_Percentage"],   # matches React
-        "RLD_level": prediction["RLD_Level"],             # matches React
-        "Feedback": prediction["Feedback"],
-        "answers": data                                   # return submitted answers
-    })
 
 # =========================================================
 # ===================== VISUAL CLOSURE ====================
