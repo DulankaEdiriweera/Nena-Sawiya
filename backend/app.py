@@ -11,9 +11,10 @@ from datetime import datetime
 import numpy as np
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
-from routes.eld_picture_mcq_routes import picture_bp
+#from routes.eld_picture_mcq_routes import picture_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
+from routes.vc_routes import vc_bp
 
 # -------------------------------
 # Flask App Setup
@@ -43,7 +44,7 @@ app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
 # Register Blueprints
 #ELD
 app.register_blueprint(eld_bp)
-app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
+#app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
 
 #RLD
@@ -107,77 +108,11 @@ def predict_vdh():
         print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
 
-# =========================================================
-# ===================== VISUAL CLOSURE ====================
-# =========================================================
 
-VC_MODEL_DIR = "vc_models"
+# VISUAL CLOSURE 
 
-vc_model = joblib.load(os.path.join(VC_MODEL_DIR, "visual_closure_model.pkl"))
-vc_label_encoder = joblib.load(os.path.join(VC_MODEL_DIR, "label_encoder.pkl"))
-
-with open(os.path.join(VC_MODEL_DIR, "feature_columns.json")) as f:
-    vc_feature_columns = json.load(f)
-
-# -------------------------------
-# VC Feedback Mapping
-# -------------------------------
-vc_feedback_map = {
-    "Weak": "දෘශ්‍ය සම්පූර්ණතා හැකියාව දුර්වලයි. අතිරේක පුහුණුව අවශ්‍ය වේ.",
-    "Average": "දෘශ්‍ය සම්පූර්ණතා හැකියාව සාමාන්‍ය මට්ටමින් පවතී.",
-    "High": "දෘශ්‍ය සම්පූර්ණතා හැකියාව ඉතා හොඳයි."
-}
-
-vc_level_sinhala_map = {
-    "Weak": "දුර්වල",
-    "Average": "සාමාන්‍ය",
-    "High": "ඉතා හොදයි"
-}
-
-# -------------------------------
-# VC Prediction Function
-# -------------------------------
-def predict_new_vc(vc_input_data):
-    """
-    vc_input_data = {
-        "Time Taken(level1)": 12,
-        "marks(level1)": 5,
-        ...
-    }
-    """
-
-    # Create DataFrame with correct column order
-    X_new = pd.DataFrame([vc_input_data])
-
-    # Ensure all required features exist
-    for col in vc_feature_columns:
-        if col not in X_new:
-            X_new[col] = 0
-
-    X_new = X_new[vc_feature_columns]
-
-    # Prediction
-    pred_class = vc_model.predict(X_new)[0]
-    pred_proba = vc_model.predict_proba(X_new).max()
-
-    level_en = vc_label_encoder.inverse_transform([pred_class])[0]
-    level_si = vc_level_sinhala_map.get(level_en, level_en)
-    feedback = vc_feedback_map.get(level_en, "ප්‍රතිචාර ලබා දීමට නොහැකි විය.")
-
-    return {
-        "VC_Level": level_si,
-        "Confidence": round(float(pred_proba) * 100, 2),
-        "Feedback": feedback
-    }
-
-# -------------------------------
-# VC Flask Route
-# -------------------------------
-@app.route("/predict_vc", methods=["POST"])
-def predict_vc():
-    data = request.get_json()
-    result = predict_new_vc(data)
-    return jsonify(result)
+# Register Blueprints
+app.register_blueprint(vc_bp)
 
 
 # -------------------------------
