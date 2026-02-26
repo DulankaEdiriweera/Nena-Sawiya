@@ -20,8 +20,8 @@ import AdminDirection from "./RldComponent/AdminDirection";
 import VCDashboard from "./VCcomponent/VCDashboard";
 import VCAssessment from "./VCcomponent/VCAssessment";
 import VCResults from "./VCcomponent/VCResults";
-import PictureMCQTask from "./EldComponent/PictureMCQTask";
-import AddPictureMCQ from "./EldComponent/AddPictureMCQ";
+//import PictureMCQTask from "./EldComponent/PictureMCQTask";
+//import AddPictureMCQ from "./EldComponent/AddPictureMCQ";
 import StoryClozeTask from "./EldComponent/StoryClozeTask";
 import AddStoryCloze from "./EldComponent/AddStoryCloze";
 
@@ -55,8 +55,8 @@ function App() {
         <Route path="/vcAssessment" element={<VCAssessment />} />
         <Route path="/vcResults" element={<VCResults />} />
 
-        <Route path="/pictureMCQTask" element={<PictureMCQTask />} />
-        <Route path="/addPictureMCQ" element={<AddPictureMCQ />} />
+        {/* <Route path="/pictureMCQTask" element={<PictureMCQTask />} />
+        <Route path="/addPictureMCQ" element={<AddPictureMCQ />} /> */}
         <Route path="/storyClozeTask" element={<StoryClozeTask />} />
         <Route path="/addStoryCloze" element={<AddStoryCloze />} />
       </Routes>
