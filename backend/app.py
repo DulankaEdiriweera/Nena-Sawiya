@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 import os
 import joblib
 from scipy.sparse import hstack
@@ -10,7 +10,8 @@ import json
 from datetime import datetime
 import numpy as np
 from routes.eld_routes import eld_bp
-
+from routes.eld_storyClozeRoutes import story_bp
+from routes.eld_picture_mcq_routes import picture_bp
 
 # -------------------------------
 # Flask App Setup
@@ -21,8 +22,23 @@ CORS(app)  # allow all origins; for development only
 # Initialize MongoDB
 init_db(app)
 
+
+# Configure uploads folder
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
 # Register Blueprints
 app.register_blueprint(eld_bp)
+app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
+app.register_blueprint(story_bp, url_prefix="/api/story_bp")
+
+
+# Serve uploaded audio files
+@app.route('/uploads/<path:filename>')
+def serve_audio(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
 
 
 
