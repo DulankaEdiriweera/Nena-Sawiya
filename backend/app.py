@@ -51,6 +51,9 @@ app.register_blueprint(story_bp, url_prefix="/api/story_bp")
 app.register_blueprint(rld_bp)
 app.register_blueprint(rld_direction_bp, url_prefix="/rld")
 
+# VISUAL CLOSURE 
+app.register_blueprint(vc_bp)
+
 # Serve uploaded audio files
 #ELD
 @app.route('/uploads/<path:filename>')
@@ -107,12 +110,6 @@ def predict_vdh():
     except Exception as e:
         print("ERROR:", e)
         return jsonify({"error": str(e)}), 500
-
-
-# VISUAL CLOSURE 
-
-# Register Blueprints
-app.register_blueprint(vc_bp)
 
 
 # -------------------------------
