@@ -12,6 +12,8 @@ import numpy as np
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
 from routes.eld_picture_mcq_routes import picture_bp
+from routes.rld_routes import rld_bp
+from routes.rld_direction_routes import rld_direction_bp
 
 # -------------------------------
 # Flask App Setup
@@ -19,42 +21,45 @@ from routes.eld_picture_mcq_routes import picture_bp
 app = Flask(__name__)
 CORS(app)  # allow all origins; for development only
 
-# -------------------------------
-# RLD Uploads Folder
-# -------------------------------
-UPLOAD_FOLDER = "rld_uploads"
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
-
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-from flask import send_from_directory
-
-@app.route('/rld_uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # Initialize MongoDB
 init_db(app)
 
 
 # Configure uploads folder
+#ELD Uploads Folder
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+# -------------------------------
+# RLD Uploads Folder
+# -------------------------------
+RLD_UPLOAD_FOLDER = "rld_uploads"
+if not os.path.exists(RLD_UPLOAD_FOLDER):
+    os.makedirs(RLD_UPLOAD_FOLDER)
+app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
+
 # Register Blueprints
+#ELD
 app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
 
+#RLD
+app.register_blueprint(rld_bp)
+app.register_blueprint(rld_direction_bp, url_prefix="/rld")
 
 # Serve uploaded audio files
+#ELD
 @app.route('/uploads/<path:filename>')
 def serve_audio(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-
+# RLD
+@app.route('/rld_uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['RLD_UPLOAD_FOLDER'], filename)
 
 
 

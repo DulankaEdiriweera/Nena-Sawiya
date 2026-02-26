@@ -15,7 +15,7 @@ import Home from "./Components/Home";
 
 import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 import AdminDirection from "./RldComponent/AdminDirection";
-import StudentDirection from "./RldComponent/StudentDirection";
+//import StudentDirection from "./RldComponent/StudentDirection";
 
 import VCDashboard from "./VCcomponent/VCDashboard";
 import VCAssessment from "./VCcomponent/VCAssessment";
@@ -47,8 +47,10 @@ function App() {
           path="/RLDTestInstructionsPage"
           element={<RLDTestInstructionsPage />}
         />
+
+        {/*<Route path="/student-direction" element={<StudentDirection />} />*/}
         <Route path="/admin-direction" element={<AdminDirection />} />
-        <Route path="/student-direction" element={<StudentDirection />} />
+
         <Route path="/vcDashboard" element={<VCDashboard />} />
         <Route path="/vcAssessment" element={<VCAssessment />} />
         <Route path="/vcResults" element={<VCResults />} />
