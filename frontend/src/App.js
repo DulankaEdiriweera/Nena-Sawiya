@@ -27,6 +27,7 @@ import AddStoryCloze from "./EldComponent/AddStoryCloze";
 import AddSequencingActivity from "./EldComponent/AddSequencingActivity";
 import SequencingTask from "./EldComponent/SequencingTask";
 import StoryManage from "./EldComponent/StoryManage";
+import PictureMCQManage from "./EldComponent/PictureMCQManage";
 
 function App() {
   return (
@@ -65,6 +66,7 @@ function App() {
         <Route path='/addSequencingTask' element={<AddSequencingActivity/>}/>
         <Route path='/sequencingTask' element={<SequencingTask/>}/>
         <Route path='/storyClozeManage' element={<StoryManage/>}/>
+        <Route path='/pictureMCQManage' element={<PictureMCQManage/>}/>
       </Routes>
     </Router>
   );
