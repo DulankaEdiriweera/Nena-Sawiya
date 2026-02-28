@@ -24,6 +24,8 @@ import PictureMCQTask from "./EldComponent/PictureMCQTask";
 import AddPictureMCQ from "./EldComponent/AddPictureMCQ";
 import StoryClozeTask from "./EldComponent/StoryClozeTask";
 import AddStoryCloze from "./EldComponent/AddStoryCloze";
+import AddSequencingActivity from "./EldComponent/AddSequencingActivity";
+import SequencingTask from "./EldComponent/SequencingTask";
 
 function App() {
   return (
@@ -59,6 +61,8 @@ function App() {
         <Route path="/addPictureMCQ" element={<AddPictureMCQ />} />
         <Route path="/storyClozeTask" element={<StoryClozeTask />} />
         <Route path="/addStoryCloze" element={<AddStoryCloze />} />
+        <Route path='/addSequencingTask' element={<AddSequencingActivity/>}/>
+        <Route path='/sequencingTask' element={<SequencingTask/>}/>
       </Routes>
     </Router>
   );

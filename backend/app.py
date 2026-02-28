@@ -12,6 +12,7 @@ import numpy as np
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
 from routes.eld_picture_mcq_routes import picture_bp
+from routes.sequencing_routes import sequencing_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
 from routes.vc_routes import vc_bp
@@ -46,6 +47,7 @@ app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
 app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
+app.register_blueprint(sequencing_bp, url_prefix="/api/sequencing_bp")
 
 #RLD
 app.register_blueprint(rld_bp)
