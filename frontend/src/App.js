@@ -26,6 +26,7 @@ import StoryClozeTask from "./EldComponent/StoryClozeTask";
 import AddStoryCloze from "./EldComponent/AddStoryCloze";
 import AddSequencingActivity from "./EldComponent/AddSequencingActivity";
 import SequencingTask from "./EldComponent/SequencingTask";
+import StoryManage from "./EldComponent/StoryManage";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
         <Route path="/addStoryCloze" element={<AddStoryCloze />} />
         <Route path='/addSequencingTask' element={<AddSequencingActivity/>}/>
         <Route path='/sequencingTask' element={<SequencingTask/>}/>
+        <Route path='/storyClozeManage' element={<StoryManage/>}/>
       </Routes>
     </Router>
   );
