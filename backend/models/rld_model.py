@@ -1,11 +1,12 @@
 from datetime import datetime
 
 class RLDModel:
-    def __init__(self, answers,
+    def __init__(self, user_id, answers,
                  overall_percentage,
                  rld_level,
                  feedback):
 
+        self.user_id=user_id
         self.answers = answers
         self.overall_percentage = overall_percentage
         self.rld_level = rld_level
@@ -14,6 +15,7 @@ class RLDModel:
 
     def to_dict(self):
         return {
+         "user_id": self.user_id,
          "answers": self.answers,
          "Percentage": self.overall_percentage,
          "RLD_level": self.rld_level,

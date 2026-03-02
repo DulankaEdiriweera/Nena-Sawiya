@@ -1,132 +1,238 @@
 import React from "react";
-import { Star, Sparkles } from "lucide-react";
 
 const ResultModal = ({ result, onClose }) => {
   if (!result) return null;
 
   const sinhalaLevelMap = {
-    "Weak": "දුර්වල",
-    "Average": "සාමාන්‍ය",
-    "Normal": "විශිෂ්ඨ"
+    Weak: "දුර්වල",
+    Average: "සාමාන්‍ය",
+    Normal: "විශිෂ්ඨ",
   };
 
-  const answeredCount = Object.values(result.answers || {}).filter(ans => ans !== "").length;
+  const levelConfig = {
+    Weak: {
+      color: "text-red-700",
+      bg: "bg-red-50",
+      border: "border-red-200",
+      badge: "bg-red-500",
+      progressColor: "bg-red-500",
+      dotColor: "bg-red-500",
+      statColor: "text-red-500",
+      sectionBorder: "border-red-200",
+      sectionHeaderBg: "bg-red-50",
+    },
+    Average: {
+      color: "text-yellow-700",
+      bg: "bg-yellow-50",
+      border: "border-yellow-200",
+      badge: "bg-yellow-500",
+      progressColor: "bg-yellow-500",
+      dotColor: "bg-yellow-500",
+      statColor: "text-yellow-500",
+      sectionBorder: "border-yellow-200",
+      sectionHeaderBg: "bg-yellow-50",
+    },
+    Normal: {
+      color: "text-green-700",
+      bg: "bg-green-50",
+      border: "border-green-200",
+      badge: "bg-green-500",
+      progressColor: "bg-green-500",
+      dotColor: "bg-green-500",
+      statColor: "text-green-500",
+      sectionBorder: "border-green-200",
+      sectionHeaderBg: "bg-green-50",
+    },
+  };
+
+  const config = levelConfig[result.RLD_level] || levelConfig["Normal"];
+
+  const answeredCount = Object.values(result.answers || {}).filter(
+    (ans) => ans !== "",
+  ).length;
   const totalCount = Object.keys(result.answers || {}).length;
+  const pct = result.Percentage ?? 0;
 
-const getEmoji = (percentage) => {
-  if (percentage === 0) return "📝";
-  if (percentage >= 85) return "🏆";
-  if (percentage >= 70) return "⭐";
-  if (percentage >= 55) return "😊";
-  if (percentage >= 40) return "👍";
-  return "💪";
-
-  };
-
-  const emoji = getEmoji(result.Percentage);
+  const feedbackParts = (result.Feedback || "").split("දෙමාව්පියන්ට උපදෙස්:");
+  const mainFeedback = feedbackParts[0].trim();
+  const parentAdvice = feedbackParts[1] ? feedbackParts[1].trim() : null;
 
   return (
-    <div className="max-h-full overflow-y-auto pb-4">
-      <div className="text-center mb-6 md:mb-8">
-        <div className="text-6xl md:text-7xl lg:text-8xl mb-3 md:mb-4 animate-bounce">{emoji}</div>
-        <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-purple-700 mb-2 md:mb-3">
-          ඔබේ ප්‍රතිඵල
-        </h2>
-      </div>
+    <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+        .sinhala { font-family: 'Noto Serif Sinhala', serif; }
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        .answer-scroll::-webkit-scrollbar { width: 4px; }
+        .answer-scroll::-webkit-scrollbar-track { background: #f0f0f8; border-radius: 2px; }
+        .answer-scroll::-webkit-scrollbar-thumb { background: #ccccdd; border-radius: 2px; }
+      `}</style>
 
-      {result.Feedback && (
-        <div className="bg-blue-50 border-2 border-blue-200 rounded-2xl md:rounded-3xl p-4 md:p-6 mb-6 md:mb-8 text-center shadow-md">
-          <p className="text-base md:text-lg lg:text-xl text-blue-800 font-semibold flex items-center justify-center gap-2 md:gap-3">
-            <span className="text-2xl md:text-3xl">💡</span>
-            {result.Feedback}
-            <span className="text-2xl md:text-3xl">💡</span>
+      <div className="dm-sans text-slate-900 max-h-full overflow-y-auto px-0.5 pb-6">
+        {/* Header */}
+        <div className="text-center py-8 border-b border-slate-200 mb-7">
+          <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-1.5">
+            Assessment Report
+          </p>
+          <p className="sinhala text-2xl font-semibold text-slate-900">
+            ප්‍රතිග්‍රාහක භාෂා තක්සේරු ප්‍රතිඵල
           </p>
         </div>
-      )}
 
-      <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-2xl md:rounded-3xl p-5 md:p-8 mb-6 md:mb-8 border-2 border-purple-200 shadow-lg">
-        <div className="text-center space-y-4 md:space-y-6">
-          <div className="bg-white rounded-2xl md:rounded-3xl p-4 md:p-6 border-2 border-blue-200 shadow-md">
-            <p className="text-xl md:text-2xl font-bold text-gray-700 mb-2 md:mb-3 flex items-center justify-center gap-2">
-              <Star className="w-6 h-6 md:w-8 md:h-8 text-yellow-500" />
-              <span className="hidden sm:inline">ඔබගේ ලකුණු</span>
-              <span className="sm:inline md:hidden">ලකුණු</span>
-              <Star className="w-6 h-6 md:w-8 md:h-8 text-yellow-500" />
+        {/* Score Band */}
+        <div className="grid grid-cols-2 gap-4 items-center mb-7">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
+              Overall Score
             </p>
-            <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-purple-600">
-              {result.Percentage}%
+            <p className="text-5xl font-bold leading-none text-slate-900">
+              {pct}
+              <span className="text-lg font-normal text-slate-400">%</span>
             </p>
           </div>
-          <div className="bg-white rounded-2xl md:rounded-3xl p-3 md:p-5 border-2 border-purple-200 shadow-md">
-            <p className="text-lg md:text-xl font-bold text-gray-700 mb-1 md:mb-2 flex items-center justify-center gap-2">
-              <Sparkles className="w-5 h-5 md:w-7 md:h-7 text-purple-500" />
-              මට්ටම
+
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 text-center">
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-2">
+              Level / මට්ටම
             </p>
-            <p className="text-2xl md:text-3xl font-bold text-purple-600">
+            <span
+              className={`sinhala inline-block px-4 py-1.5 rounded-full text-sm font-semibold text-white mt-1 ${config.badge}`}
+            >
               {sinhalaLevelMap[result.RLD_level] || result.RLD_level}
-            </p>
-          </div>
-          <div className="grid grid-cols-2 gap-3 md:gap-4">
-            <div className="bg-green-50 rounded-xl md:rounded-2xl p-3 md:p-4 border-2 border-green-200">
-              <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-green-600">{answeredCount}</p>
-              <p className="text-sm md:text-base font-semibold text-green-700">
-                <span className="hidden sm:inline">පිළිතුරු දුන්නා</span>
-                <span className="sm:hidden">දුන්නා</span>
-              </p>
-            </div>
-            <div className="bg-blue-50 rounded-xl md:rounded-2xl p-3 md:p-4 border-2 border-blue-200">
-              <p className="text-3xl md:text-4xl lg:text-5xl font-bold text-blue-600">{totalCount}</p>
-              <p className="text-sm md:text-base font-semibold text-blue-700">
-                <span className="hidden sm:inline">මුළු ප්‍රශ්න</span>
-                <span className="sm:hidden">මුළු</span>
-              </p>
-            </div>
+            </span>
           </div>
         </div>
-      </div>
 
-      <div className="mb-6 md:mb-8">
-        <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center text-gray-700 mb-4 md:mb-6 flex items-center justify-center gap-2 md:gap-3">
-          <span className="text-3xl md:text-4xl">🎤</span>
-          ඔබගේ පිළිතුරු
-          <span className="text-3xl md:text-4xl">🎤</span>
-        </h3>
-        <div className="grid gap-3 md:gap-4 max-h-[35vh] md:max-h-[40vh] overflow-y-auto pr-1 md:pr-2">
-          {Object.entries(result.answers || {})
-            .filter(([q, ans]) => ans !== "") // Only show answered questions
-            .map(([q, ans], index) => {
-              return (
-                <div key={q} className="bg-white border-2 border-gray-200 rounded-xl md:rounded-2xl p-3 md:p-5 shadow-md hover:shadow-lg transition-all hover:scale-102">
-                  <div className="flex items-start gap-2 md:gap-4">
-                    <span className="text-xl md:text-2xl lg:text-3xl font-bold rounded-full w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 flex items-center justify-center border-2 flex-shrink-0 bg-purple-100 text-purple-700 border-purple-300">
+        {/* Progress Bar */}
+        <div className="mb-7">
+          <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+            <div
+              className={`h-full rounded-full transition-all duration-1000 ${config.progressColor}`}
+              style={{ width: `${Math.min(pct, 100)}%` }}
+            />
+          </div>
+          <div className="flex justify-between mt-1.5">
+            <span className="text-xs text-slate-400 font-medium">0%</span>
+            <span className={`text-xs font-semibold ${config.color}`}>
+              {pct}%
+            </span>
+            <span className="text-xs text-slate-400 font-medium">100%</span>
+          </div>
+        </div>
+
+        {/* Feedback Section */}
+        {result.Feedback && (
+          <div
+            className={`border rounded-xl overflow-hidden mb-4 ${config.sectionBorder}`}
+          >
+            <div
+              className={`flex items-center gap-2.5 px-4 py-3.5 border-b ${config.sectionHeaderBg} ${config.sectionBorder}`}
+            >
+              <div
+                className={`w-2 h-2 rounded-full flex-shrink-0 ${config.dotColor}`}
+              />
+              <span className="text-xs font-bold tracking-widest uppercase text-indigo-400">
+                තක්සේරු ප්‍රතිපෝෂණය
+              </span>
+            </div>
+            <div className="p-4 bg-white">
+              <p className="sinhala text-sm leading-loose text-slate-700">
+                {mainFeedback}
+              </p>
+              {parentAdvice && (
+                <div className="bg-slate-50 border border-slate-200 border-l-4 border-l-indigo-400 rounded-r-lg p-3.5 mt-3">
+                  <p className="dm-sans text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                    දෙමාව්පියන්ට උපදෙස්
+                  </p>
+                  <p className="sinhala text-sm leading-relaxed text-slate-600">
+                    {parentAdvice}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 gap-3 mb-4">
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+            <p
+              className={`text-4xl font-bold leading-none ${config.statColor}`}
+            >
+              {answeredCount}
+            </p>
+            <p className="sinhala text-xs font-semibold tracking-wider uppercase text-slate-400 mt-1.5">
+              පිළිතුරු දුන්නා
+            </p>
+          </div>
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-center">
+            <p className="text-4xl font-bold leading-none text-slate-900">
+              {totalCount}
+            </p>
+            <p className="sinhala text-xs font-semibold tracking-wider uppercase text-slate-400 mt-1.5">
+              මුළු ප්‍රශ්න
+            </p>
+          </div>
+        </div>
+
+        {/* Answers */}
+        <div className="border border-slate-200 rounded-xl overflow-hidden">
+          <div className="flex items-center gap-2.5 px-4 py-3.5 bg-slate-50 border-b border-slate-200">
+            <div className="w-2 h-2 rounded-full bg-slate-400 flex-shrink-0" />
+            <span className="text-xs font-bold tracking-widest uppercase text-indigo-400">
+              ඔබගේ පිළිතුරු
+            </span>
+          </div>
+          <div className="p-4 bg-white">
+            <div className="answer-scroll max-h-72 overflow-y-auto flex flex-col gap-2.5 pr-1">
+              {Object.entries(result.answers || {})
+                .filter(([, ans]) => ans !== "")
+                .map(([q, ans], index) => (
+                  <div
+                    key={q}
+                    className="flex gap-3 items-start p-3 bg-slate-50 border border-slate-100 rounded-lg"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-slate-200 text-indigo-500 text-xs font-bold flex items-center justify-center flex-shrink-0 mt-0.5">
                       {index + 1}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-bold text-gray-800 text-sm md:text-base lg:text-lg mb-1 md:mb-2">{q}</p>
-                      <p className="text-gray-700 text-sm md:text-base lg:text-lg flex items-start gap-1 md:gap-2 bg-gray-50 rounded-lg md:rounded-xl p-2 md:p-3 border border-gray-200">
-                        <span className="text-lg md:text-xl flex-shrink-0">💬</span>
-                        <span className="font-medium break-words">{ans}</span>
+                    </div>
+                    <div>
+                      <p className="text-xs font-semibold text-slate-400 tracking-wider uppercase mb-0.5">
+                        {q}
+                      </p>
+                      <p className="sinhala text-sm text-slate-700 leading-relaxed">
+                        {ans}
                       </p>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="text-center pt-6 border-t border-slate-200 mt-7">
+          <button
+            onClick={onClose}
+            className="inline-flex items-center gap-2 px-9 py-3 bg-slate-900 text-white rounded-lg dm-sans text-sm font-semibold tracking-wide cursor-pointer transition-all duration-200 hover:bg-slate-700 hover:-translate-y-0.5 border-none"
+          >
+            <svg
+              className="w-4 h-4 opacity-70"
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <path
+                d="M2 8h12M8 2l6 6-6 6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            නැවත ආරම්භ කරන්න
+          </button>
         </div>
       </div>
-
-      <div className="text-center mt-6 md:mt-8">
-        <button onClick={onClose} className="bg-gradient-to-r from-purple-500 to-blue-500 text-white px-8 md:px-12 lg:px-16 py-4 md:py-5 lg:py-6 rounded-full hover:from-purple-600 hover:to-blue-600 text-lg md:text-xl lg:text-2xl font-bold shadow-lg hover:shadow-xl hover:scale-105 transition-all flex items-center gap-2 md:gap-3 lg:gap-4 mx-auto border-2 border-purple-300">
-          <span className="text-2xl md:text-3xl">🔄</span>
-          <span className="hidden sm:inline">නැවත ආරම්භ කරන්න</span>
-          <span className="sm:hidden">නැවත</span>
-        </button>
-      </div>
-
-      <style jsx>{`
-        .hover\\:scale-102:hover { transform: scale(1.02); }
-      `}</style>
-    </div>
+    </>
   );
 };
 
