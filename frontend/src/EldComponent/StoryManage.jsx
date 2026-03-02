@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const StoryManage = () => {
+  const navigate = useNavigate();
   const [stories, setStories] = useState([]);
   const [editStory, setEditStory] = useState(null);
 
@@ -92,6 +94,12 @@ const StoryManage = () => {
   return (
     <div className="p-6 bg-gray-300 min-h-screen">
       <h2 className="text-3xl font-bold mb-6 text-gray-800">Story Completion Task Management</h2>
+      <button
+        onClick={() => navigate("/addStoryCloze")} // navigate to the add page
+        className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded shadow mb-5"
+      >
+        Add Activity
+      </button>
 
       <div className="overflow-x-auto">
         <table className="w-full bg-white shadow-2xl rounded-lg overflow-hidden">

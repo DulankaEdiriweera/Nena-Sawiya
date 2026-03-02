@@ -29,6 +29,7 @@ import SequencingTask from "./EldComponent/SequencingTask";
 import StoryManage from "./EldComponent/StoryManage";
 import PictureMCQManage from "./EldComponent/PictureMCQManage";
 import SequencingManage from "./EldComponent/SequencingManage";
+import ELDInterventionAdminDashboard from "./EldComponent/ELDInterventionAdminDashboard";
 
 function App() {
   return (
@@ -69,6 +70,8 @@ function App() {
         <Route path='/storyClozeManage' element={<StoryManage/>}/>
         <Route path='/pictureMCQManage' element={<PictureMCQManage/>}/>
         <Route path='/sequencingManage' element={<SequencingManage/>}/>
+        <Route path='/sequencingManage' element={<SequencingManage/>}/>
+        <Route path='/eldAdminIntervention' element={<ELDInterventionAdminDashboard/>}/>
       </Routes>
     </Router>
   );
