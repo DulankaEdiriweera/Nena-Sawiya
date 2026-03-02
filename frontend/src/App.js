@@ -15,7 +15,17 @@ import Home from "./Components/Home";
 
 import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 import AdminDirection from "./RldComponent/AdminDirection";
-//import StudentDirection from "./RldComponent/StudentDirection";
+import StudentDirection from "./RldComponent/StudentDirectionGame";
+import AdminJumbledForm from "./RldComponent/AdminJumbledForm";
+import StudentJumbledGame from "./RldComponent/StudentJumbledGame";
+import AdminCategorizeForm from "./RldComponent/Admincategorizeform";
+import StudentCategorizeGame from "./RldComponent/Studentcategorizegame";
+import AdminComprehensionForm from "./RldComponent/Admincomprehensionform";
+import StudentComprehensionGame from "./RldComponent/Studentcomprehensiongame";
+import AdminWHForm from "./RldComponent/AdminWhForm";
+import StudentWHGame from "./RldComponent/StudentWhGame";
+import RLDAdminDashboard from "./RldComponent/RLDAdminDashboard";
+import StudentDashboard from "./RldComponent/StudentDashboard";
 
 import VCDashboard from "./VCcomponent/VCDashboard";
 import VCAssessment from "./VCcomponent/VCAssessment";
@@ -35,6 +45,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import Register from "./Components/Register";
 import Login from "./Components/Login";
 import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
+import InterventionDashboard from "./Components/Intervention Dashboard";
 
 function App() {
   return (
@@ -79,11 +90,108 @@ function App() {
         <Route path="/summary" element={<FinalSummary />} />
         <Route
           path="/RLDTestInstructionsPage"
-          element={<RLDTestInstructionsPage />}
+          element={
+            <ProtectedRoute role="user">
+              <RLDTestInstructionsPage />
+            </ProtectedRoute>
+          }
         />
-
-        {/*<Route path="/student-direction" element={<StudentDirection />} />*/}
-        <Route path="/admin-direction" element={<AdminDirection />} />
+        <Route
+          path="/student-direction"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-direction"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-jumbled"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminJumbledForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-jumbled"
+          element={
+            <ProtectedRoute role="user">
+              <StudentJumbledGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-categorize"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminCategorizeForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-categorize"
+          element={
+            <ProtectedRoute role="user">
+              <StudentCategorizeGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-comprehension"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminComprehensionForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-comprehension"
+          element={
+            <ProtectedRoute role="user">
+              <StudentComprehensionGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-wh"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminWHForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-wh"
+          element={
+            <ProtectedRoute role="user">
+              <StudentWHGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-admin-dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <RLDAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-student-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/vcDashboard" element={<VCDashboard />} />
         <Route path="/vcAssessment" element={<VCAssessment />} />
@@ -195,6 +303,14 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/intervention-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <InterventionDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

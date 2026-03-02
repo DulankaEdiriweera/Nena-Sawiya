@@ -17,6 +17,10 @@ from routes.eld_picture_mcq_routes import picture_bp
 from routes.sequencing_routes import sequencing_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
+from routes.rld_jumbled_routes import rld_jumbled_bp
+from routes.rld_categorize_routes import rld_categorize_bp
+from routes.rld_comprehension_routes import rld_comprehension_bp
+from routes.rld_wh_routes import rld_wh_bp
 from routes.vc_routes import vc_bp
 
 # -------------------------------
@@ -60,8 +64,11 @@ app.register_blueprint(sequencing_bp, url_prefix="/api/sequencing_bp")
 
 #RLD
 app.register_blueprint(rld_bp)
-app.register_blueprint(rld_direction_bp, url_prefix="/rld")
-
+app.register_blueprint(rld_direction_bp, url_prefix="/api/rld_direction_bp")
+app.register_blueprint(rld_jumbled_bp, url_prefix="/api/rld_jumbled")
+app.register_blueprint(rld_categorize_bp, url_prefix="/api/rld_categorize")
+app.register_blueprint(rld_comprehension_bp, url_prefix="/api/rld_comprehension")
+app.register_blueprint(rld_wh_bp, url_prefix="/api/rld_wh")
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
 
