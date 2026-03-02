@@ -1,4 +1,3 @@
-// src/RldCategorize/AdminCategorizeForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -11,174 +10,7 @@ const LEVEL_RULES = {
 const emptyBag = () => ({ label: "", image: null, preview: null });
 const emptyOption = () => ({ image: null, preview: null, correct_bag: "" });
 
-const s = {
-  wrap: {
-    minHeight: "100vh",
-    background: "#f4f4f8",
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    padding: "40px 16px",
-    fontFamily: "'DM Sans',sans-serif",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 640,
-    background: "#fff",
-    border: "1px solid #e2e2ee",
-    borderRadius: 16,
-    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-    overflow: "hidden",
-  },
-  header: { padding: "24px 28px", borderBottom: "1px solid #ebebf5" },
-  tag: {
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    textTransform: "uppercase",
-    color: "#9999bb",
-    marginBottom: 4,
-  },
-  title: { fontSize: 20, fontWeight: 700, color: "#1a1a2e", marginBottom: 2 },
-  sub: { fontSize: 13, color: "#9999bb" },
-  body: { padding: "24px 28px 32px" },
-  alert: (e) => ({
-    display: "flex",
-    gap: 10,
-    padding: "10px 14px",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 500,
-    marginBottom: 20,
-    border: "1px solid",
-    background: e ? "#fdf3f2" : "#f0faf4",
-    borderColor: e ? "#e8b4b0" : "#a8dbbe",
-    color: e ? "#c0392b" : "#1a7a4a",
-  }),
-  dot: (e) => ({
-    width: 6,
-    height: 6,
-    borderRadius: "50%",
-    marginTop: 5,
-    flexShrink: 0,
-    background: e ? "#c0392b" : "#27ae60",
-  }),
-  field: { marginBottom: 18 },
-  label: {
-    display: "block",
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: "#6666aa",
-    marginBottom: 6,
-  },
-  hint: {
-    fontSize: 11,
-    fontWeight: 400,
-    color: "#aaaacc",
-    textTransform: "none",
-    letterSpacing: 0,
-    marginLeft: 6,
-  },
-  select: {
-    width: "100%",
-    border: "1px solid #e2e2ee",
-    borderRadius: 8,
-    padding: "10px 14px",
-    fontFamily: "'DM Sans',sans-serif",
-    fontSize: 14,
-    color: "#1a1a2e",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  input: {
-    width: "100%",
-    border: "1px solid #e2e2ee",
-    borderRadius: 8,
-    padding: "9px 12px",
-    fontFamily: "'Noto Serif Sinhala',serif",
-    fontSize: 14,
-    color: "#1a1a2e",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  row: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "10px 12px",
-    border: "1px solid #e2e2ee",
-    borderRadius: 8,
-    marginBottom: 8,
-    background: "#fafafa",
-  },
-  badge: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#6666aa",
-    letterSpacing: "0.08em",
-    flexShrink: 0,
-    width: 48,
-  },
-  thumb: {
-    width: 36,
-    height: 36,
-    borderRadius: 6,
-    objectFit: "cover",
-    border: "1px solid #e2e2ee",
-    flexShrink: 0,
-  },
-  upload: { position: "relative", flex: 1 },
-  fileBtn: {
-    display: "block",
-    width: "100%",
-    padding: "7px 10px",
-    border: "1px dashed #c8c8e8",
-    borderRadius: 6,
-    background: "#f7f7fb",
-    color: "#7777bb",
-    fontSize: 12,
-    fontWeight: 600,
-    cursor: "pointer",
-    textAlign: "center",
-    boxSizing: "border-box",
-  },
-  fileHid: {
-    position: "absolute",
-    inset: 0,
-    opacity: 0,
-    cursor: "pointer",
-    width: "100%",
-    height: "100%",
-  },
-  assign: {
-    border: "1px solid #e2e2ee",
-    borderRadius: 6,
-    padding: "7px 10px",
-    fontFamily: "'DM Sans',sans-serif",
-    fontSize: 13,
-    color: "#1a1a2e",
-    outline: "none",
-    flexShrink: 0,
-  },
-  divider: { height: 1, background: "#ebebf5", margin: "4px 0 18px" },
-  submit: (loading) => ({
-    width: "100%",
-    padding: 14,
-    background: loading ? "#aaaacc" : "#1a1a2e",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    fontSize: 14,
-    fontWeight: 700,
-    cursor: loading ? "not-allowed" : "pointer",
-    letterSpacing: "0.04em",
-  }),
-  warn: { fontSize: 12, color: "#d68910", fontWeight: 500, marginTop: 4 },
-};
-
-const UploadCell = ({ value, onChange }) => {
+const UploadCell = ({ onChange }) => {
   const [preview, setPreview] = useState(null);
   const handle = (e) => {
     const f = e.target.files[0];
@@ -187,18 +19,22 @@ const UploadCell = ({ value, onChange }) => {
     onChange(f);
   };
   return (
-    <div style={s.upload}>
-      <div style={s.fileBtn}>
+    <div className="relative flex-1">
+      <div className="block w-full px-2.5 py-1.5 border border-dashed border-indigo-300 rounded-md bg-slate-50 text-indigo-400 text-xs font-semibold cursor-pointer text-center">
         {preview ? "Click to replace" : "Upload image"}
         <input
           type="file"
           accept="image/*"
           onChange={handle}
-          style={s.fileHid}
+          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full"
         />
       </div>
       {preview && (
-        <img src={preview} style={{ ...s.thumb, marginTop: 6 }} alt="" />
+        <img
+          src={preview}
+          className="w-9 h-9 rounded-md object-cover border border-slate-200 mt-1.5"
+          alt=""
+        />
       )}
     </div>
   );
@@ -263,7 +99,11 @@ const AdminCategorizeForm = () => {
       const res = await axios.post(
         "http://localhost:5000/api/rld_categorize/add_set",
         fd,
-        { headers: { "Content-Type": "multipart/form-data" } },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        },
       );
       setMessage(res.data.message || "Saved successfully.");
       setIsError(false);
@@ -282,32 +122,56 @@ const AdminCategorizeForm = () => {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
-      <div style={s.wrap}>
-        <div style={s.card}>
-          <div style={s.header}>
-            <p style={s.tag}>Admin Panel</p>
-            <p style={s.title}>Category Sorting — Add Set</p>
-            <p style={s.sub}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        .sinhala { font-family: 'Noto Serif Sinhala', serif; }
+      `}</style>
+
+      <div className="dm-sans min-h-screen bg-slate-100 flex items-start justify-center px-4 py-10">
+        <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-7 py-6 border-b border-slate-100">
+            <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
+              Admin Panel
+            </p>
+            <p className="text-xl font-bold text-slate-900 mb-0.5">
+              Category Sorting — Add Set
+            </p>
+            <p className="text-sm text-slate-400">
               Student drags images into the correct category bag.
             </p>
           </div>
 
-          <div style={s.body}>
+          {/* Body */}
+          <div className="px-7 py-6 pb-8">
+            {/* Alert */}
             {message && (
-              <div style={s.alert(isError)}>
-                <div style={s.dot(isError)} />
+              <div
+                className={`flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg text-sm font-medium mb-5 border ${
+                  isError
+                    ? "bg-red-50 border-red-200 text-red-700"
+                    : "bg-green-50 border-green-200 text-green-700"
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
+                    isError ? "bg-red-600" : "bg-green-500"
+                  }`}
+                />
                 {message}
               </div>
             )}
 
             <form key={formKey} onSubmit={handleSubmit}>
-              <div style={s.field}>
-                <label style={s.label}>Difficulty Level</label>
+              {/* Difficulty Level */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Difficulty Level
+                </label>
                 <select
                   value={level}
                   onChange={(e) => handleLevelChange(e.target.value)}
-                  style={s.select}
+                  className="w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 outline-none dm-sans"
                 >
                   <option value="easy">Easy — 2 bags, 4 images</option>
                   <option value="medium">Medium — 2 bags, 6 images</option>
@@ -315,72 +179,86 @@ const AdminCategorizeForm = () => {
                 </select>
               </div>
 
-              <div style={s.field}>
-                <label style={s.label}>
-                  Instruction <span style={s.hint}>Sinhala</span>
+              {/* Instruction */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Instruction{" "}
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1">
+                    Sinhala
+                  </span>
                 </label>
                 <input
                   value={instruction}
                   required
                   onChange={(e) => setInstruction(e.target.value)}
                   placeholder="e.g. පළතුරු සහ ඇඳුම් නිවැරදි බෑගවලට දමන්න"
-                  style={s.input}
+                  className="sinhala w-full border border-slate-200 rounded-lg px-3 py-2.5 text-sm text-slate-900 outline-none"
                 />
               </div>
 
-              <div style={s.divider} />
+              {/* Divider */}
+              <div className="h-px bg-slate-100 my-1 mb-4" />
 
-              {/* Bags */}
-              <div style={s.field}>
-                <label style={s.label}>
+              {/* Category Bags */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
                   Category Bags{" "}
-                  <span style={s.hint}>{LEVEL_RULES[level].bags} bags</span>
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1">
+                    {LEVEL_RULES[level].bags} bags
+                  </span>
                 </label>
                 {bags.map((bag, i) => (
-                  <div key={i} style={s.row}>
-                    <span style={s.badge}>Bag {i + 1}</span>
+                  <div
+                    key={i}
+                    className="flex items-center gap-2.5 px-3 py-2.5 border border-slate-200 rounded-lg mb-2 bg-slate-50"
+                  >
+                    <span className="text-xs font-bold text-indigo-400 tracking-wide flex-shrink-0 w-12">
+                      Bag {i + 1}
+                    </span>
                     <input
                       value={bag.label}
                       required
                       onChange={(e) => updateBag(i, "label", e.target.value)}
                       placeholder="e.g. පළතුරු"
-                      style={{ ...s.input, flex: 1, width: "auto" }}
+                      className="sinhala flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 outline-none min-w-0"
                     />
-                    <UploadCell
-                      value={bag.image}
-                      onChange={(f) => updateBag(i, "image", f)}
-                    />
+                    <UploadCell onChange={(f) => updateBag(i, "image", f)} />
                   </div>
                 ))}
               </div>
 
-              <div style={s.divider} />
+              {/* Divider */}
+              <div className="h-px bg-slate-100 my-1 mb-4" />
 
-              {/* Options */}
-              <div style={s.field}>
-                <label style={s.label}>
+              {/* Option Images */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
                   Option Images{" "}
-                  <span style={s.hint}>{LEVEL_RULES[level].options} items</span>
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1">
+                    {LEVEL_RULES[level].options} items
+                  </span>
                 </label>
                 {bagLabels.length === 0 && (
-                  <p style={s.warn}>
+                  <p className="text-xs text-yellow-600 font-medium mt-1 mb-2">
                     Enter bag labels above first — then assign each image to a
                     bag.
                   </p>
                 )}
                 {options.map((opt, i) => (
-                  <div key={i} style={s.row}>
-                    <span style={{ ...s.badge, width: 24 }}>{i + 1}</span>
-                    <UploadCell
-                      value={opt.image}
-                      onChange={(f) => updateOption(i, "image", f)}
-                    />
+                  <div
+                    key={i}
+                    className="flex items-center gap-2.5 px-3 py-2.5 border border-slate-200 rounded-lg mb-2 bg-slate-50"
+                  >
+                    <span className="text-xs font-bold text-indigo-400 tracking-wide flex-shrink-0 w-6">
+                      {i + 1}
+                    </span>
+                    <UploadCell onChange={(f) => updateOption(i, "image", f)} />
                     <select
                       value={opt.correct_bag}
                       onChange={(e) =>
                         updateOption(i, "correct_bag", e.target.value)
                       }
-                      style={s.assign}
+                      className="border border-slate-200 rounded-md px-2.5 py-1.5 dm-sans text-sm text-slate-900 outline-none flex-shrink-0"
                     >
                       <option value="">Assign bag</option>
                       {bagLabels.map((lbl) => (
@@ -393,10 +271,15 @@ const AdminCategorizeForm = () => {
                 ))}
               </div>
 
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                style={s.submit(loading)}
+                className={`w-full py-3.5 rounded-lg text-sm font-bold tracking-wide text-white border-none transition-colors ${
+                  loading
+                    ? "bg-slate-400 cursor-not-allowed"
+                    : "bg-slate-900 cursor-pointer hover:bg-slate-700"
+                }`}
               >
                 {loading ? "Saving…" : "Save Category Set"}
               </button>

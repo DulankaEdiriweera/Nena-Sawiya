@@ -1,4 +1,3 @@
-// src/RldJumbled/AdminJumbledSentenceForm.jsx
 import React, { useState } from "react";
 import axios from "axios";
 
@@ -69,254 +68,164 @@ const AdminJumbledSentenceForm = () => {
     }
   };
 
-  const s = {
-    wrap: {
-      minHeight: "100vh",
-      background: "#f4f4f8",
-      display: "flex",
-      alignItems: "flex-start",
-      justifyContent: "center",
-      padding: "40px 16px",
-      fontFamily: "'DM Sans',sans-serif",
-    },
-    card: {
-      width: "100%",
-      maxWidth: 620,
-      background: "#fff",
-      border: "1px solid #e2e2ee",
-      borderRadius: 16,
-      boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-      overflow: "hidden",
-    },
-    header: { padding: "24px 28px", borderBottom: "1px solid #ebebf5" },
-    tag: {
-      fontSize: 11,
-      fontWeight: 700,
-      letterSpacing: "0.16em",
-      textTransform: "uppercase",
-      color: "#9999bb",
-      marginBottom: 4,
-    },
-    title: { fontSize: 20, fontWeight: 700, color: "#1a1a2e", marginBottom: 2 },
-    sub: { fontSize: 13, color: "#9999bb" },
-    body: { padding: "24px 28px 28px" },
-    alert: (err) => ({
-      display: "flex",
-      gap: 10,
-      padding: "10px 14px",
-      borderRadius: 8,
-      fontSize: 13,
-      fontWeight: 500,
-      marginBottom: 20,
-      border: "1px solid",
-      background: err ? "#fdf3f2" : "#f0faf4",
-      borderColor: err ? "#e8b4b0" : "#a8dbbe",
-      color: err ? "#c0392b" : "#1a7a4a",
-    }),
-    dot: (err) => ({
-      width: 6,
-      height: 6,
-      borderRadius: "50%",
-      marginTop: 5,
-      flexShrink: 0,
-      background: err ? "#c0392b" : "#27ae60",
-    }),
-    label: {
-      display: "block",
-      fontSize: 11,
-      fontWeight: 700,
-      letterSpacing: "0.1em",
-      textTransform: "uppercase",
-      color: "#6666aa",
-      marginBottom: 6,
-    },
-    hint: {
-      fontSize: 11,
-      fontWeight: 400,
-      color: "#aaaacc",
-      textTransform: "none",
-      letterSpacing: 0,
-      marginLeft: 6,
-    },
-    select: {
-      width: "100%",
-      border: "1px solid #e2e2ee",
-      borderRadius: 8,
-      padding: "10px 14px",
-      fontFamily: "'DM Sans',sans-serif",
-      fontSize: 14,
-      color: "#1a1a2e",
-      outline: "none",
-      marginBottom: 18,
-      boxSizing: "border-box",
-    },
-    row: { display: "flex", alignItems: "center", gap: 8, marginBottom: 8 },
-    num: {
-      fontSize: 11,
-      fontWeight: 700,
-      color: "#aaaacc",
-      width: 18,
-      flexShrink: 0,
-    },
-    input: (green) => ({
-      flex: 1,
-      border: `1px solid ${green ? "#a8dbbe" : "#e2e2ee"}`,
-      borderRadius: 8,
-      padding: "9px 12px",
-      fontFamily: "'Noto Serif Sinhala',serif",
-      fontSize: 14,
-      color: "#1a1a2e",
-      background: green ? "#f0faf4" : "#fff",
-      outline: "none",
-      boxSizing: "border-box",
-    }),
-    rmBtn: {
-      border: "none",
-      background: "#fdf3f2",
-      color: "#c0392b",
-      borderRadius: 6,
-      width: 28,
-      height: 28,
-      cursor: "pointer",
-      fontWeight: 700,
-      fontSize: 13,
-    },
-    addBtn: {
-      background: "none",
-      border: "1px dashed #c8c8e8",
-      borderRadius: 8,
-      padding: "8px 14px",
-      color: "#7777bb",
-      fontSize: 13,
-      fontWeight: 600,
-      cursor: "pointer",
-      marginBottom: 18,
-    },
-    preview: { fontSize: 12, color: "#9999bb", marginBottom: 20 },
-    divider: { height: 1, background: "#ebebf5", margin: "4px 0 18px" },
-    submit: {
-      width: "100%",
-      padding: 14,
-      background: "#1a1a2e",
-      color: "#fff",
-      border: "none",
-      borderRadius: 8,
-      fontSize: 14,
-      fontWeight: 700,
-      cursor: "pointer",
-      letterSpacing: "0.04em",
-    },
-  };
-
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
-      <div style={s.wrap}>
-        <div style={s.card}>
-          <div style={s.header}>
-            <p style={s.tag}>Admin Panel</p>
-            <p style={s.title}>Jumbled Sentence — Add Set</p>
-            <p style={s.sub}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        .sinhala { font-family: 'Noto Serif Sinhala', serif; }
+        .focus-ring:focus { border-color: #8888cc; box-shadow: 0 0 0 3px rgba(100,100,200,0.08); }
+      `}</style>
+
+      <div className="dm-sans min-h-screen bg-slate-100 flex items-start justify-center px-4 py-10">
+        <div className="w-full max-w-xl bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-7 py-6 border-b border-slate-100">
+            <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
+              Admin Panel
+            </p>
+            <p className="text-xl font-bold text-slate-900 mb-0.5">
+              Jumbled Sentence — Add Set
+            </p>
+            <p className="text-sm text-slate-400">
               Enter words in jumbled order, then provide the correct order for
               grading.
             </p>
           </div>
 
-          <div style={s.body}>
+          {/* Body */}
+          <div className="px-7 py-6 pb-7">
+            {/* Alert */}
             {message && (
-              <div style={s.alert(isError)}>
-                <div style={s.dot(isError)} />
+              <div
+                className={`flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg text-sm font-medium mb-5 border ${
+                  isError
+                    ? "bg-red-50 border-red-200 text-red-700"
+                    : "bg-green-50 border-green-200 text-green-700"
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
+                    isError ? "bg-red-600" : "bg-green-500"
+                  }`}
+                />
                 {message}
               </div>
             )}
 
             <form key={formKey} onSubmit={handleSubmit}>
-              <label style={s.label}>Difficulty Level</label>
-              <select
-                value={level}
-                onChange={(e) => handleLevelChange(e.target.value)}
-                style={s.select}
-              >
-                <option value="easy">Easy — 2–3 words</option>
-                <option value="medium">Medium — 3–4 words</option>
-                <option value="hard">Hard — 5 words</option>
-              </select>
+              {/* Difficulty Level */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Difficulty Level
+                </label>
+                <select
+                  value={level}
+                  onChange={(e) => handleLevelChange(e.target.value)}
+                  className="focus-ring dm-sans w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 outline-none"
+                >
+                  <option value="easy">Easy — 2–3 words</option>
+                  <option value="medium">Medium — 3–4 words</option>
+                  <option value="hard">Hard — 5 words</option>
+                </select>
+              </div>
 
-              {/* Jumbled words */}
-              <label style={s.label}>
-                Jumbled Words
-                <span style={s.hint}>shown to student</span>
-              </label>
-              {jumbledWords.map((word, i) => (
-                <div key={i} style={s.row}>
-                  <span style={s.num}>{i + 1}</span>
-                  <input
-                    value={word}
-                    required
-                    placeholder={`Word ${i + 1} — Sinhala`}
-                    style={s.input(false)}
-                    onChange={(e) =>
-                      updateWord(
-                        setJumbledWords,
-                        jumbledWords,
-                        i,
-                        e.target.value,
-                      )
-                    }
-                  />
-                  {jumbledWords.length > MIN_WORDS[level] && (
-                    <button
-                      type="button"
-                      onClick={() => removeWord(i)}
-                      style={s.rmBtn}
-                    >
-                      ✕
-                    </button>
-                  )}
-                </div>
-              ))}
-              {jumbledWords.length < MAX_WORDS[level] && (
-                <button type="button" onClick={addWord} style={s.addBtn}>
-                  + Add word
-                </button>
-              )}
+              {/* Jumbled Words */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Jumbled Words
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    shown to student
+                  </span>
+                </label>
+                {jumbledWords.map((word, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold text-slate-400 w-4 flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    <input
+                      value={word}
+                      required
+                      placeholder={`Word ${i + 1} — Sinhala`}
+                      onChange={(e) =>
+                        updateWord(
+                          setJumbledWords,
+                          jumbledWords,
+                          i,
+                          e.target.value,
+                        )
+                      }
+                      className="focus-ring sinhala flex-1 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 bg-white outline-none"
+                    />
+                    {jumbledWords.length > MIN_WORDS[level] && (
+                      <button
+                        type="button"
+                        onClick={() => removeWord(i)}
+                        className="w-7 h-7 rounded-md bg-red-50 text-red-600 font-bold text-xs border-none cursor-pointer hover:bg-red-100 transition-colors flex items-center justify-center"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+                {jumbledWords.length < MAX_WORDS[level] && (
+                  <button
+                    type="button"
+                    onClick={addWord}
+                    className="dm-sans mt-1 bg-transparent border border-dashed border-indigo-200 rounded-lg px-3.5 py-2 text-indigo-400 text-sm font-semibold cursor-pointer hover:bg-indigo-50 hover:border-indigo-300 transition-colors"
+                  >
+                    + Add word
+                  </button>
+                )}
+              </div>
 
-              <div style={s.divider} />
+              {/* Divider */}
+              <div className="h-px bg-slate-100 my-5" />
 
-              {/* Correct order */}
-              <label style={s.label}>
-                Correct Order
-                <span style={s.hint}>
-                  for grading only — student won't see this
-                </span>
-              </label>
-              {correctWords.map((word, i) => (
-                <div key={i} style={s.row}>
-                  <span style={s.num}>{i + 1}</span>
-                  <input
-                    value={word}
-                    required
-                    placeholder={`Correct word ${i + 1} — Sinhala`}
-                    style={s.input(true)}
-                    onChange={(e) =>
-                      updateWord(
-                        setCorrectWords,
-                        correctWords,
-                        i,
-                        e.target.value,
-                      )
-                    }
-                  />
-                </div>
-              ))}
-              <p style={s.preview}>
+              {/* Correct Order */}
+              <div className="mb-4">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Correct Order
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    for grading only — student won't see this
+                  </span>
+                </label>
+                {correctWords.map((word, i) => (
+                  <div key={i} className="flex items-center gap-2 mb-2">
+                    <span className="text-xs font-bold text-slate-400 w-4 flex-shrink-0">
+                      {i + 1}
+                    </span>
+                    <input
+                      value={word}
+                      required
+                      placeholder={`Correct word ${i + 1} — Sinhala`}
+                      onChange={(e) =>
+                        updateWord(
+                          setCorrectWords,
+                          correctWords,
+                          i,
+                          e.target.value,
+                        )
+                      }
+                      className="focus-ring sinhala flex-1 border border-green-200 rounded-lg px-3 py-2 text-sm text-slate-900 bg-green-50 outline-none"
+                    />
+                  </div>
+                ))}
+              </div>
+
+              {/* Preview */}
+              <p className="text-xs text-slate-400 mb-5">
                 Preview:{" "}
-                <strong style={{ color: "#1a1a2e" }}>
+                <strong className="text-slate-900 font-semibold">
                   {correctWords.filter(Boolean).join(" ") || "—"}
                 </strong>
               </p>
 
-              <button type="submit" style={s.submit}>
+              {/* Submit */}
+              <button
+                type="submit"
+                className="dm-sans w-full py-3.5 bg-slate-900 text-white rounded-lg text-sm font-bold tracking-wide border-none cursor-pointer hover:bg-slate-700 hover:-translate-y-px transition-all"
+              >
                 Save Jumbled Sentence
               </button>
             </form>

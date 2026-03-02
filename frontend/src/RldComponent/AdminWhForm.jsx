@@ -1,4 +1,3 @@
-// src/RldWH/AdminWHForm.jsx
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 
@@ -9,168 +8,6 @@ const WH_HINTS = {
   මොකද: "What",
   කවදා: "When",
   ඇයි: "Why",
-};
-
-const s = {
-  wrap: {
-    minHeight: "100vh",
-    background: "#f4f4f8",
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "center",
-    padding: "40px 16px",
-    fontFamily: "'DM Sans',sans-serif",
-  },
-  card: {
-    width: "100%",
-    maxWidth: 640,
-    background: "#fff",
-    border: "1px solid #e2e2ee",
-    borderRadius: 16,
-    boxShadow: "0 4px 24px rgba(0,0,0,0.07)",
-    overflow: "hidden",
-  },
-  header: { padding: "24px 28px", borderBottom: "1px solid #ebebf5" },
-  tag: {
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.16em",
-    textTransform: "uppercase",
-    color: "#9999bb",
-    marginBottom: 4,
-  },
-  title: { fontSize: 20, fontWeight: 700, color: "#1a1a2e", marginBottom: 2 },
-  sub: { fontSize: 13, color: "#9999bb" },
-  body: { padding: "24px 28px 32px" },
-  alert: (e) => ({
-    display: "flex",
-    gap: 10,
-    padding: "10px 14px",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 500,
-    marginBottom: 20,
-    border: "1px solid",
-    background: e ? "#fdf3f2" : "#f0faf4",
-    borderColor: e ? "#e8b4b0" : "#a8dbbe",
-    color: e ? "#c0392b" : "#1a7a4a",
-  }),
-  dot: (e) => ({
-    width: 6,
-    height: 6,
-    borderRadius: "50%",
-    marginTop: 5,
-    flexShrink: 0,
-    background: e ? "#c0392b" : "#27ae60",
-  }),
-  field: { marginBottom: 18 },
-  label: {
-    display: "block",
-    fontSize: 11,
-    fontWeight: 700,
-    letterSpacing: "0.1em",
-    textTransform: "uppercase",
-    color: "#6666aa",
-    marginBottom: 6,
-  },
-  hint: {
-    fontSize: 11,
-    fontWeight: 400,
-    color: "#aaaacc",
-    textTransform: "none",
-    letterSpacing: 0,
-    marginLeft: 6,
-  },
-  select: {
-    width: "100%",
-    border: "1px solid #e2e2ee",
-    borderRadius: 8,
-    padding: "10px 14px",
-    fontFamily: "'DM Sans',sans-serif",
-    fontSize: 14,
-    color: "#1a1a2e",
-    outline: "none",
-    boxSizing: "border-box",
-  },
-  input: (green) => ({
-    width: "100%",
-    border: `1px solid ${green ? "#a8dbbe" : "#e2e2ee"}`,
-    borderRadius: 8,
-    padding: "9px 12px",
-    fontFamily: "'Noto Serif Sinhala',serif",
-    fontSize: 14,
-    color: "#1a1a2e",
-    background: green ? "#f0faf4" : "#fff",
-    outline: "none",
-    boxSizing: "border-box",
-  }),
-  divider: { height: 1, background: "#ebebf5", margin: "6px 0 18px" },
-  submit: {
-    width: "100%",
-    padding: 14,
-    background: "#1a1a2e",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    fontSize: 14,
-    fontWeight: 700,
-    cursor: "pointer",
-    letterSpacing: "0.04em",
-  },
-  audioBox: {
-    border: "1px solid #e2e2ee",
-    borderRadius: 10,
-    padding: "14px 16px",
-    background: "#f7f7fb",
-    marginBottom: 0,
-  },
-  row: { display: "flex", alignItems: "center", gap: 8 },
-  tabBtn: (active, color) => ({
-    padding: "5px 12px",
-    fontSize: 12,
-    fontWeight: 600,
-    border: "none",
-    cursor: "pointer",
-    background: active ? color : "#ebebf5",
-    color: active ? "#fff" : "#6666aa",
-    borderRadius: 6,
-    transition: "all 0.15s",
-  }),
-  recBtn: (rec) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: 6,
-    padding: "8px 14px",
-    background: rec ? "#2d2d50" : "#c0392b",
-    color: "#fff",
-    border: "none",
-    borderRadius: 8,
-    fontSize: 13,
-    fontWeight: 600,
-    cursor: "pointer",
-  }),
-  optRow: (sel) => ({
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-    padding: "10px 12px",
-    border: `1px solid ${sel ? "#a8dbbe" : "#e2e2ee"}`,
-    borderRadius: 8,
-    background: sel ? "#f0faf4" : "#fff",
-    marginBottom: 8,
-  }),
-  radioLbl: {
-    fontSize: 11,
-    fontWeight: 700,
-    color: "#1a7a4a",
-    whiteSpace: "nowrap",
-  },
-  radioOff: {
-    fontSize: 11,
-    fontWeight: 600,
-    color: "#aaaacc",
-    whiteSpace: "nowrap",
-  },
 };
 
 // ── AudioInput ────────────────────────────────────────────────────────────────
@@ -262,67 +99,59 @@ const AudioInput = ({
   };
 
   return (
-    <div style={s.audioBox}>
-      <div
-        style={{ ...s.row, justifyContent: "space-between", marginBottom: 10 }}
-      >
+    <div className="border border-slate-200 rounded-xl px-4 py-3.5 bg-slate-50">
+      {/* Header row */}
+      <div className="flex items-center justify-between mb-3">
         <div>
-          <p
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "#6666aa",
-              marginBottom: 2,
-            }}
-          >
+          <p className="text-xs font-bold tracking-widest uppercase text-indigo-400 mb-0.5">
             {label}
           </p>
-          {hint && <p style={{ fontSize: 11, color: "#aaaacc" }}>{hint}</p>}
+          {hint && <p className="text-xs text-slate-400">{hint}</p>}
         </div>
-        <div style={{ display: "flex", gap: 4 }}>
+        <div className="flex gap-1.5">
           <button
             type="button"
             onClick={() => setMode("record")}
-            style={s.tabBtn(mode === "record", "#c0392b")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors ${
+              mode === "record"
+                ? "bg-red-600 text-white"
+                : "bg-slate-200 text-indigo-400 hover:bg-slate-300"
+            }`}
           >
             Record
           </button>
           <button
             type="button"
             onClick={() => setMode("upload")}
-            style={s.tabBtn(mode === "upload", "#1a1a2e")}
+            className={`px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors ${
+              mode === "upload"
+                ? "bg-slate-900 text-white"
+                : "bg-slate-200 text-indigo-400 hover:bg-slate-300"
+            }`}
           >
             Upload
           </button>
         </div>
       </div>
 
+      {/* Record mode */}
       {mode === "record" && (
-        <div style={s.row}>
+        <div className="flex items-center gap-2.5">
           <button
             type="button"
             onClick={recording ? stop : start}
-            style={s.recBtn(recording)}
+            className={`sinhala flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-white text-sm font-semibold border-none cursor-pointer transition-colors ${
+              recording ? "bg-slate-800" : "bg-red-600 hover:bg-red-700"
+            }`}
           >
             <span
-              style={{
-                width: 8,
-                height: 8,
-                borderRadius: recording ? "2px" : "50%",
-                background: "#fff",
-              }}
+              className={`w-2 h-2 bg-white ${recording ? "rounded-sm" : "rounded-full"}`}
             />
             {recording ? "නවතන්න" : "පටිගත කරන්න"}
           </button>
           {status && (
             <span
-              style={{
-                fontSize: 12,
-                color: recording ? "#c0392b" : "#1a7a4a",
-                fontWeight: 500,
-              }}
+              className={`text-xs font-medium ${recording ? "text-red-600" : "text-green-700"}`}
             >
               {status}
             </span>
@@ -330,6 +159,7 @@ const AudioInput = ({
         </div>
       )}
 
+      {/* Upload mode */}
       {mode === "upload" && (
         <>
           <input
@@ -337,37 +167,27 @@ const AudioInput = ({
             type="file"
             accept="audio/*"
             onChange={onFile}
-            style={{ display: "none" }}
+            className="hidden"
           />
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            style={s.recBtn(false)}
+            className="sinhala flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-700 rounded-lg text-white text-sm font-semibold border-none cursor-pointer transition-colors"
           >
             ගොනුව තෝරන්න
           </button>
-          {status && (
-            <p style={{ fontSize: 11, color: "#1a7a4a", marginTop: 6 }}>
-              {status}
-            </p>
-          )}
+          {status && <p className="text-xs text-green-700 mt-1.5">{status}</p>}
         </>
       )}
 
+      {/* Audio player */}
       {audioURL && (
-        <div style={{ ...s.row, marginTop: 10 }}>
-          <audio controls src={audioURL} style={{ flex: 1, height: 32 }} />
+        <div className="flex items-center gap-2.5 mt-3">
+          <audio controls src={audioURL} className="flex-1 h-8" />
           <button
             type="button"
             onClick={clear}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#c0392b",
-              fontSize: 12,
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
+            className="bg-transparent border-none text-red-600 text-xs font-semibold cursor-pointer hover:text-red-800"
           >
             Remove
           </button>
@@ -452,33 +272,56 @@ const AdminWHForm = () => {
 
   return (
     <>
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');`}</style>
-      <div style={s.wrap}>
-        <div style={s.card}>
-          <div style={s.header}>
-            <p style={s.tag}>Admin Panel</p>
-            <p style={s.title}>WH Question — Add Set</p>
-            <p style={s.sub}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+Sinhala:wght@400;600&family=DM+Sans:wght@400;500;600;700&display=swap');
+        .dm-sans { font-family: 'DM Sans', sans-serif; }
+        .sinhala { font-family: 'Noto Serif Sinhala', serif; }
+        .focus-ring:focus { border-color: #8888cc; box-shadow: 0 0 0 3px rgba(100,100,200,0.08); }
+      `}</style>
+
+      <div className="dm-sans min-h-screen bg-slate-100 flex items-start justify-center px-4 py-10">
+        <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
+          {/* Header */}
+          <div className="px-7 py-6 border-b border-slate-100">
+            <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
+              Admin Panel
+            </p>
+            <p className="text-xl font-bold text-slate-900 mb-0.5">
+              WH Question — Add Set
+            </p>
+            <p className="text-sm text-slate-400">
               Record or upload audio · question text auto-fills from speech.
             </p>
           </div>
 
-          <div style={s.body}>
+          {/* Body */}
+          <div className="px-7 py-6 pb-8">
+            {/* Alert */}
             {message && (
-              <div style={s.alert(isError)}>
-                <div style={s.dot(isError)} />
+              <div
+                className={`flex items-start gap-2.5 px-3.5 py-2.5 rounded-lg text-sm font-medium mb-5 border ${
+                  isError
+                    ? "bg-red-50 border-red-200 text-red-700"
+                    : "bg-green-50 border-green-200 text-green-700"
+                }`}
+              >
+                <div
+                  className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${isError ? "bg-red-600" : "bg-green-500"}`}
+                />
                 {message}
               </div>
             )}
 
             <form key={formKey} onSubmit={handleSubmit}>
-              {/* Level */}
-              <div style={s.field}>
-                <label style={s.label}>Difficulty Level</label>
+              {/* Difficulty Level */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Difficulty Level
+                </label>
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  style={s.select}
+                  className="focus-ring dm-sans w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 bg-white outline-none"
                 >
                   <option value="easy">Easy — 2 answer options</option>
                   <option value="medium">Medium — 3 answer options</option>
@@ -487,35 +330,24 @@ const AdminWHForm = () => {
               </div>
 
               {/* WH Type */}
-              <div style={s.field}>
-                <label style={s.label}>WH Question Type</label>
-                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  WH Question Type
+                </label>
+                <div className="flex flex-wrap gap-2">
                   {WH_TYPES.map((wh) => (
                     <button
                       key={wh}
                       type="button"
                       onClick={() => setWhType(wh)}
-                      style={{
-                        padding: "7px 14px",
-                        borderRadius: 8,
-                        border: `1px solid ${whType === wh ? "#1a1a2e" : "#e2e2ee"}`,
-                        background: whType === wh ? "#1a1a2e" : "#fff",
-                        color: whType === wh ? "#fff" : "#1a1a2e",
-                        fontFamily: "'Noto Serif Sinhala',serif",
-                        fontSize: 14,
-                        fontWeight: 600,
-                        cursor: "pointer",
-                      }}
+                      className={`sinhala px-3.5 py-1.5 rounded-lg border text-sm font-semibold cursor-pointer transition-colors ${
+                        whType === wh
+                          ? "bg-slate-900 border-slate-900 text-white"
+                          : "bg-white border-slate-200 text-slate-900 hover:border-slate-400"
+                      }`}
                     >
                       {wh}
-                      <span
-                        style={{
-                          display: "block",
-                          fontSize: 10,
-                          opacity: 0.6,
-                          fontFamily: "'DM Sans',sans-serif",
-                        }}
-                      >
+                      <span className="dm-sans block text-xs opacity-60 font-normal">
                         {WH_HINTS[wh]}
                       </span>
                     </button>
@@ -524,8 +356,10 @@ const AdminWHForm = () => {
               </div>
 
               {/* Scene Audio */}
-              <div style={s.field}>
-                <label style={s.label}>Scene Audio</label>
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Scene Audio
+                </label>
                 <AudioInput
                   key={`scene-${formKey}`}
                   resetKey={formKey}
@@ -536,10 +370,12 @@ const AdminWHForm = () => {
               </div>
 
               {/* Question Audio */}
-              <div style={s.field}>
-                <label style={s.label}>
-                  Question Audio{" "}
-                  <span style={s.hint}>text auto-fills below</span>
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Question Audio
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    text auto-fills below
+                  </span>
                 </label>
                 <AudioInput
                   key={`q-${formKey}`}
@@ -552,41 +388,53 @@ const AdminWHForm = () => {
               </div>
 
               {/* Question Text */}
-              <div style={s.field}>
-                <label style={s.label}>
-                  Question Text <span style={s.hint}>edit if needed</span>
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Question Text
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    edit if needed
+                  </span>
                 </label>
                 <input
                   value={questionText}
                   onChange={(e) => setQText(e.target.value)}
                   placeholder={`e.g. ළමයා ${whType}?`}
-                  style={s.input(false)}
+                  className="focus-ring sinhala w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 bg-white outline-none"
                 />
               </div>
 
-              <div style={s.divider} />
+              {/* Divider */}
+              <div className="h-px bg-slate-100 my-5" />
 
-              {/* Options */}
-              <div style={s.field}>
-                <label style={s.label}>
-                  Answer Options{" "}
-                  <span style={s.hint}>Sinhala · select correct answer</span>
+              {/* Answer Options */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Answer Options
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    Sinhala · select correct answer
+                  </span>
                 </label>
                 {options.map((opt, i) => (
-                  <div key={i} style={s.optRow(correctIndex === i)}>
+                  <div
+                    key={i}
+                    className={`flex items-center gap-2.5 px-3 py-2.5 border rounded-lg mb-2 transition-colors ${
+                      correctIndex === i
+                        ? "border-green-300 bg-green-50"
+                        : "border-slate-200 bg-white"
+                    }`}
+                  >
                     <input
                       type="radio"
                       name="correct"
                       checked={correctIndex === i}
                       onChange={() => setCorrect(i)}
-                      style={{
-                        accentColor: "#1a7a4a",
-                        width: 14,
-                        height: 14,
-                        flexShrink: 0,
-                      }}
+                      className="w-3.5 h-3.5 flex-shrink-0 accent-green-700"
                     />
-                    <span style={correctIndex === i ? s.radioLbl : s.radioOff}>
+                    <span
+                      className={`text-xs font-bold whitespace-nowrap ${
+                        correctIndex === i ? "text-green-700" : "text-slate-400"
+                      }`}
+                    >
                       {correctIndex === i ? "Correct" : `Option ${i + 1}`}
                     </span>
                     <input
@@ -594,24 +442,25 @@ const AdminWHForm = () => {
                       required
                       onChange={(e) => updateOption(i, e.target.value)}
                       placeholder={`Sinhala answer ${i + 1}`}
-                      style={{
-                        ...s.input(correctIndex === i),
-                        flex: 1,
-                        width: "auto",
-                      }}
+                      className={`focus-ring sinhala flex-1 border rounded-lg px-3 py-2 text-sm text-slate-900 outline-none transition-colors ${
+                        correctIndex === i
+                          ? "border-green-200 bg-green-50"
+                          : "border-slate-200 bg-white"
+                      }`}
                     />
                   </div>
                 ))}
               </div>
 
+              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                style={{
-                  ...s.submit,
-                  background: loading ? "#aaaacc" : "#1a1a2e",
-                  cursor: loading ? "not-allowed" : "pointer",
-                }}
+                className={`dm-sans w-full py-3.5 rounded-lg text-sm font-bold tracking-wide text-white border-none transition-all ${
+                  loading
+                    ? "bg-slate-400 cursor-not-allowed"
+                    : "bg-slate-900 cursor-pointer hover:bg-slate-700 hover:-translate-y-px"
+                }`}
               >
                 {loading ? "Saving…" : "Save WH Question"}
               </button>

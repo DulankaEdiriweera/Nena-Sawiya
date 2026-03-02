@@ -4,8 +4,10 @@ from models.rld_model import RLDModel
 import joblib
 import os
 from scipy.sparse import hstack
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 rld_bp = Blueprint("rld_bp", __name__)
+
 
 # ==============================
 # Load ML Models
@@ -73,14 +75,16 @@ def predict_new_rld(responses: dict):
 # ==============================
 
 @rld_bp.route("/predict_rld", methods=["POST"])
+@jwt_required()
 def predict_rld():
-
     data = request.get_json()
+    user_id = get_jwt_identity()
 
     percentage, level, feedback = predict_new_rld(data)
 
     # Create model object
     rld_record = RLDModel(
+        user_id,
         answers=data,
         overall_percentage=percentage,
         rld_level=level,

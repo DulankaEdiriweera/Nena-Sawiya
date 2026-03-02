@@ -45,6 +45,7 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import Register from "./Components/Register";
 import Login from "./Components/Login";
 import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
+import InterventionDashboard from "./Components/Intervention Dashboard";
 
 function App() {
   return (
@@ -89,26 +90,108 @@ function App() {
         <Route path="/summary" element={<FinalSummary />} />
         <Route
           path="/RLDTestInstructionsPage"
-          element={<RLDTestInstructionsPage />}
+          element={
+            <ProtectedRoute role="user">
+              <RLDTestInstructionsPage />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/student-direction" element={<StudentDirection />} />
-        <Route path="/admin-direction" element={<AdminDirection />} />
-        <Route path="/admin-jumbled" element={<AdminJumbledForm />} />
-        <Route path="/student-jumbled" element={<StudentJumbledGame />} />
-        <Route path="/admin-categorize" element={<AdminCategorizeForm />} />
-        <Route path="/student-categorize" element={<StudentCategorizeGame />} />
+        <Route
+          path="/student-direction"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-direction"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-jumbled"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminJumbledForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-jumbled"
+          element={
+            <ProtectedRoute role="user">
+              <StudentJumbledGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-categorize"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminCategorizeForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-categorize"
+          element={
+            <ProtectedRoute role="user">
+              <StudentCategorizeGame />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin-comprehension"
-          element={<AdminComprehensionForm />}
+          element={
+            <ProtectedRoute role="admin">
+              <AdminComprehensionForm />
+            </ProtectedRoute>
+          }
         />
         <Route
           path="/student-comprehension"
-          element={<StudentComprehensionGame />}
+          element={
+            <ProtectedRoute role="user">
+              <StudentComprehensionGame />
+            </ProtectedRoute>
+          }
         />
-        <Route path="/admin-wh" element={<AdminWHForm />} />
-        <Route path="/student-wh" element={<StudentWHGame />} />
-        <Route path="/admin-dashboard" element={<RLDAdminDashboard />} />
-        <Route path="/student-dashboard" element={<StudentDashboard />} />
+        <Route
+          path="/admin-wh"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminWHForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-wh"
+          element={
+            <ProtectedRoute role="user">
+              <StudentWHGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-admin-dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <RLDAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-student-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/vcDashboard" element={<VCDashboard />} />
         <Route path="/vcAssessment" element={<VCAssessment />} />
@@ -220,6 +303,14 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route
+          path="/intervention-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <InterventionDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );
