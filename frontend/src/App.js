@@ -34,6 +34,7 @@ import AdminDashboard from "./Components/AdminDashboard";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Register from "./Components/Register";
 import Login from "./Components/Login";
+import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
 
 function App() {
   return (
@@ -171,6 +172,14 @@ function App() {
           element={
             <ProtectedRoute role="admin">
               <ELDInterventionAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/eldStudentIntervention"
+          element={
+            <ProtectedRoute role="user">
+              <StudentELDDashboard />
             </ProtectedRoute>
           }
         />

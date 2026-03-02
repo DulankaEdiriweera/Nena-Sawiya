@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Header from "../Components/Header";
 
 const StoryClozeTask = () => {
   const [stories, setStories] = useState([]);
@@ -124,7 +125,11 @@ const StoryClozeTask = () => {
   );
 
   return (
-    <div className="font-sans min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex flex-col items-center justify-center py-10 px-4">
+    <div>
+      <div>
+        <Header/>
+      </div>
+      <div className="font-sans min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex flex-col items-center justify-center py-10 px-4">
       {/* OUTER CONTAINER WITH BORDER + SHADOW */}
       <div className="w-full max-w-6xl border-4 border-indigo-300 rounded-3xl shadow-2xl bg-white p-8">
         {/* Header */}
@@ -244,6 +249,7 @@ const StoryClozeTask = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
