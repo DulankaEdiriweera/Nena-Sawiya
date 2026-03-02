@@ -15,6 +15,10 @@ from routes.eld_storyClozeRoutes import story_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
 from routes.vc_routes import vc_bp
+from routes.vc_jigsaw_routes import vc_jigsaw_bp
+from routes.vc_pic_com_routes import vc_pic_com_bp
+#from routes.vc_sha_mat_routes import vc_sha_mat_bp
+
 
 # -------------------------------
 # Flask App Setup
@@ -41,6 +45,14 @@ if not os.path.exists(RLD_UPLOAD_FOLDER):
     os.makedirs(RLD_UPLOAD_FOLDER)
 app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
 
+# -------------------------------
+# VC Uploads Folder
+# -------------------------------
+VC_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vc_uploads")
+os.makedirs(VC_UPLOAD_FOLDER, exist_ok=True)
+app.config["VC_UPLOAD_FOLDER"] = VC_UPLOAD_FOLDER
+
+
 # Register Blueprints
 #ELD
 app.register_blueprint(eld_bp)
@@ -53,6 +65,9 @@ app.register_blueprint(rld_direction_bp, url_prefix="/rld")
 
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
+app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")
+app.register_blueprint(vc_pic_com_bp, url_prefix="/api/vc_pic_com")
+#app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
 
 # Serve uploaded audio files
 #ELD
@@ -65,7 +80,10 @@ def serve_audio(filename):
 def uploaded_file(filename):
     return send_from_directory(app.config['RLD_UPLOAD_FOLDER'], filename)
 
-
+#VC
+@app.route('/vc_uploads/<path:filename>')
+def serve_vc_uploads(filename):
+    return send_from_directory(app.config["VC_UPLOAD_FOLDER"], filename)
 
 # ---------- VD Model ----------
 # Added at the END for safe integration

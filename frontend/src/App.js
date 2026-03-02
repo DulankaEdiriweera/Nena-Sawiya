@@ -25,6 +25,15 @@ import VCResults from "./VCcomponent/VCResults";
 import StoryClozeTask from "./EldComponent/StoryClozeTask";
 import AddStoryCloze from "./EldComponent/AddStoryCloze";
 
+import AdminAddVCJigsaw from "./VCcomponent/AdminAddVCJigsaw";
+import VCJigsawList from "./VCcomponent/VCJigsawList";
+import VCJigsawPage from "./VCcomponent/VCJigsawPage";
+import AdminVCJigsawList from "./VCcomponent/AdminVCJigsawList";
+import VCPicComList from "./VCcomponent/VCPicComList";
+import VCPicComPage  from "./VCcomponent/VCPicComPage";
+import AdminAddVCPicCom from "./VCcomponent/AdminAddVCPicCom";
+import AdminVCPicComList from "./VCcomponent/AdminVCPicComList";
+
 function App() {
   return (
     <Router>
@@ -59,6 +68,16 @@ function App() {
         <Route path="/addPictureMCQ" element={<AddPictureMCQ />} /> */}
         <Route path="/storyClozeTask" element={<StoryClozeTask />} />
         <Route path="/addStoryCloze" element={<AddStoryCloze />} />
+
+        <Route path="/vcAdminAddJigsaw" element={<AdminAddVCJigsaw />} />
+        <Route path="/vcJigsawList" element={<VCJigsawList />} />
+        <Route path="/vcJigsaw/:puzzleId" element={<VCJigsawPage />} />
+        <Route path="/vcAdminJigsawList" element={<AdminVCJigsawList />} />
+
+        <Route path="/vcPicCom" element={<VCPicComList />} />
+        <Route path="/vcPicCom/:activityId" element={<VCPicComPage />} />
+        <Route path="/admin/vcPicCom/add" element={<AdminAddVCPicCom />} />
+        <Route path="/admin/vcPicCom/list" element={<AdminVCPicComList />} />
       </Routes>
     </Router>
   );
