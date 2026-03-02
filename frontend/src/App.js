@@ -15,7 +15,17 @@ import Home from "./Components/Home";
 
 import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 import AdminDirection from "./RldComponent/AdminDirection";
-//import StudentDirection from "./RldComponent/StudentDirection";
+import StudentDirection from "./RldComponent/StudentDirectionGame";
+import AdminJumbledForm from "./RldComponent/AdminJumbledForm";
+import StudentJumbledGame from "./RldComponent/StudentJumbledGame";
+import AdminCategorizeForm from "./RldComponent/Admincategorizeform";
+import StudentCategorizeGame from "./RldComponent/Studentcategorizegame";
+import AdminComprehensionForm from "./RldComponent/Admincomprehensionform";
+import StudentComprehensionGame from "./RldComponent/Studentcomprehensiongame";
+import AdminWHForm from "./RldComponent/AdminWhForm";
+import StudentWHGame from "./RldComponent/StudentWhGame";
+import RLDAdminDashboard from "./RldComponent/RLDAdminDashboard";
+import StudentDashboard from "./RldComponent/StudentDashboard";
 
 import VCDashboard from "./VCcomponent/VCDashboard";
 import VCAssessment from "./VCcomponent/VCAssessment";
@@ -47,9 +57,24 @@ function App() {
           path="/RLDTestInstructionsPage"
           element={<RLDTestInstructionsPage />}
         />
-
-        {/*<Route path="/student-direction" element={<StudentDirection />} />*/}
+        <Route path="/student-direction" element={<StudentDirection />} />
         <Route path="/admin-direction" element={<AdminDirection />} />
+        <Route path="/admin-jumbled" element={<AdminJumbledForm />} />
+        <Route path="/student-jumbled" element={<StudentJumbledGame />} />
+        <Route path="/admin-categorize" element={<AdminCategorizeForm />} />
+        <Route path="/student-categorize" element={<StudentCategorizeGame />} />
+        <Route
+          path="/admin-comprehension"
+          element={<AdminComprehensionForm />}
+        />
+        <Route
+          path="/student-comprehension"
+          element={<StudentComprehensionGame />}
+        />
+        <Route path="/admin-wh" element={<AdminWHForm />} />
+        <Route path="/student-wh" element={<StudentWHGame />} />
+        <Route path="/admin-dashboard" element={<RLDAdminDashboard />} />
+        <Route path="/student-dashboard" element={<StudentDashboard />} />
 
         <Route path="/vcDashboard" element={<VCDashboard />} />
         <Route path="/vcAssessment" element={<VCAssessment />} />
