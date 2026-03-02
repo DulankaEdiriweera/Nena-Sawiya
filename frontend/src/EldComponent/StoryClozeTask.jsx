@@ -144,7 +144,7 @@ const StoryClozeTask = () => {
         <div className="rounded-2xl p-6 flex flex-col lg:flex-row gap-10">
           {/* VIDEO SECTION WITH BORDER + SHADOW */}
           <div className="flex-1 flex justify-center">
-            <div className="border-4 border-indigo-400 rounded-2xl shadow-xl p-2 bg-indigo-50">
+            <div className="p-2">
               <video
                 controls
                 src={`http://localhost:5000${currentStory.video_url}`}

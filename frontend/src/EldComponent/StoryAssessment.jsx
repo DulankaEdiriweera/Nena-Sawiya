@@ -8,6 +8,9 @@ import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 import Header from "../Components/Header";
 
 function StoryAssessment() {
+  //Get token from localStorage
+  const token = localStorage.getItem("token");
+
   const [transcripts, setTranscripts] = useState(["", "", "", ""]);
   const [recognizers, setRecognizers] = useState([null, null, null, null]);
   const [isRecording, setIsRecording] = useState([false, false, false, false]);
@@ -103,7 +106,7 @@ function StoryAssessment() {
     try {
       const res = await fetch("http://127.0.0.1:5000/predict_eld", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
