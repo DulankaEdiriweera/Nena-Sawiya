@@ -4,6 +4,7 @@ from models.eld_model import ELDModel
 import joblib
 from scipy.sparse import hstack
 import os
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 eld_bp = Blueprint("eld_bp", __name__)
 
@@ -62,6 +63,7 @@ def predict_new_eld(story1, story2, story3, story4):
 # Prediction Route
 # -------------------------------
 @eld_bp.route("/predict_eld", methods=["POST"])
+@jwt_required()  # Require login
 def predict_eld():
 
     data = request.get_json()
@@ -71,12 +73,18 @@ def predict_eld():
     story3 = data.get("story3", "")
     story4 = data.get("story4", "")
 
+    # ---------------------------
+    # Get logged-in user's ID
+    # ---------------------------
+    user_id = get_jwt_identity()
+
     percentage, level_en, level_si, feedback = predict_new_eld(
         story1, story2, story3, story4
     )
 
     # Save English level internally
     eld_record = ELDModel(
+        user_id,
         story1,
         story2,
         story3,

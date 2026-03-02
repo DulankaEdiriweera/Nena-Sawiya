@@ -1,9 +1,10 @@
 from datetime import datetime
 
 class ELDModel:
-    def __init__(self, story1, story2, story3, story4,
+    def __init__(self, user_id, story1, story2, story3, story4,
                  overall_percentage, eld_level, feedback):
 
+        self.user_id = user_id
         self.story1 = story1
         self.story2 = story2
         self.story3 = story3
@@ -15,6 +16,7 @@ class ELDModel:
 
     def to_dict(self):
         return {
+            "user_id": self.user_id,
             "story1": self.story1,
             "story2": self.story2,
             "story3": self.story3,

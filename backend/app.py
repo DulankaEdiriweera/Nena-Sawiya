@@ -9,6 +9,8 @@ from visualDiscrimination import preprocess_dataframe
 import json
 from datetime import datetime
 import numpy as np
+from flask_jwt_extended import JWTManager
+from routes.auth_routes import auth_bp
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
 from routes.eld_picture_mcq_routes import picture_bp
@@ -21,6 +23,10 @@ from routes.vc_routes import vc_bp
 # Flask App Setup
 # -------------------------------
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
+
 CORS(app)  # allow all origins; for development only
 
 
@@ -43,6 +49,9 @@ if not os.path.exists(RLD_UPLOAD_FOLDER):
 app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
 
 # Register Blueprints
+
+app.register_blueprint(auth_bp,url_prefix="/api/auth")
+
 #ELD
 app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")

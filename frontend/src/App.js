@@ -30,15 +30,42 @@ import StoryManage from "./EldComponent/StoryManage";
 import PictureMCQManage from "./EldComponent/PictureMCQManage";
 import SequencingManage from "./EldComponent/SequencingManage";
 import ELDInterventionAdminDashboard from "./EldComponent/ELDInterventionAdminDashboard";
+import AdminDashboard from "./Components/AdminDashboard";
+import ProtectedRoute from "./Components/ProtectedRoute";
+import Register from "./Components/Register";
+import Login from "./Components/Login";
 
 function App() {
   return (
     <Router>
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/story" element={<StoryAssessment />} />
-        <Route path="/eldResults" element={<EldResults />} />
-        <Route path="/elduserguide" element={<ELDUserGuide />} />
+        <Route
+          path="/story"
+          element={
+            <ProtectedRoute role="user">
+              <StoryAssessment />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/eldResults"
+          element={
+            <ProtectedRoute role="user">
+              <EldResults />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/elduserguide"
+          element={
+            <ProtectedRoute role="user">
+              <ELDUserGuide />
+            </ProtectedRoute>
+          }
+        />
+
         <Route path="/visual" element={<VisualDiscriminationHome />} />
         <Route path="/visualDisAdvices" element={<StudentAdvicePageDis />} />
         <Route path="/level1allin1" element={<Level1Discrimination />} />
@@ -61,17 +88,104 @@ function App() {
         <Route path="/vcAssessment" element={<VCAssessment />} />
         <Route path="/vcResults" element={<VCResults />} />
 
-        <Route path="/pictureMCQTask" element={<PictureMCQTask />} />
-        <Route path="/addPictureMCQ" element={<AddPictureMCQ />} />
-        <Route path="/storyClozeTask" element={<StoryClozeTask />} />
-        <Route path="/addStoryCloze" element={<AddStoryCloze />} />
-        <Route path='/addSequencingTask' element={<AddSequencingActivity/>}/>
-        <Route path='/sequencingTask' element={<SequencingTask/>}/>
-        <Route path='/storyClozeManage' element={<StoryManage/>}/>
-        <Route path='/pictureMCQManage' element={<PictureMCQManage/>}/>
-        <Route path='/sequencingManage' element={<SequencingManage/>}/>
-        <Route path='/sequencingManage' element={<SequencingManage/>}/>
-        <Route path='/eldAdminIntervention' element={<ELDInterventionAdminDashboard/>}/>
+        {/*ELD Intervention Routes)*/}
+        <Route
+          path="/pictureMCQTask"
+          element={
+            <ProtectedRoute role="user">
+              <PictureMCQTask />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addPictureMCQ"
+          element={
+            <ProtectedRoute role="admin">
+              <AddPictureMCQ />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/storyClozeTask"
+          element={
+            <ProtectedRoute role="user">
+              <StoryClozeTask />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/addStoryCloze"
+          element={
+            <ProtectedRoute role="admin">
+              <AddStoryCloze />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/addSequencingTask"
+          element={
+            <ProtectedRoute role="admin">
+              <AddSequencingActivity />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/sequencingTask"
+          element={
+            <ProtectedRoute role="user">
+              <SequencingTask />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/storyClozeManage"
+          element={
+            <ProtectedRoute role="admin">
+              <StoryManage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/pictureMCQManage"
+          element={
+            <ProtectedRoute role="admin">
+              <PictureMCQManage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/sequencingManage"
+          element={
+            <ProtectedRoute role="admin">
+              <SequencingManage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/eldAdminIntervention"
+          element={
+            <ProtectedRoute role="admin">
+              <ELDInterventionAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/*cmmon*/}
+        <Route
+          path="/admin-dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );
