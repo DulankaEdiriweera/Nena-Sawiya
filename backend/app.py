@@ -9,9 +9,12 @@ from visualDiscrimination import preprocess_dataframe
 import json
 from datetime import datetime
 import numpy as np
+from flask_jwt_extended import JWTManager
+from routes.auth_routes import auth_bp
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
 from routes.eld_picture_mcq_routes import picture_bp
+from routes.sequencing_routes import sequencing_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
 from routes.vc_routes import vc_bp
@@ -27,6 +30,10 @@ from routes.vd_count_image_routes import vd_count_bp
 # Flask App Setup
 # -------------------------------
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
+
 CORS(app)  # allow all origins; for development only
 
 
@@ -59,10 +66,14 @@ app.config["VD_UPLOAD_FOLDER"] = VD_UPLOAD_FOLDER
 
 
 # Register Blueprints
+
+app.register_blueprint(auth_bp,url_prefix="/api/auth")
+
 #ELD
 app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
+app.register_blueprint(sequencing_bp, url_prefix="/api/sequencing_bp")
 
 #RLD
 app.register_blueprint(rld_bp)

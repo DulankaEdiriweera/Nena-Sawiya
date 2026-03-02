@@ -18,3 +18,7 @@ def init_db(app):
     except Exception as e:
         print("MongoDB Connection Failed!")
         print("Error:", e)
+
+
+def get_db():
+    return mongo.db
