@@ -67,7 +67,7 @@ function ResultPage() {
         {/* Main Card */}
         <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-xl text-center border-8 border-purple-200 relative z-10">
           {/* Top Color Strip */}
-          <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 rounded-t-3xl"></div>
+          <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 to-purple-400 rounded-t-3xl"></div>
 
           {/* Title */}
           <h2 className="text-2xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-8">
@@ -103,7 +103,7 @@ function ResultPage() {
           </button>
 
           {/* Bottom Color Strip */}
-          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-b-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 to-red-400 rounded-b-3xl"></div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import Header from "../Components/Header";
 
 const SequencingTask = () => {
   const [activities, setActivities] = useState([]);
@@ -141,112 +142,119 @@ const SequencingTask = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-4xl bg-white border-4 border-indigo-300 rounded-3xl shadow-2xl p-8">
-        <h1 className="text-3xl font-bold text-center mb-2 text-indigo-700">
-          නිවැරදි අනුපිළිවෙල තෝරා ගැනීමේ ක්‍රියාකාරකම
-        </h1>
+    <div>
+      <div>
+        <Header />
+      </div>
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex items-center justify-center px-4 py-10">
+        <div className="w-full max-w-4xl bg-white border-4 border-indigo-300 rounded-3xl shadow-2xl p-8">
+          <h1 className="text-3xl font-bold text-center mb-2 text-indigo-700">
+            නිවැරදි අනුපිළිවෙල තෝරා ගැනීමේ ක්‍රියාකාරකම
+          </h1>
 
-        <p className="text-center mb-2 font-semibold text-indigo-600">
-          Level: {current.level}
-        </p>
-
-        <p className="text-center mb-6 font-semibold text-lg">Score: {score}</p>
-
-        <h2 className="text-xl font-semibold text-center mb-4">
-          {current.title}
-        </h2>
-
-        {/* DROP BOXES */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-          {placedImages.map((img, index) => {
-            let borderColor = "border-gray-400";
-
-            if (submitted) {
-              borderColor =
-                img && img.id === current.correct_order[index]
-                  ? "border-green-500"
-                  : "border-red-500";
-            }
-
-            return (
-              <div
-                key={index}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => handleDrop(e, index)}
-                onClick={() => handleClearBox(index)}
-                className={`w-full h-40 border-4 ${borderColor} rounded-xl flex items-center justify-center bg-gray-100 cursor-pointer`}
-              >
-                {img ? (
-                  <img
-                    src={`http://localhost:5000${img.url}`}
-                    alt=""
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <span className="text-gray-400">Drop Here</span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-
-        {showWarning && !isComplete && (
-          <p className="text-red-500 text-sm mb-4 text-center">
-            ඉදිරිපත් කිරීමට පෙර කරුණාකර සියලුම කොටු පුරවන්න.
+          <p className="text-center mb-2 font-semibold text-indigo-600">
+            Level: {current.level}
           </p>
-        )}
 
-        {/* DRAGGABLE IMAGES */}
-        <div className="flex flex-wrap gap-4 justify-center mb-6">
-          {availableImages.map((img) => (
-            <div
-              key={img.id}
-              draggable={!submitted}
-              onDragStart={(e) => handleDragStart(e, img)}
-              className="w-32 h-32 border-4 border-indigo-400 rounded-xl overflow-hidden cursor-grab hover:scale-105 transition"
-            >
-              <img
-                src={`http://localhost:5000${img.url}`}
-                alt=""
-                className="w-full h-full object-cover"
-              />
-            </div>
-          ))}
-        </div>
+          <p className="text-center mb-6 font-semibold text-lg">
+            Score: {score}
+          </p>
 
-        {/* BUTTONS */}
-        {showResults ? (
-          <div className="mt-6 text-center">
-            <div className="text-2xl font-bold text-green-600 mb-3">
-              🎉 සියලුම ක්‍රියාකාරකම් අවසන්!
-            </div>
-            <div className="text-xl font-semibold text-indigo-700">
-              ලකුණු: {score} / {activities.length}
-            </div>
+          <h2 className="text-xl font-semibold text-center mb-4">
+            {current.title}
+          </h2>
+
+          {/* DROP BOXES */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
+            {placedImages.map((img, index) => {
+              let borderColor = "border-gray-400";
+
+              if (submitted) {
+                borderColor =
+                  img && img.id === current.correct_order[index]
+                    ? "border-green-500"
+                    : "border-red-500";
+              }
+
+              return (
+                <div
+                  key={index}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => handleDrop(e, index)}
+                  onClick={() => handleClearBox(index)}
+                  className={`w-full h-40 border-4 ${borderColor} rounded-xl flex items-center justify-center bg-gray-100 cursor-pointer`}
+                >
+                  {img ? (
+                    <img
+                      src={`http://localhost:5000${img.url}`}
+                      alt=""
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <span className="text-gray-400">Drop Here</span>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        ) : !submitted ? (
-          <button
-            onClick={handleSubmit}
-            disabled={!isComplete}
-            className={`w-full py-3 rounded-xl font-semibold text-white ${
-              isComplete
-                ? "bg-indigo-600 hover:bg-indigo-700"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            ඉදිරිපත් කරන්න
-          </button>
-        ) : (
-          currentIndex + 1 < activities.length && (
+
+          {showWarning && !isComplete && (
+            <p className="text-red-500 text-sm mb-4 text-center">
+              ඉදිරිපත් කිරීමට පෙර කරුණාකර සියලුම කොටු පුරවන්න.
+            </p>
+          )}
+
+          {/* DRAGGABLE IMAGES */}
+          <div className="flex flex-wrap gap-4 justify-center mb-6">
+            {availableImages.map((img) => (
+              <div
+                key={img.id}
+                draggable={!submitted}
+                onDragStart={(e) => handleDragStart(e, img)}
+                className="w-32 h-32 border-4 border-indigo-400 rounded-xl overflow-hidden cursor-grab hover:scale-105 transition"
+              >
+                <img
+                  src={`http://localhost:5000${img.url}`}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+          </div>
+
+          {/* BUTTONS */}
+          {showResults ? (
+            <div className="mt-6 text-center">
+              <div className="text-2xl font-bold text-green-600 mb-3">
+                🎉 සියලුම ක්‍රියාකාරකම් අවසන්!
+              </div>
+              <div className="text-xl font-semibold text-indigo-700">
+                ලකුණු: {score} / {activities.length}
+              </div>
+            </div>
+          ) : !submitted ? (
             <button
-              onClick={handleNext}
-              className="w-full py-3 rounded-xl font-semibold text-white bg-green-600 hover:bg-green-700"
+              onClick={handleSubmit}
+              disabled={!isComplete}
+              className={`w-full py-3 rounded-xl font-semibold text-white ${
+                isComplete
+                  ? "bg-indigo-600 hover:bg-indigo-700"
+                  : "bg-gray-400 cursor-not-allowed"
+              }`}
             >
-              ඊළඟ ක්‍රියාකාරකම
+              ඉදිරිපත් කරන්න
             </button>
-          )
-        )}
+          ) : (
+            currentIndex + 1 < activities.length && (
+              <button
+                onClick={handleNext}
+                className="w-full py-3 rounded-xl font-semibold text-white bg-green-600 hover:bg-green-700"
+              >
+                ඊළඟ ක්‍රියාකාරකම
+              </button>
+            )
+          )}
+        </div>
       </div>
     </div>
   );
