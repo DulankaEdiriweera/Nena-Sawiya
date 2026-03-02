@@ -16,6 +16,13 @@ from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
 from routes.vc_routes import vc_bp
 
+
+from routes.vd_routes import vd_bp
+from routes.vd_drag_drop_text_image_routes import vd_drag_text_bp
+from routes.vd_picture_mcq_routes import vd_picture_bp
+from routes.vd_memory_image_routes import vd_memory_bp
+from routes.vd_count_image_routes import vd_count_bp
+
 # -------------------------------
 # Flask App Setup
 # -------------------------------
@@ -41,6 +48,16 @@ if not os.path.exists(RLD_UPLOAD_FOLDER):
     os.makedirs(RLD_UPLOAD_FOLDER)
 app.config["RLD_UPLOAD_FOLDER"] = RLD_UPLOAD_FOLDER
 
+
+# -------------------------------
+# VD Uploads Folder
+# -------------------------------
+VD_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vd_uploads")
+os.makedirs(VD_UPLOAD_FOLDER, exist_ok=True)
+app.config["VD_UPLOAD_FOLDER"] = VD_UPLOAD_FOLDER
+
+
+
 # Register Blueprints
 #ELD
 app.register_blueprint(eld_bp)
@@ -54,6 +71,17 @@ app.register_blueprint(rld_direction_bp, url_prefix="/rld")
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
 
+
+#VISUAL DISCRIMINATION
+app.register_blueprint(vd_bp)
+app.register_blueprint(vd_drag_text_bp, url_prefix="/api/vd_drag_text")
+app.register_blueprint(vd_picture_bp, url_prefix="/api/vd_picture_mcq")
+app.register_blueprint(vd_memory_bp, url_prefix="/api/vd_memory")
+app.register_blueprint(vd_count_bp, url_prefix="/api/vd_count")
+
+
+
+
 # Serve uploaded audio files
 #ELD
 @app.route('/uploads/<path:filename>')
@@ -65,51 +93,13 @@ def serve_audio(filename):
 def uploaded_file(filename):
     return send_from_directory(app.config['RLD_UPLOAD_FOLDER'], filename)
 
+#VD 
+@app.route('/vd_uploads/<filename>')
+def serve_vd_uploads(filename):
+    return send_from_directory(app.config['VD_UPLOAD_FOLDER'], filename)
 
 
-# ---------- VD Model ----------
-# Added at the END for safe integration
-# -------------------------------
 
-# Load VD model
-vd_folder_path = "visualD_models"
-VD_model = joblib.load(os.path.join(vd_folder_path, "VD_model.pkl"))
-
-# Map numeric prediction to readable Sinhala labels
-visual_D = {
-    0: "දුර්වල",
-    1: "සාමාන්‍ය",
-    2: "ඉතා හොඳයි"
-}
-
-@app.route('/predictVDH', methods=['POST'])
-def predict_vdh():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({"error": "No JSON received"}), 400
-
-        # Convert JSON to DataFrame
-        df = pd.DataFrame(data)
-
-        # Ensure columns match the model's training columns
-        expected_columns = VD_model.feature_names_in_
-        missing_cols = [c for c in expected_columns if c not in df.columns]
-        if missing_cols:
-            return jsonify({"error": f"Missing columns: {missing_cols}"}), 400
-
-        # Reorder and preprocess
-        df = df[expected_columns]
-        df = preprocess_dataframe(df, has_target=False)
-
-        predictions = VD_model.predict(df)
-        readable = [visual_D[p] for p in predictions]
-
-        return jsonify({"predictions": readable})
-
-    except Exception as e:
-        print("ERROR:", e)
-        return jsonify({"error": str(e)}), 500
 
 
 # -------------------------------
