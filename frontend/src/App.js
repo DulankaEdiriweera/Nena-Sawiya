@@ -46,6 +46,7 @@ import Register from "./Components/Register";
 import Login from "./Components/Login";
 import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
 import InterventionDashboard from "./Components/Intervention Dashboard";
+import Progress from "./Components/Progress";
 
 function App() {
   return (
@@ -308,6 +309,14 @@ function App() {
           element={
             <ProtectedRoute role="user">
               <InterventionDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/progress"
+          element={
+            <ProtectedRoute role="user">
+              < Progress/>
             </ProtectedRoute>
           }
         />
