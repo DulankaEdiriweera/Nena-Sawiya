@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const MIN_WORDS = { easy: 2, medium: 3, hard: 5 };
 const MAX_WORDS = { easy: 3, medium: 4, hard: 5 };
 
 const AdminJumbledSentenceForm = () => {
+  const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [jumbledWords, setJumbledWords] = useState(["", ""]);
   const [correctWords, setCorrectWords] = useState(["", ""]);
@@ -62,6 +64,9 @@ const AdminJumbledSentenceForm = () => {
       setJumbledWords(Array(MIN_WORDS[level]).fill(""));
       setCorrectWords(Array(MIN_WORDS[level]).fill(""));
       setFormKey((k) => k + 1);
+      navigate("/rld-admin-dashboard", {
+        state: { activeCat: "Jumbled Sentences" },
+      });
     } catch (err) {
       setMessage(err.response?.data?.error || "Error saving sentence.");
       setIsError(true);
