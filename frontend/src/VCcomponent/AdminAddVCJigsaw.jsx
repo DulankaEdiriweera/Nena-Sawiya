@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
+import AdminHeader from "../Components/AdminHeader";
 
 export default function AdminAddVCJigsaw() {
   const apiBase = "http://localhost:5000";
@@ -102,7 +103,9 @@ export default function AdminAddVCJigsaw() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 720, margin: "0 auto" }}>
+    <div>
+      <div><AdminHeader/></div>
+      <div style={{ padding: 24, maxWidth: 720, margin: "0 auto" }}>
       <h2>Admin - Add VC Jigsaw</h2>
 
       {message && (
@@ -234,5 +237,8 @@ export default function AdminAddVCJigsaw() {
         and slices pieces from it, so the board and reference will match exactly.
       </div> */}
     </div>
+
+    </div>
+    
   );
 }

@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from database.db import mongo
 from models.vc_model import VCModel
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import CORS
 
 import os
 import json
@@ -182,6 +183,7 @@ def predict_vc_route():
     vc_record = VCModel(
         answers=answers,
         times=times,
+        user_id=user_id, 
 
         ml_label_en=ml_result["ml_label_en"],
         vc_level_si=ml_result["VC_Level"],

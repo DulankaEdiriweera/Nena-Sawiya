@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import AdminHeader from "../Components/AdminHeader";
 
 export default function AdminVCShaMatList() {
   const [items, setItems] = useState([]);
@@ -35,7 +36,9 @@ export default function AdminVCShaMatList() {
   };
 
   return (
-    <div style={{ padding: 24 }}>
+    <div>
+      <div><AdminHeader/></div>
+          <div style={{ padding: 24 }}>
       <h2>Admin - All Shadow Match Activities</h2>
 
       {loading ? (
@@ -117,6 +120,7 @@ export default function AdminVCShaMatList() {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }

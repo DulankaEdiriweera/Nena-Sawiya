@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaPuzzlePiece, FaImage, FaRegClone, FaListUl } from "react-icons/fa";
+import AdminHeader from "../Components/AdminHeader";
 
 export default function VCAdminDashboard() {
   const navigate = useNavigate();
@@ -39,7 +40,9 @@ export default function VCAdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-6 py-10">
+    <div>
+      <div><AdminHeader/></div>
+          <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-6 py-10">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
@@ -111,5 +114,7 @@ export default function VCAdminDashboard() {
         </div>
       </div>
     </div>
+    </div>
+
   );
 }

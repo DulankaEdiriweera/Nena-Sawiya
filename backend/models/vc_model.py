@@ -20,7 +20,6 @@ class VCModel:
     ):
 
         self.user_id = user_id
-
         self.answers = answers
         self.times = times
 

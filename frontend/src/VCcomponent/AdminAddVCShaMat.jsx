@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
 import axios from "axios";
+import AdminHeader from "../Components/AdminHeader";
 
 export default function AdminAddVCShaMat() {
   const apiBase = "http://localhost:5000";
@@ -107,7 +108,9 @@ export default function AdminAddVCShaMat() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 760, margin: "0 auto" }}>
+    <div>
+      <div><AdminHeader/></div>
+          <div style={{ padding: 24, maxWidth: 760, margin: "0 auto" }}>
       <h2>Admin - Add Shadow Match</h2>
 
       {message && (
@@ -246,5 +249,7 @@ export default function AdminAddVCShaMat() {
         </button>
       </form>
     </div>
+    </div>
+
   );
 }

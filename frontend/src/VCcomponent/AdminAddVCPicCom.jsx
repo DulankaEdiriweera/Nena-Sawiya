@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import AdminHeader from "../Components/AdminHeader";
 
 export default function AdminAddVCPicCom() {
   const [title, setTitle] = useState("");
@@ -53,7 +54,9 @@ export default function AdminAddVCPicCom() {
   };
 
   return (
-    <div style={{ padding: 24, maxWidth: 650, margin: "0 auto" }}>
+    <div>
+      <div><AdminHeader/></div>
+      <div style={{ padding: 24, maxWidth: 650, margin: "0 auto" }}>
       <h2>Admin - Add Picture Completion</h2>
 
       {message && (
@@ -132,5 +135,7 @@ export default function AdminAddVCPicCom() {
         </button>
       </form>
     </div>
+    </div>
+    
   );
 }
