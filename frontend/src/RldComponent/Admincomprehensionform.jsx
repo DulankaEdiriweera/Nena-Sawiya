@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LEVEL_CONFIG = {
   easy: { minQ: 1, maxQ: 2, label: "Easy — 1–2 Questions" },
@@ -16,6 +17,7 @@ const emptyQuestion = () => ({
 const OPTION_LABELS = ["A", "B", "C", "D"];
 
 const AdminComprehensionForm = () => {
+  const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [passage, setPassage] = useState("");
   const [questions, setQuestions] = useState([emptyQuestion()]);
@@ -94,6 +96,9 @@ const AdminComprehensionForm = () => {
       setPassage("");
       setQuestions(Array(config.minQ).fill(null).map(emptyQuestion));
       setFormKey((k) => k + 1);
+      navigate("/rld-admin-dashboard", {
+        state: { activeCat: "Comprehension" },
+      });
     } catch (err) {
       setMessage(
         err.response?.data?.error || "An error occurred. Please try again.",

@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { EDIT_FORMS } from "./RLDEditForms.jsx";
+import AdminHeader from "../Components/AdminHeader";
+import { useLocation } from "react-router-dom";
 
 const B = "http://localhost:5000/api";
 const LEVELS = ["easy", "medium", "hard"];
@@ -21,6 +23,8 @@ const CATS = [
     del: "delete_set",
     update: "update_set",
     add: "/admin-direction",
+    color: "from-pink-500 to-rose-600",
+    description: "Drag-and-drop direction activities",
   },
   {
     name: "Jumbled Sentences",
@@ -30,6 +34,8 @@ const CATS = [
     del: "delete_set",
     update: "update_set",
     add: "/admin-jumbled",
+    color: "from-purple-500 to-indigo-600",
+    description: "Rearrange words into correct order",
   },
   {
     name: "Categorization",
@@ -39,6 +45,8 @@ const CATS = [
     del: "delete_set",
     update: "update_set",
     add: "/admin-categorize",
+    color: "from-green-500 to-emerald-600",
+    description: "Sort images into correct categories",
   },
   {
     name: "Comprehension",
@@ -48,6 +56,8 @@ const CATS = [
     del: "delete_passage",
     update: "update_passage",
     add: "/admin-comprehension",
+    color: "from-yellow-500 to-orange-600",
+    description: "Reading passages with questions",
   },
   {
     name: "WH Questions",
@@ -57,6 +67,8 @@ const CATS = [
     del: "delete_question",
     update: "update_question",
     add: "/admin-wh",
+    color: "from-sky-500 to-blue-600",
+    description: "Audio-based WH question activities",
   },
 ];
 
@@ -184,16 +196,10 @@ const CategorizeBody = ({ item }) => {
 
 const OptionRow = ({ index, text, isCorrect }) => (
   <div
-    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${
-      isCorrect ? "bg-emerald-50 border border-emerald-200" : "bg-gray-50"
-    }`}
+    className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm ${isCorrect ? "bg-emerald-50 border border-emerald-200" : "bg-gray-50"}`}
   >
     <span
-      className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
-        isCorrect
-          ? "bg-emerald-500 text-white"
-          : "bg-white border border-gray-300 text-gray-500"
-      }`}
+      className={`w-5 h-5 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${isCorrect ? "bg-emerald-500 text-white" : "bg-white border border-gray-300 text-gray-500"}`}
     >
       {isCorrect ? "✓" : index + 1}
     </span>
@@ -315,10 +321,7 @@ const GameCard = ({ icon, index, level, item, cat, onDelete, onUpdated }) => {
           </span>
           {level && (
             <span
-              className={`text-xs font-medium px-2 py-0.5 rounded border capitalize ${
-                LEVEL_COLOR[level] ||
-                "bg-gray-100 text-gray-600 border-gray-200"
-              }`}
+              className={`text-xs font-medium px-2 py-0.5 rounded border capitalize ${LEVEL_COLOR[level] || "bg-gray-100 text-gray-600 border-gray-200"}`}
             >
               {level}
             </span>
@@ -327,11 +330,7 @@ const GameCard = ({ icon, index, level, item, cat, onDelete, onUpdated }) => {
         <div className="flex gap-1">
           <button
             onClick={() => setEditing((e) => !e)}
-            className={`px-2 py-1 text-xs rounded transition ${
-              editing
-                ? "bg-indigo-100 text-indigo-700"
-                : "hover:bg-gray-200 text-gray-500 hover:text-indigo-600"
-            }`}
+            className={`px-2 py-1 text-xs rounded transition ${editing ? "bg-indigo-100 text-indigo-700" : "hover:bg-gray-200 text-gray-500 hover:text-indigo-600"}`}
           >
             {editing ? "Cancel" : "Edit"}
           </button>
@@ -365,11 +364,22 @@ const GameCard = ({ icon, index, level, item, cat, onDelete, onUpdated }) => {
 // ── Main Dashboard ──
 export default function RLDAdminDashboard() {
   const navigate = useNavigate();
-  const [active, setActive] = useState(null);
+  const location = useLocation();
+  const initialCat = location.state?.activeCat
+    ? CATS.find((c) => c.name === location.state.activeCat)
+    : null;
+
+  const [active, setActive] = useState(initialCat);
   const [allData, setAllData] = useState({});
   const [loading, setLoading] = useState(false);
   const [level, setLevel] = useState("all");
   const [delItem, setDelItem] = useState(null);
+
+  useEffect(() => {
+    if (initialCat) {
+      loadData(initialCat);
+    }
+  }, []);
 
   const loadData = async (cat) => {
     setLoading(true);
@@ -384,7 +394,11 @@ export default function RLDAdminDashboard() {
   };
 
   const handleSelect = async (cat) => {
-    if (active?.name === cat.name) return;
+    if (active?.name === cat.name) {
+      setActive(null);
+      setAllData({});
+      return;
+    }
     setActive(cat);
     setLevel("all");
     await loadData(cat);
@@ -414,7 +428,7 @@ export default function RLDAdminDashboard() {
       : (allData[level] || []).map((i) => ({ ...i, _lvl: level }));
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-100">
       {delItem && (
         <DeleteModal
           onConfirm={handleDelete}
@@ -422,121 +436,124 @@ export default function RLDAdminDashboard() {
         />
       )}
 
-      <header className="bg-white border-b border-gray-200 px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center gap-3">
-          <span className="text-xl">🧠</span>
-          <div>
-            <h1 className="text-sm font-bold text-gray-900">RLD Admin</h1>
-            <p className="text-xs text-gray-400">Intervention Dashboard</p>
-          </div>
-        </div>
-      </header>
+      <AdminHeader />
 
-      <div className="max-w-6xl mx-auto px-6 py-7 space-y-7">
-        <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Category
-          </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-            {CATS.map((cat) => (
-              <button
-                key={cat.name}
-                onClick={() => handleSelect(cat)}
-                className={`flex flex-col items-center gap-2 rounded-xl border px-3 py-4 text-center transition-all ${
-                  active?.name === cat.name
-                    ? "bg-indigo-600 border-indigo-600 text-white shadow-md"
-                    : "bg-white border-gray-200 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50"
-                }`}
-              >
-                <span className="text-2xl">{cat.icon}</span>
-                <span className="text-xs font-semibold leading-tight">
+      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] px-6 py-10">
+        {/* Page Title */}
+        <h1 className="text-3xl font-bold mb-10 text-gray-800 text-center">
+          Receptive Language Disorder — Admin Dashboard
+        </h1>
+
+        {/* Category Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 w-full max-w-5xl mx-auto mb-10 justify-items-center">
+          {CATS.map((cat) => (
+            <div
+              key={cat.name}
+              onClick={() => handleSelect(cat)}
+              className={`cursor-pointer bg-gradient-to-r ${cat.color} text-white p-8 rounded-2xl shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-2xl
+                ${active?.name === cat.name ? "ring-4 ring-white ring-offset-2 ring-offset-gray-100 scale-105 shadow-2xl" : ""}
+              `}
+            >
+              <div className="flex flex-col items-center space-y-4 text-center">
+                <span className="text-4xl">{cat.icon}</span>
+                <h2 className="text-base font-semibold leading-tight">
                   {cat.name}
-                </span>
-              </button>
-            ))}
-          </div>
+                </h2>
+                <p className="text-xs opacity-90">{cat.description}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {!active ? (
-          <div className="text-center py-24 text-gray-400 text-sm">
-            Select a category above to get started
-          </div>
-        ) : (
-          <div className="space-y-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-base font-bold text-gray-900">
-                  {active.icon} {active.name}
-                </h2>
-                <p className="text-xs text-gray-400">
-                  {loading ? "Loading…" : `${total} games`}
-                </p>
-              </div>
-              <button
-                onClick={() => navigate(active.add)}
-                className="bg-indigo-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-indigo-700 transition"
+        {/* Content Panel */}
+        <div className="w-full max-w-6xl">
+          {active && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+              {/* Panel Header */}
+              <div
+                className={`bg-gradient-to-r ${active.color} px-6 py-5 flex items-center justify-between`}
               >
-                + Add New
-              </button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setLevel("all")}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition ${
-                  level === "all"
-                    ? "bg-indigo-600 text-white border-indigo-600"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
-                }`}
-              >
-                All ({total})
-              </button>
-              {LEVELS.map((l) => (
+                <div>
+                  <h2 className="text-lg font-bold text-white">
+                    {active.icon} {active.name}
+                  </h2>
+                  <p className="text-xs text-white/80 mt-0.5">
+                    {loading
+                      ? "Loading…"
+                      : `${total} game${total !== 1 ? "s" : ""} total`}
+                  </p>
+                </div>
                 <button
-                  key={l}
-                  onClick={() => setLevel(l)}
-                  className={`px-3.5 py-1.5 rounded-full text-xs font-semibold border transition capitalize ${
-                    level === l
-                      ? "bg-indigo-600 text-white border-indigo-600"
-                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-300"
+                  onClick={() => navigate(active.add)}
+                  className="bg-white text-gray-800 text-sm font-bold px-5 py-2 rounded-xl hover:bg-gray-100 transition shadow"
+                >
+                  + Add New
+                </button>
+              </div>
+
+              {/* Level Filter */}
+              <div className="flex flex-wrap gap-2 px-6 py-4 border-b border-gray-100">
+                <button
+                  onClick={() => setLevel("all")}
+                  className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+                    level === "all"
+                      ? "bg-gray-800 text-white border-gray-800"
+                      : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
                   }`}
                 >
-                  {l[0].toUpperCase() + l.slice(1)} ({allData[l]?.length || 0})
+                  All ({total})
                 </button>
-              ))}
-            </div>
+                {LEVELS.map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => setLevel(l)}
+                    className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition capitalize ${
+                      level === l
+                        ? "bg-gray-800 text-white border-gray-800"
+                        : "bg-white text-gray-600 border-gray-200 hover:border-gray-400"
+                    }`}
+                  >
+                    {l[0].toUpperCase() + l.slice(1)} ({allData[l]?.length || 0}
+                    )
+                  </button>
+                ))}
+              </div>
 
-            {loading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {[...Array(6)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white border border-gray-200 rounded-xl h-44 animate-pulse"
-                  />
-                ))}
+              {/* Games Grid */}
+              <div className="p-6">
+                {loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {[...Array(6)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="bg-gray-100 border border-gray-200 rounded-xl h-44 animate-pulse"
+                      />
+                    ))}
+                  </div>
+                ) : visible.length === 0 ? (
+                  <div className="text-center py-16 text-gray-400 text-sm">
+                    No games found for this level
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                    {visible.map((item, i) => (
+                      <GameCard
+                        key={getId(item) || i}
+                        icon={active.icon}
+                        index={i}
+                        level={item._lvl}
+                        item={item}
+                        cat={active}
+                        onDelete={() => setDelItem(item)}
+                        onUpdated={() => loadData(active)}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
-            ) : visible.length === 0 ? (
-              <div className="text-center py-20 text-gray-400 text-sm bg-white border border-gray-200 rounded-xl">
-                No games found
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {visible.map((item, i) => (
-                  <GameCard
-                    key={getId(item) || i}
-                    icon={active.icon}
-                    index={i}
-                    level={item._lvl}
-                    item={item}
-                    cat={active}
-                    onDelete={() => setDelItem(item)}
-                    onUpdated={() => loadData(active)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

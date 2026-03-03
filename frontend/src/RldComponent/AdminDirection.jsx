@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const ZONES = {
   easy: ["left", "right"],
@@ -82,6 +83,7 @@ const UploadZone = ({ preview, fileName, label, onChange }) => (
 );
 
 const AdminDirectionForm = () => {
+  const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [sceneImage, setSceneImage] = useState(null);
   const [scenePreview, setScenePreview] = useState(null);
@@ -160,6 +162,9 @@ const AdminDirectionForm = () => {
       setMessage(res.data.message || "Direction set saved successfully.");
       setIsError(false);
       resetForm(level);
+      navigate("/rld-admin-dashboard", {
+        state: { activeCat: "Directional" },
+      });
     } catch (err) {
       setMessage(
         err.response?.data?.error || "An error occurred. Please try again.",

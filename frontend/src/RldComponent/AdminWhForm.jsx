@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const WH_TYPES = ["කවුද", "කොහේ", "මොකද", "කවදා", "ඇයි"];
 const WH_HINTS = {
@@ -199,6 +200,7 @@ const AudioInput = ({
 
 // ── Main Form ─────────────────────────────────────────────────────────────────
 const AdminWHForm = () => {
+  const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [whType, setWhType] = useState("කවුද");
   const [questionText, setQText] = useState("");
@@ -262,6 +264,9 @@ const AdminWHForm = () => {
       setOptions(["", "", "", ""]);
       setCorrect(0);
       setFormKey((k) => k + 1);
+      navigate("/rld-admin-dashboard", {
+        state: { activeCat: "WH Questions" },
+      });
     } catch (err) {
       setMessage(err.response?.data?.error || "Error saving.");
       setIsError(true);
