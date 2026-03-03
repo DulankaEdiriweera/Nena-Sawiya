@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddSequencingActivity = () => {
   const [level, setLevel] = useState("EASY");
@@ -10,6 +12,7 @@ const AddSequencingActivity = () => {
   const [images, setImages] = useState([]);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
   // Handle image selection
   const handleImageChange = (e) => {
@@ -23,44 +26,60 @@ const AddSequencingActivity = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (images.length < 2) {
-      setMessage("Please upload at least 2 images.");
-      setIsError(true);
-      return;
-    }
+  if (images.length < 2) {
+    Swal.fire({
+      icon: "warning",
+      title: "Minimum Images Required",
+      text: "Please upload at least 2 images.",
+      confirmButtonColor: "#6366F1",
+    });
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append("level", level);
-    formData.append("title", title);
-    formData.append("task_number", taskNumber);
-    formData.append("correct_order", correctOrder);
+  const formData = new FormData();
+  formData.append("level", level);
+  formData.append("title", title);
+  formData.append("task_number", taskNumber);
+  formData.append("correct_order", correctOrder);
 
-    images.forEach((img) => formData.append("images", img));
+  images.forEach((img) => formData.append("images", img));
 
-    try {
-      await axios.post(
-        "http://localhost:5000/api/sequencing_bp/add",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      );
+  try {
+    await axios.post(
+      "http://localhost:5000/api/sequencing_bp/add",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
-      setMessage("Sequencing activity added successfully.");
-      setIsError(false);
+    Swal.fire({
+      icon: "success",
+      title: "Success!",
+      text: "Sequencing activity added successfully.",
+      confirmButtonColor: "#16A34A",
+    }).then((result) => {
+      navigate('/sequencingManage')
+    });
 
-      // Reset form
-      setLevel("EASY");
-      setTitle("");
-      setTaskNumber("");
-      setCorrectOrder("");
-      setImages([]);
-    } catch (error) {
-      console.error(error);
-      setMessage("Error adding activity.");
-      setIsError(true);
-    }
-  };
+    // Reset form
+    setLevel("EASY");
+    setTitle("");
+    setTaskNumber("");
+    setCorrectOrder("");
+    setImages([]);
+
+  } catch (error) {
+    console.error(error);
+
+    Swal.fire({
+      icon: "error",
+      title: "Upload Failed",
+      text: "Error adding activity.",
+      confirmButtonColor: "#DC2626",
+    });
+  }
+};
 
   return (
     <div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import AdminHeader from '../Components/AdminHeader'
+import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
 
 const StoryManage = () => {
   const navigate = useNavigate();
@@ -22,14 +23,40 @@ const StoryManage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this story?")) {
-      try {
-        await axios.delete(`http://localhost:5000/api/story_bp/delete/${id}`);
-        fetchStories();
-      } catch (err) {
-        console.error(err);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This story will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DC2626",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`http://localhost:5000/api/story_bp/delete/${id}`);
+
+          fetchStories();
+
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "Story has been deleted successfully.",
+            confirmButtonColor: "#16A34A",
+          });
+        } catch (err) {
+          console.error(err);
+
+          Swal.fire({
+            icon: "error",
+            title: "Delete Failed",
+            text: "Something went wrong while deleting.",
+            confirmButtonColor: "#DC2626",
+          });
+        }
       }
-    }
+    });
   };
 
   const openEditModal = (story) => {
@@ -73,106 +100,158 @@ const StoryManage = () => {
 
   const handleUpdate = async (e) => {
     e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("title", editStory.title);
-      formData.append("text_with_blanks", editStory.text_with_blanks);
-      formData.append("task_number", editStory.task_number);
-      editStory.blanks_answers.forEach((b) =>
-        formData.append("blanks_answers[]", b),
-      );
-      editStory.options.forEach((o) => formData.append("options[]", o));
-      if (editStory.videoFile) formData.append("video", editStory.videoFile);
 
-      await axios.put(
-        `http://localhost:5000/api/story_bp/update/${editStory._id}`,
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } },
-      );
+    Swal.fire({
+      title: "Update Story?",
+      text: "Are you sure you want to save these changes?",
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#2563EB",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, Update",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const formData = new FormData();
+          formData.append("title", editStory.title);
+          formData.append("text_with_blanks", editStory.text_with_blanks);
+          formData.append("task_number", editStory.task_number);
 
-      setEditStory(null);
-      fetchStories();
-    } catch (err) {
-      console.error(err);
-    }
+          editStory.blanks_answers.forEach((b) =>
+            formData.append("blanks_answers[]", b),
+          );
+
+          editStory.options.forEach((o) => formData.append("options[]", o));
+
+          if (editStory.videoFile)
+            formData.append("video", editStory.videoFile);
+
+          await axios.put(
+            `http://localhost:5000/api/story_bp/update/${editStory._id}`,
+            formData,
+            { headers: { "Content-Type": "multipart/form-data" } },
+          );
+
+          Swal.fire({
+            icon: "success",
+            title: "Updated!",
+            text: "Story updated successfully.",
+            confirmButtonColor: "#16A34A",
+          });
+
+          setEditStory(null);
+          fetchStories();
+        } catch (err) {
+          console.error(err);
+
+          Swal.fire({
+            icon: "error",
+            title: "Update Failed",
+            text: "Something went wrong while updating.",
+            confirmButtonColor: "#DC2626",
+          });
+        }
+      }
+    });
   };
 
   return (
     <div>
       <div>
-        <AdminHeader/>
+        <AdminHeader />
       </div>
-      <div className="p-6 bg-gray-300 min-h-screen">
+      <div className="p-6 bg-white min-h-screen">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">
           Story Completion Task Management
         </h2>
         <button
           onClick={() => navigate("/addStoryCloze")} // navigate to the add page
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded shadow mb-5"
+          className="bg-indigo-400 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg shadow mb-5"
         >
           Add Activity
         </button>
 
         <div className="overflow-x-auto">
-          <table className="w-full bg-white shadow-2xl rounded-lg overflow-hidden">
-            <thead className="bg-indigo-400 text-white">
-              <tr>
-                <th className="p-3 text-left">Title</th>
-                <th className="p-3 text-left">Task No</th>
-                <th className="p-3 text-left">Text</th>
-                <th className="p-3 text-left">Blanks</th>
-                <th className="p-3 text-left">Options</th>
-                <th className="p-3 text-left">Video</th>
-                <th className="p-3 text-left">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stories.map((story) => (
-                <tr
-                  key={story._id}
-                  className="border-b hover:bg-gray-50 transition duration-200"
-                >
-                  <td className="p-3">{story.title}</td>
-                  <td className="p-3">{story.task_number}</td>
-                  <td className="p-3 max-w-xs">
-                    {story.text_with_blanks}
-                  </td>
-                  <td className="p-3">
-                    {story.blanks_answers?.map((b, i) => (
-                      <div key={i}>• {b}</div>
-                    ))}
-                  </td>
-                  <td className="p-3">
-                    {story.options?.map((o, i) => (
-                      <div key={i}>• {o}</div>
-                    ))}
-                  </td>
-                  <td className="p-3">
-                    <video
-                      src={`http://localhost:5000${story.video_url}`}
-                      width="140"
-                      controls
-                      className="rounded-lg shadow-md"
-                    />
-                  </td>
-                  <td className="p-3 space-x-2 flex flex-col sm:flex-row">
-                    <button
-                      onClick={() => openEditModal(story)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(story._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div className="border border-gray-300 rounded-2xl shadow-xl overflow-hidden">
+            <table className="w-full bg-white">
+              <thead className="bg-indigo-500 text-white border-b-2 border-indigo-600">
+                <tr>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Title
+                  </th>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Task No
+                  </th>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Text
+                  </th>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Blanks
+                  </th>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Options
+                  </th>
+                  <th className="p-4 text-left border-r border-indigo-400">
+                    Video
+                  </th>
+                  <th className="p-4 text-left">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {stories.map((story) => (
+                  <tr
+                    key={story._id}
+                    className="border-b border-gray-200 hover:bg-gray-50 transition duration-200"
+                  >
+                    <td className="p-4 border-r border-gray-200">
+                      {story.title}
+                    </td>
+                    <td className="p-4 border-r border-gray-200">
+                      {story.task_number}
+                    </td>
+                    <td className="p-4 border-r border-gray-200 max-w-xs">
+                      {story.text_with_blanks}
+                    </td>
+                    <td className="p-4 border-r border-gray-200">
+                      {story.blanks_answers?.map((b, i) => (
+                        <div key={i}>• {b}</div>
+                      ))}
+                    </td>
+                    <td className="p-4 border-r border-gray-200">
+                      {story.options?.map((o, i) => (
+                        <div key={i}>• {o}</div>
+                      ))}
+                    </td>
+                    <td className="p-4 border-r border-gray-200">
+                      <video
+                        src={`http://localhost:5000${story.video_url}`}
+                        width="140"
+                        controls
+                        className="rounded-lg shadow-md"
+                      />
+                    </td>
+                    <td className="p-4">
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <button
+                          onClick={() => openEditModal(story)}
+                          className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl shadow"
+                        >
+                          Update
+                        </button>
+                        <button
+                          onClick={() => handleDelete(story._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl shadow"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* EDIT MODAL */}

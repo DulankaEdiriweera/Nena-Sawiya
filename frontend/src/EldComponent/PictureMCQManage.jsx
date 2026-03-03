@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
 
 const PictureMCQManage = () => {
   const navigate = useNavigate();
@@ -22,16 +23,42 @@ const PictureMCQManage = () => {
   };
 
   const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this MCQ?")) {
-      try {
-        await axios.delete(
-          `http://localhost:5000/api/picture_mcq/delete/${id}`,
-        );
-        fetchMCQs();
-      } catch (err) {
-        console.error(err);
+    Swal.fire({
+      title: "Are you sure?",
+      text: "This MCQ will be permanently deleted!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#DC2626",
+      cancelButtonColor: "#6B7280",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(
+            `http://localhost:5000/api/picture_mcq/delete/${id}`,
+          );
+
+          fetchMCQs(); // Refresh the MCQ list
+
+          Swal.fire({
+            icon: "success",
+            title: "Deleted!",
+            text: "MCQ has been deleted successfully.",
+            confirmButtonColor: "#16A34A",
+          });
+        } catch (err) {
+          console.error(err);
+
+          Swal.fire({
+            icon: "error",
+            title: "Delete Failed",
+            text: "Something went wrong while deleting the MCQ.",
+            confirmButtonColor: "#DC2626",
+          });
+        }
       }
-    }
+    });
   };
 
   const openEditModal = (mcq) => {
@@ -79,8 +106,22 @@ const PictureMCQManage = () => {
 
       setEditMCQ(null);
       fetchMCQs();
+
+      Swal.fire({
+        icon: "success",
+        title: "Updated!",
+        text: "MCQ has been updated successfully.",
+        confirmButtonColor: "#16A34A",
+      });
     } catch (err) {
       console.error(err);
+
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: "Something went wrong while updating the MCQ.",
+        confirmButtonColor: "#DC2626",
+      });
     }
   };
 
@@ -89,14 +130,14 @@ const PictureMCQManage = () => {
       <div>
         <AdminHeader />
       </div>
-      <div className="p-6 bg-gray-300 min-h-screen">
+      <div className="p-6 bg-white min-h-screen">
         <h2 className="text-3xl font-bold mb-6 text-gray-800">
           Picture MCQ Management
         </h2>
 
         <button
           onClick={() => navigate("/addPictureMCQ")} // navigate to the add page
-          className="bg-green-500 hover:bg-green-600 text-white px-6 py-2 rounded shadow mb-5"
+          className="bg-indigo-400 hover:bg-indigo-600 text-white px-6 py-2 rounded shadow mb-5"
         >
           Add Activity
         </button>
@@ -140,13 +181,13 @@ const PictureMCQManage = () => {
                   <td className="p-3 space-x-2 flex flex-col sm:flex-row">
                     <button
                       onClick={() => openEditModal(mcq)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded shadow"
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-xl shadow"
                     >
                       Update
                     </button>
                     <button
                       onClick={() => handleDelete(mcq._id)}
-                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded shadow"
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl shadow"
                     >
                       Delete
                     </button>

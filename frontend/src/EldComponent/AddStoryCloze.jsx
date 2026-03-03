@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddStoryCloze = () => {
   const [title, setTitle] = useState("");
@@ -11,6 +13,7 @@ const AddStoryCloze = () => {
   const [taskNumber, setTaskNumber] = useState("");
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+  const navigate = useNavigate();
 
   const handleAddBlank = () => setBlanksAnswers([...blanksAnswers, ""]);
   const handleAddOption = () => setOptions([...options, ""]);
@@ -31,8 +34,12 @@ const AddStoryCloze = () => {
     e.preventDefault();
 
     if (!video) {
-      setMessage("Please upload a video.");
-      setIsError(true);
+      Swal.fire({
+        icon: "warning",
+        title: "Video Required",
+        text: "Please upload a video before submitting.",
+        confirmButtonColor: "#6366F1",
+      });
       return;
     }
 
@@ -51,8 +58,14 @@ const AddStoryCloze = () => {
         { headers: { "Content-Type": "multipart/form-data" } },
       );
 
-      setMessage(res.data.message);
-      setIsError(false);
+      Swal.fire({
+      icon: "success",
+      title: "Success!",
+      text: res.data.message || "Story uploaded successfully!",
+      confirmButtonColor: "#16A34A",
+    }).then((result) => {
+      navigate('/storyClozeManage')
+    });
 
       // Reset
       setTitle("");
@@ -63,8 +76,12 @@ const AddStoryCloze = () => {
       setTaskNumber("");
     } catch (err) {
       console.error(err);
-      setMessage("Error uploading story.");
-      setIsError(true);
+      Swal.fire({
+      icon: "error",
+      title: "Upload Failed",
+      text: "Something went wrong while uploading the story.",
+      confirmButtonColor: "#DC2626",
+    });
     }
   };
 

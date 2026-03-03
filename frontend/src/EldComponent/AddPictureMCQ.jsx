@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddPictureMCQ = () => {
   const [level, setLevel] = useState("EASY");
@@ -11,6 +13,7 @@ const AddPictureMCQ = () => {
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+   const navigate = useNavigate();
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -22,14 +25,22 @@ const AddPictureMCQ = () => {
     e.preventDefault();
 
     if (!image) {
-      setMessage("Please upload an image.");
-      setIsError(true);
+      Swal.fire({
+        icon: "warning",
+        title: "Image Required",
+        text: "Please upload an image.",
+        confirmButtonColor: "#2563EB",
+      });
       return;
     }
 
     if (!correctAnswer) {
-      setMessage("Please specify the correct answer.");
-      setIsError(true);
+      Swal.fire({
+        icon: "warning",
+        title: "Answer Required",
+        text: "Please specify the correct answer.",
+        confirmButtonColor: "#2563EB",
+      });
       return;
     }
 
@@ -46,8 +57,14 @@ const AddPictureMCQ = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      setMessage("MCQ added successfully.");
-      setIsError(false);
+      Swal.fire({
+        icon: "success",
+        title: "MCQ Added!",
+        text: "Picture MCQ added successfully.",
+        confirmButtonColor: "#16A34A",
+      }).then((result) => {
+      navigate('/pictureMCQManage')
+    });
 
       // Reset form
       setQuestion("");
@@ -58,8 +75,12 @@ const AddPictureMCQ = () => {
       setLevel("EASY");
     } catch (error) {
       console.error(error);
-      setMessage("Error adding MCQ.");
-      setIsError(true);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Error adding MCQ.",
+        confirmButtonColor: "#DC2626",
+      });
     }
   };
 
