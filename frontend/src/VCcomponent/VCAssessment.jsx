@@ -1,4 +1,3 @@
-// VCAssessment.jsx
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Timer, AlertCircle, CheckCircle, Star } from "lucide-react";
@@ -6,6 +5,7 @@ import Header from "../Components/Header";
 
 const VCAssessment = () => {
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   // Timer state (per level)
   const [levelTimer, setLevelTimer] = useState(0);
@@ -245,10 +245,12 @@ const VCAssessment = () => {
 
     console.log("Submitting payload:", payload);
 
+    
+
     try {
       const response = await fetch("http://localhost:5000/predict_vc", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         body: JSON.stringify(payload),
       });
 

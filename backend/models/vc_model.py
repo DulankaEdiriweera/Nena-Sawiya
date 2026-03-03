@@ -3,6 +3,7 @@ from datetime import datetime
 class VCModel:
     def __init__(
         self,
+        user_id: str,
         answers: dict,
         times: dict,
         ml_label_en: str,
@@ -17,6 +18,8 @@ class VCModel:
         rule_based_label: str,
         ml_vs_rule_mismatch: bool
     ):
+
+        self.user_id = user_id
         self.answers = answers
         self.times = times
 
@@ -37,6 +40,7 @@ class VCModel:
 
     def to_dict(self):
         return {
+            "user_id": self.user_id,
             "answers": self.answers,
             "times": self.times,
 
