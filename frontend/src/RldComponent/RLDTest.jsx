@@ -168,10 +168,10 @@ const RLDTest = () => {
 
   const totalSubCount = questions.reduce(
     (acc, q) => acc + q.subQuestions.length,
-    0
+    0,
   );
   const answeredCount = Object.values(answers).filter(
-    (ans) => ans !== ""
+    (ans) => ans !== "",
   ).length;
   const progressPercent = Math.round((answeredCount / totalSubCount) * 100);
 
@@ -274,7 +274,7 @@ const RLDTest = () => {
             isManuallyStopped = true;
             recognition.stop();
           },
-          current.id === "Q3" ? 2500 : 1200
+          current.id === "Q3" ? 2500 : 1200,
         );
       };
 
@@ -354,7 +354,7 @@ const RLDTest = () => {
   const submitAnswersWithState = async (answersToSubmit) => {
     setIsSubmitting(true);
     const allSkipped = Object.values(answersToSubmit).every(
-      (ans) => ans === ""
+      (ans) => ans === "",
     );
 
     if (allSkipped) {
@@ -372,9 +372,13 @@ const RLDTest = () => {
     }
 
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch("http://127.0.0.1:5000/predict_rld", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(answersToSubmit),
       });
       if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);

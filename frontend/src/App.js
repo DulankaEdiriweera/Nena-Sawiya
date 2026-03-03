@@ -15,7 +15,17 @@ import Home from "./Components/Home";
 
 import RLDTestInstructionsPage from "./RldComponent/RLDTestInstructionsPage";
 import AdminDirection from "./RldComponent/AdminDirection";
-//import StudentDirection from "./RldComponent/StudentDirection";
+import StudentDirection from "./RldComponent/StudentDirectionGame";
+import AdminJumbledForm from "./RldComponent/AdminJumbledForm";
+import StudentJumbledGame from "./RldComponent/StudentJumbledGame";
+import AdminCategorizeForm from "./RldComponent/Admincategorizeform";
+import StudentCategorizeGame from "./RldComponent/Studentcategorizegame";
+import AdminComprehensionForm from "./RldComponent/Admincomprehensionform";
+import StudentComprehensionGame from "./RldComponent/Studentcomprehensiongame";
+import AdminWHForm from "./RldComponent/AdminWhForm";
+import StudentWHGame from "./RldComponent/StudentWhGame";
+import RLDAdminDashboard from "./RldComponent/RLDAdminDashboard";
+import StudentDashboard from "./RldComponent/StudentDashboard";
 
 import VCDashboard from "./VCcomponent/VCDashboard";
 import VCAssessment from "./VCcomponent/VCAssessment";
@@ -34,19 +44,8 @@ import AdminDashboard from "./Components/AdminDashboard";
 import ProtectedRoute from "./Components/ProtectedRoute";
 import Register from "./Components/Register";
 import Login from "./Components/Login";
-
-import UserVdDragTextImage from "./pages/visualDiscriminationPages/UserVdDragTextImage";
-import AdminVdDragTextImage from "./pages/visualDiscriminationPages/AdminVdDragTextImage";
-import AdminVdDragManage from "./pages/visualDiscriminationPages/Adminvddragmanage";
-import AdminPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1";
-import UserVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDIntUser1";
-import AdminManageVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1manage";
-import MemoryGamePage from "./pages/visualDiscriminationPages/VDImageMemoryMCQActivity";
-import AdminAddMemoryGame from "./pages/visualDiscriminationPages/AdminMemoryImageQuestions";
-import AdminViewMemoryGames from "./pages/visualDiscriminationPages/AdminViewMemoryImageGames";
-import AdminAddCountImageGame from "./pages/visualDiscriminationPages/AdminAddObjectCountVD";
-import AdminManageCountImageGames from "./pages/visualDiscriminationPages/AdminManageObjectCVD";
-import CountImageGame from "./pages/visualDiscriminationPages/UserObjectCountVD";
+import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
+import InterventionDashboard from "./Components/Intervention Dashboard";
 
 function App() {
   return (
@@ -91,11 +90,108 @@ function App() {
         <Route path="/summary" element={<FinalSummary />} />
         <Route
           path="/RLDTestInstructionsPage"
-          element={<RLDTestInstructionsPage />}
+          element={
+            <ProtectedRoute role="user">
+              <RLDTestInstructionsPage />
+            </ProtectedRoute>
+          }
         />
-
-        {/*<Route path="/student-direction" element={<StudentDirection />} />*/}
-        <Route path="/admin-direction" element={<AdminDirection />} />
+        <Route
+          path="/student-direction"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-direction"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminDirection />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-jumbled"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminJumbledForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-jumbled"
+          element={
+            <ProtectedRoute role="user">
+              <StudentJumbledGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-categorize"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminCategorizeForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-categorize"
+          element={
+            <ProtectedRoute role="user">
+              <StudentCategorizeGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-comprehension"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminComprehensionForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-comprehension"
+          element={
+            <ProtectedRoute role="user">
+              <StudentComprehensionGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin-wh"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminWHForm />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student-wh"
+          element={
+            <ProtectedRoute role="user">
+              <StudentWHGame />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-admin-dashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <RLDAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/rld-student-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/vcDashboard" element={<VCDashboard />} />
         <Route path="/vcAssessment" element={<VCAssessment />} />
@@ -187,6 +283,14 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/eldStudentIntervention"
+          element={
+            <ProtectedRoute role="user">
+              <StudentELDDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/*cmmon*/}
         <Route
@@ -199,22 +303,14 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
-        <Route path="/userVD1Drag" element={<UserVdDragTextImage />} />
-        <Route path="/AdminVdDragTextImage" element={<AdminVdDragTextImage />} />
-        <Route path="/AdminVdDragmanage" element={<AdminVdDragManage />} />
-        <Route path="/adminVD1" element={<AdminPictureMCQ />} />
-        <Route path="/userVD1" element={<UserVdPictureMCQ />} />
-        <Route path="/AdminManageVdPictureMCQ1" element={<AdminManageVdPictureMCQ />} />
-        <Route path="/UserMemoryGamePage" element={<MemoryGamePage />} />
-        <Route path="/AdminAddMemoryGame1" element={<AdminAddMemoryGame />} />
-        <Route path="/AdminViewMemoryGames1" element={<AdminViewMemoryGames />} />
-        <Route path="/AdminAddCountImageGame1" element={<AdminAddCountImageGame />} />
-        <Route path="/AdminManageCountImageGames1" element={<AdminManageCountImageGames />} />
-        <Route path="/CountImageGameVD" element={<CountImageGame />} />
-
-
-
+        <Route
+          path="/intervention-dashboard"
+          element={
+            <ProtectedRoute role="user">
+              <InterventionDashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </Router>
   );

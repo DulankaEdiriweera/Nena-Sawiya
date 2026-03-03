@@ -185,7 +185,7 @@ function StoryAssessment() {
           {/* Main Card */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 w-full border-8 border-purple-200 mb-8 flex flex-col md:flex-row items-center justify-between gap-8 relative">
             {/* Top stripe */}
-            <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 rounded-t-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow to-purple-400 rounded-t-3xl"></div>
 
             {/* Left: Media */}
             <div className="flex-1 flex justify-center items-center">
@@ -234,7 +234,7 @@ function StoryAssessment() {
             </div>
 
             {/* Bottom stripe */}
-            <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-b-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 to-red-400 rounded-b-3xl"></div>
           </div>
 
           {/* Navigation Buttons */}
