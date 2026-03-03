@@ -4,6 +4,7 @@ from models.eld_model import ELDModel
 import joblib
 from scipy.sparse import hstack
 import os
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 eld_bp = Blueprint("eld_bp", __name__)
 
@@ -20,7 +21,7 @@ vectorizers_eld = joblib.load(os.path.join(folder_path,"vectorizers_eld.pkl"))
 # Sinhala Feedback Mapping
 # -------------------------------
 feedback_map_eld = {
-    "Weak": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා දුර්වලතාවයේ සලකුණු පෙන්නුම් කරයි. වැඩි දුර නිරීක්ෂණය හා උපකාරය අවශ්‍ය වේ.",
+    "Weak": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා දුර්වලතාවයේ සලකුණු පෙන්නුම් කරයි. ක්‍රියා කිහිපයක් මඟහැර තිබුණි හෝ නිවැරදිව විස්තර කළේ නැත. එසේම සිදුවීම් අනුපිළිවෙලින් පැහැදිලිව කියාදීමට අපහසුතාවයක් පෙන්නුම් කළේය. දරුවාට වාක්‍ය ගොඩනැගීම, වචන භාවිතය සහ කතාවක් සම්පූර්ණ කිරීම සම්බන්ධයෙන් වැඩි උපකාර හා මගපෙන්වීම අවශ්‍ය වේ. නිරන්තර භාෂා ක්‍රියාකාරකම් හා මගපෙන්වූ අභ්‍යාස මඟින් මෙම කුසලතා වැඩි දියුණු කළ හැක.",
     "Average": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා සාමාන්‍ය මට්ටමින් පවතින අතර වැඩි දියුණු කිරීම අවශ්‍ය විය හැක.",
     "Normal": "ඔබේ දරුවාගේ ප්‍රකාශන භාෂා කුසලතා සාමාන්‍යයෙන් සෞඛ්‍ය සම්පන්න ලෙස පවතී."
 }
@@ -62,6 +63,7 @@ def predict_new_eld(story1, story2, story3, story4):
 # Prediction Route
 # -------------------------------
 @eld_bp.route("/predict_eld", methods=["POST"])
+@jwt_required()  # Require login
 def predict_eld():
 
     data = request.get_json()
@@ -71,12 +73,18 @@ def predict_eld():
     story3 = data.get("story3", "")
     story4 = data.get("story4", "")
 
+    # ---------------------------
+    # Get logged-in user's ID
+    # ---------------------------
+    user_id = get_jwt_identity()
+
     percentage, level_en, level_si, feedback = predict_new_eld(
         story1, story2, story3, story4
     )
 
     # Save English level internally
     eld_record = ELDModel(
+        user_id,
         story1,
         story2,
         story3,

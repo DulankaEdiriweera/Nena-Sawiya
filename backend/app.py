@@ -9,11 +9,18 @@ from visualDiscrimination import preprocess_dataframe
 import json
 from datetime import datetime
 import numpy as np
+from flask_jwt_extended import JWTManager
+from routes.auth_routes import auth_bp
 from routes.eld_routes import eld_bp
 from routes.eld_storyClozeRoutes import story_bp
-#from routes.eld_picture_mcq_routes import picture_bp
+from routes.eld_picture_mcq_routes import picture_bp
+from routes.sequencing_routes import sequencing_bp
 from routes.rld_routes import rld_bp
 from routes.rld_direction_routes import rld_direction_bp
+from routes.rld_jumbled_routes import rld_jumbled_bp
+from routes.rld_categorize_routes import rld_categorize_bp
+from routes.rld_comprehension_routes import rld_comprehension_bp
+from routes.rld_wh_routes import rld_wh_bp
 from routes.vc_routes import vc_bp
 from routes.vc_jigsaw_routes import vc_jigsaw_bp
 from routes.vc_pic_com_routes import vc_pic_com_bp
@@ -24,6 +31,10 @@ from routes.vc_pic_com_routes import vc_pic_com_bp
 # Flask App Setup
 # -------------------------------
 app = Flask(__name__)
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+jwt = JWTManager(app)
+
 CORS(app)  # allow all origins; for development only
 
 
@@ -54,15 +65,22 @@ app.config["VC_UPLOAD_FOLDER"] = VC_UPLOAD_FOLDER
 
 
 # Register Blueprints
+
+app.register_blueprint(auth_bp,url_prefix="/api/auth")
+
 #ELD
 app.register_blueprint(eld_bp)
-#app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
+app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
+app.register_blueprint(sequencing_bp, url_prefix="/api/sequencing_bp")
 
 #RLD
 app.register_blueprint(rld_bp)
-app.register_blueprint(rld_direction_bp, url_prefix="/rld")
-
+app.register_blueprint(rld_direction_bp, url_prefix="/api/rld_direction_bp")
+app.register_blueprint(rld_jumbled_bp, url_prefix="/api/rld_jumbled")
+app.register_blueprint(rld_categorize_bp, url_prefix="/api/rld_categorize")
+app.register_blueprint(rld_comprehension_bp, url_prefix="/api/rld_comprehension")
+app.register_blueprint(rld_wh_bp, url_prefix="/api/rld_wh")
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
 app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")

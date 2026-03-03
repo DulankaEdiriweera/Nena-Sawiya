@@ -8,6 +8,9 @@ import { FaMicrophone, FaStopCircle } from "react-icons/fa";
 import Header from "../Components/Header";
 
 function StoryAssessment() {
+  //Get token from localStorage
+  const token = localStorage.getItem("token");
+
   const [transcripts, setTranscripts] = useState(["", "", "", ""]);
   const [recognizers, setRecognizers] = useState([null, null, null, null]);
   const [isRecording, setIsRecording] = useState([false, false, false, false]);
@@ -103,7 +106,7 @@ function StoryAssessment() {
     try {
       const res = await fetch("http://127.0.0.1:5000/predict_eld", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
@@ -182,7 +185,7 @@ function StoryAssessment() {
           {/* Main Card */}
           <div className="bg-white rounded-3xl shadow-2xl p-8 w-full border-8 border-purple-200 mb-8 flex flex-col md:flex-row items-center justify-between gap-8 relative">
             {/* Top stripe */}
-            <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow-400 via-green-400 via-blue-400 to-purple-400 rounded-t-3xl"></div>
+            <div className="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-red-400 via-yellow to-purple-400 rounded-t-3xl"></div>
 
             {/* Left: Media */}
             <div className="flex-1 flex justify-center items-center">
@@ -231,7 +234,7 @@ function StoryAssessment() {
             </div>
 
             {/* Bottom stripe */}
-            <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 via-green-400 via-yellow-400 to-red-400 rounded-b-3xl"></div>
+            <div className="absolute bottom-0 left-0 w-full h-4 bg-gradient-to-r from-purple-400 via-blue-400 to-red-400 rounded-b-3xl"></div>
           </div>
 
           {/* Navigation Buttons */}
