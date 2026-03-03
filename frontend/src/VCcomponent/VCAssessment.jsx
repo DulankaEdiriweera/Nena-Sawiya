@@ -245,10 +245,12 @@ const VCAssessment = () => {
 
     console.log("Submitting payload:", payload);
 
+    const token = localStorage.getItem("token");
+
     try {
       const response = await fetch("http://localhost:5000/predict_vc", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}`, },
         body: JSON.stringify(payload),
       });
 

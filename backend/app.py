@@ -24,7 +24,7 @@ from routes.rld_wh_routes import rld_wh_bp
 from routes.vc_routes import vc_bp
 from routes.vc_jigsaw_routes import vc_jigsaw_bp
 from routes.vc_pic_com_routes import vc_pic_com_bp
-#from routes.vc_sha_mat_routes import vc_sha_mat_bp
+from routes.vc_sha_mat_routes import vc_sha_mat_bp
 
 
 # -------------------------------
@@ -85,7 +85,7 @@ app.register_blueprint(rld_wh_bp, url_prefix="/api/rld_wh")
 app.register_blueprint(vc_bp)
 app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")
 app.register_blueprint(vc_pic_com_bp, url_prefix="/api/vc_pic_com")
-#app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
+app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
 
 # Serve uploaded audio files
 #ELD

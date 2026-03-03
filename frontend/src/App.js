@@ -47,6 +47,22 @@ import Login from "./Components/Login";
 import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
 import InterventionDashboard from "./Components/Intervention Dashboard";
 
+import AdminAddVCJigsaw from "./VCcomponent/AdminAddVCJigsaw";
+import VCJigsawList from "./VCcomponent/VCJigsawList";
+import VCJigsawPage from "./VCcomponent/VCJigsawPage";
+import AdminVCJigsawList from "./VCcomponent/AdminVCJigsawList";
+import VCPicComList from "./VCcomponent/VCPicComList";
+import VCPicComPage  from "./VCcomponent/VCPicComPage";
+import AdminAddVCPicCom from "./VCcomponent/AdminAddVCPicCom";
+import AdminVCPicComList from "./VCcomponent/AdminVCPicComList";
+import VCShaMatList from "./VCcomponent/VCShaMatList";
+import VCShaMatPage from "./VCcomponent/VCShaMatPage";
+import AdminAddVCShaMat from "./VCcomponent/AdminAddVCShaMat";
+import AdminVCShaMatList from "./VCcomponent/AdminVCShaMatList";
+import VCStudentDashboard from "./VCcomponent/VCStudentDashboard";
+import VCAdminDashboard from "./VCcomponent/VCAdminDashboard";
+
+
 function App() {
   return (
     <Router>
@@ -193,9 +209,32 @@ function App() {
           }
         />
 
-        <Route path="/vcDashboard" element={<VCDashboard />} />
-        <Route path="/vcAssessment" element={<VCAssessment />} />
-        <Route path="/vcResults" element={<VCResults />} />
+        <Route
+          path="/vcDashboard"
+          element={
+            <ProtectedRoute role="user">
+              <VCDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcAssessment"
+          element={
+            <ProtectedRoute role="user">
+              <VCAssessment />
+            </ProtectedRoute>
+          }
+        />
+
+                <Route
+          path="/vcResults"
+          element={
+            <ProtectedRoute role="user">
+              <VCResults />
+            </ProtectedRoute>
+          }
+        />
 
         {/*ELD Intervention Routes)*/}
         <Route
@@ -288,6 +327,133 @@ function App() {
           element={
             <ProtectedRoute role="user">
               <StudentELDDashboard />
+            </ProtectedRoute>
+          }
+        />
+        {/*VC Intervention Routes)*/}
+        
+                <Route
+          path="/vcStudentDashboard"
+          element={
+            <ProtectedRoute role="user">
+              <VCStudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcAdminDashboard"
+          element={
+            <ProtectedRoute role="admin">
+              <VCAdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcAdminAddJigsaw"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminAddVCJigsaw />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcJigsawList"
+          element={
+            <ProtectedRoute role="user">
+              <VCJigsawList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcJigsaw/:puzzleId"
+          element={
+            <ProtectedRoute role="user">
+              <VCJigsawPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcAdminJigsawList"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminVCJigsawList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcPicCom"
+          element={
+            <ProtectedRoute role="user">
+              <VCPicComList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcPicCom/:activityId"
+          element={
+            <ProtectedRoute role="user">
+              <VCPicComPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/vcPicCom/add"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminAddVCPicCom />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/vcPicCom/list"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminVCPicComList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcShadowMatch"
+          element={
+            <ProtectedRoute role="user">
+              <VCShaMatList />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/vcShadowMatch/:activityId"
+          element={
+            <ProtectedRoute role="user">
+              <VCShaMatPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/addShadowMatch"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminAddVCShaMat />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/shadowMatchList"
+          element={
+            <ProtectedRoute role="admin">
+              <AdminVCShaMatList />
             </ProtectedRoute>
           }
         />
