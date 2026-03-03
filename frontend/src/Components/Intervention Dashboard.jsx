@@ -25,7 +25,7 @@ const INTERVENTIONS = [
     bg: "from-green-200 to-emerald-200",
   },
   {
-    path: "/vcDashboard",
+    path: "/vcStudentDashboard",
     emoji: "🔷",
     label: "දෘශ්‍ය සම්පූර්ණතා හැකියාව",
     sub: "Visual Closure",

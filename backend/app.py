@@ -31,6 +31,10 @@ from routes.vd_picture_mcq_routes import vd_picture_bp
 from routes.vd_memory_image_routes import vd_memory_bp
 from routes.vd_count_image_routes import vd_count_bp
 
+from routes.vc_jigsaw_routes import vc_jigsaw_bp
+from routes.vc_pic_com_routes import vc_pic_com_bp
+from routes.vc_sha_mat_routes import vc_sha_mat_bp
+
 # -------------------------------
 # Flask App Setup
 # -------------------------------
@@ -68,6 +72,12 @@ VD_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vd_
 os.makedirs(VD_UPLOAD_FOLDER, exist_ok=True)
 app.config["VD_UPLOAD_FOLDER"] = VD_UPLOAD_FOLDER
 
+# -------------------------------
+# VC Uploads Folder
+# -------------------------------
+VC_UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), "vc_uploads")
+os.makedirs(VC_UPLOAD_FOLDER, exist_ok=True)
+app.config["VC_UPLOAD_FOLDER"] = VC_UPLOAD_FOLDER
 
 
 # Register Blueprints
@@ -88,9 +98,12 @@ app.register_blueprint(rld_jumbled_bp, url_prefix="/api/rld_jumbled")
 app.register_blueprint(rld_categorize_bp, url_prefix="/api/rld_categorize")
 app.register_blueprint(rld_comprehension_bp, url_prefix="/api/rld_comprehension")
 app.register_blueprint(rld_wh_bp, url_prefix="/api/rld_wh")
+
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
-
+app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")
+app.register_blueprint(vc_pic_com_bp, url_prefix="/api/vc_pic_com")
+app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
 
 #VISUAL DISCRIMINATION
 app.register_blueprint(vd_bp)
@@ -118,7 +131,10 @@ def uploaded_file(filename):
 def serve_vd_uploads(filename):
     return send_from_directory(app.config['VD_UPLOAD_FOLDER'], filename)
 
-
+#VC
+@app.route('/vc_uploads/<path:filename>')
+def serve_vc_uploads(filename):
+    return send_from_directory(app.config["VC_UPLOAD_FOLDER"], filename)
 
 
 

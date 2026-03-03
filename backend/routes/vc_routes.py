@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from database.db import mongo
 from models.vc_model import VCModel
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import CORS
 
 import os
 import json
@@ -163,7 +165,10 @@ def predict_vc(payload: dict):
 # Route: predict + store
 # -------------------------------
 @vc_bp.route("/predict_vc", methods=["POST"])
+@jwt_required()
 def predict_vc_route():
+
+    user_id = get_jwt_identity()
     payload = request.get_json(force=True)
 
     ml_result = predict_vc(payload)
@@ -178,6 +183,7 @@ def predict_vc_route():
     vc_record = VCModel(
         answers=answers,
         times=times,
+        user_id=user_id, 
 
         ml_label_en=ml_result["ml_label_en"],
         vc_level_si=ml_result["VC_Level"],
