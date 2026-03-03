@@ -48,20 +48,18 @@ import StudentELDDashboard from "./EldComponent/StudentELDDashboard";
 import InterventionDashboard from "./Components/Intervention Dashboard";
 import Progress from "./Components/Progress";
 
-import AdminAddVCJigsaw from "./VCcomponent/AdminAddVCJigsaw";
-import VCJigsawList from "./VCcomponent/VCJigsawList";
-import VCJigsawPage from "./VCcomponent/VCJigsawPage";
-import AdminVCJigsawList from "./VCcomponent/AdminVCJigsawList";
-import VCPicComList from "./VCcomponent/VCPicComList";
-import VCPicComPage  from "./VCcomponent/VCPicComPage";
-import AdminAddVCPicCom from "./VCcomponent/AdminAddVCPicCom";
-import AdminVCPicComList from "./VCcomponent/AdminVCPicComList";
-import VCShaMatList from "./VCcomponent/VCShaMatList";
-import VCShaMatPage from "./VCcomponent/VCShaMatPage";
-import AdminAddVCShaMat from "./VCcomponent/AdminAddVCShaMat";
-import AdminVCShaMatList from "./VCcomponent/AdminVCShaMatList";
-import VCStudentDashboard from "./VCcomponent/VCStudentDashboard";
-import VCAdminDashboard from "./VCcomponent/VCAdminDashboard";
+import UserVdDragTextImage from "./pages/visualDiscriminationPages/UserVdDragTextImage";
+import AdminVdDragTextImage from "./pages/visualDiscriminationPages/AdminVdDragTextImage";
+import AdminVdDragManage from "./pages/visualDiscriminationPages/Adminvddragmanage";
+import AdminPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1";
+import UserVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDIntUser1";
+import AdminManageVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1manage";
+import MemoryGamePage from "./pages/visualDiscriminationPages/VDImageMemoryMCQActivity";
+import AdminAddMemoryGame from "./pages/visualDiscriminationPages/AdminMemoryImageQuestions";
+import AdminViewMemoryGames from "./pages/visualDiscriminationPages/AdminViewMemoryImageGames";
+import AdminAddCountImageGame from "./pages/visualDiscriminationPages/AdminAddObjectCountVD";
+import AdminManageCountImageGames from "./pages/visualDiscriminationPages/AdminManageObjectCVD";
+import CountImageGame from "./pages/visualDiscriminationPages/UserObjectCountVD";
 
 
 function App() {
@@ -95,16 +93,7 @@ function App() {
           }
         />
 
-        <Route path="/visual" element={<VisualDiscriminationHome />} />
-        <Route path="/visualDisAdvices" element={<StudentAdvicePageDis />} />
-        <Route path="/level1allin1" element={<Level1Discrimination />} />
-        <Route
-          path="/discriminationL2"
-          element={<ObjectCountingPageDiscrimination />}
-        />
-        <Route path="/discriminationL3P1" element={<Level3ShapeMemory />} />
-        <Route path="/discriminationL3p2" element={<Level3Choices />} />
-        <Route path="/summary" element={<FinalSummary />} />
+        
         <Route
           path="/RLDTestInstructionsPage"
           element={
@@ -331,133 +320,222 @@ function App() {
             </ProtectedRoute>
           }
         />
-        {/*VC Intervention Routes)*/}
-        
-                <Route
-          path="/vcStudentDashboard"
-          element={
-            <ProtectedRoute role="user">
-              <VCStudentDashboard />
-            </ProtectedRoute>
-          }
-        />
+
+        {/*VisualD All Routes*/}
+
+
+{/*VD Intervention*/}
 
         <Route
-          path="/vcAdminDashboard"
-          element={
-            <ProtectedRoute role="admin">
-              <VCAdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+  path="/userVD1Drag"
+  element={
+    <ProtectedRoute role="user">
+      <UserVdDragTextImage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcAdminAddJigsaw"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminAddVCJigsaw />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/userVD1"
+  element={
+    <ProtectedRoute role="user">
+      <UserVdPictureMCQ />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcJigsawList"
-          element={
-            <ProtectedRoute role="user">
-              <VCJigsawList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/UserMemoryGamePage"
+  element={
+    <ProtectedRoute role="user">
+      <MemoryGamePage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcJigsaw/:puzzleId"
-          element={
-            <ProtectedRoute role="user">
-              <VCJigsawPage />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/CountImageGameVD"
+  element={
+    <ProtectedRoute role="user">
+      <CountImageGame />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcAdminJigsawList"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminVCJigsawList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/userVD1Drag"
+  element={
+    <ProtectedRoute role="user">
+      <UserVdDragTextImage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcPicCom"
-          element={
-            <ProtectedRoute role="user">
-              <VCPicComList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/userVD1"
+  element={
+    <ProtectedRoute role="user">
+      <UserVdPictureMCQ />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcPicCom/:activityId"
-          element={
-            <ProtectedRoute role="user">
-              <VCPicComPage />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/UserMemoryGamePage"
+  element={
+    <ProtectedRoute role="user">
+      <MemoryGamePage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/admin/vcPicCom/add"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminAddVCPicCom />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/CountImageGameVD"
+  element={
+    <ProtectedRoute role="user">
+      <CountImageGame />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/admin/vcPicCom/list"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminVCPicComList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/AdminVdDragTextImage"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminVdDragTextImage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcShadowMatch"
-          element={
-            <ProtectedRoute role="user">
-              <VCShaMatList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/AdminVdDragmanage"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminVdDragManage />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/vcShadowMatch/:activityId"
-          element={
-            <ProtectedRoute role="user">
-              <VCShaMatPage />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/adminVD1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminPictureMCQ />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/admin/addShadowMatch"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminAddVCShaMat />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/AdminManageVdPictureMCQ1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminManageVdPictureMCQ />
+    </ProtectedRoute>
+  }
+/>
 
-        <Route
-          path="/admin/shadowMatchList"
-          element={
-            <ProtectedRoute role="admin">
-              <AdminVCShaMatList />
-            </ProtectedRoute>
-          }
-        />
+<Route
+  path="/AdminAddMemoryGame1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminAddMemoryGame />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/AdminViewMemoryGames1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminViewMemoryGames />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/AdminAddCountImageGame1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminAddCountImageGame />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/AdminManageCountImageGames1"
+  element={
+    <ProtectedRoute role="admin">
+      <AdminManageCountImageGames />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/visual"
+  element={
+    <ProtectedRoute role="user">
+      <VisualDiscriminationHome />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/visualDisAdvices"
+  element={
+    <ProtectedRoute role="user">
+      <StudentAdvicePageDis />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/level1allin1"
+  element={
+    <ProtectedRoute role="user">
+      <Level1Discrimination />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/discriminationL2"
+  element={
+    <ProtectedRoute role="user">
+      <ObjectCountingPageDiscrimination />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/discriminationL3P1"
+  element={
+    <ProtectedRoute role="user">
+      <Level3ShapeMemory />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/discriminationL3p2"
+  element={
+    <ProtectedRoute role="user">
+      <Level3Choices />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/summary"
+  element={
+    <ProtectedRoute role="user">
+      <FinalSummary />
+    </ProtectedRoute>
+  }
+/>
+
+
+
+
 
         {/*cmmon*/}
         <Route
