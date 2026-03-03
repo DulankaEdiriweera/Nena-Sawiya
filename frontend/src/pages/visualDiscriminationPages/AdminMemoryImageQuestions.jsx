@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 const BASE = "http://localhost:5000";
 
@@ -94,7 +95,9 @@ export default function AdminAddMemoryGame() {
   };
 
   return (
-    <div
+    <div>
+      <div><AdminHeader/></div>
+      <div
       className="min-h-screen p-6"
       style={{
         background: "linear-gradient(135deg, #e0f2fe 0%, #fce7f3 50%, #fef9c3 100%)",
@@ -306,6 +309,9 @@ export default function AdminAddMemoryGame() {
         </div>
       </div>
     </div>
+
+    </div>
+    
   );
 }
 

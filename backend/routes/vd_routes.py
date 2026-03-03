@@ -8,6 +8,7 @@ import json
 from database.db import mongo
 from models.vd_model import VDModel
 from visualDiscrimination import preprocess_dataframe
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 vd_bp = Blueprint("vd_bp", __name__)
 
@@ -55,12 +56,18 @@ def generate_assessment_hash(payload: dict) -> str:
 # -------------------------------
 @vd_bp.route("/predictVDH", methods=["POST"])
 @vd_bp.route("/predict_vd", methods=["POST"])
+@jwt_required()  # Require login
 def predict_vd():
     try:
         data = request.get_json()
 
         if not data:
             return jsonify({"error": "No JSON received"}), 400
+
+        # ---------------------------
+        # Get logged-in user's ID
+        # ---------------------------
+        user_id = get_jwt_identity()
 
         # Convert JSON → DataFrame
         df = pd.DataFrame(data)
@@ -92,6 +99,7 @@ def predict_vd():
 
             if not existing:
                 vd_record = VDModel(
+                    user_id=user_id, 
                     input_marks=input_payload,
                     predicted_level=level,
                     advice=advice,

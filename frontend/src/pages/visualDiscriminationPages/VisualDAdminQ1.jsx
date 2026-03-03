@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 export default function AdminVdPictureMCQ() {
   const [level, setLevel] = useState("EASY");
@@ -66,7 +67,9 @@ export default function AdminVdPictureMCQ() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
+    <div>
+      <div><AdminHeader/></div>
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
       <div className="max-w-3xl mx-auto">
 
         {/* Header */}
@@ -201,6 +204,9 @@ export default function AdminVdPictureMCQ() {
         </form>
       </div>
     </div>
+
+    </div>
+    
   );
 }
 

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 export default function AdminAddCountImageGame() {
   const [title, setTitle] = useState("");
@@ -61,7 +62,9 @@ export default function AdminAddCountImageGame() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
+    <div>
+      <div><AdminHeader/></div>
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-orange-400 to-pink-500 rounded-3xl p-6 mb-6 text-white text-center shadow-lg">
@@ -190,6 +193,8 @@ export default function AdminAddCountImageGame() {
         </div>
       </div>
     </div>
+    </div>
+    
   );
 }
 

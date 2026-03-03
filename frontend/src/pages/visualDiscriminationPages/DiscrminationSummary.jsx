@@ -49,11 +49,14 @@ export default function FinalSummary() {
     ];
 
     console.log("📤 Sending payload to backend:", JSON.stringify(payload, null, 2));
+    // ✅ Get the JWT token here
+    const token = localStorage.getItem("token");
 
     fetch("http://127.0.0.1:5000/predictVDH", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`, // send token in header
       },
       body: JSON.stringify(payload),
     })

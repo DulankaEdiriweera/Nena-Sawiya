@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 const BASE = "http://localhost:5000";
 
@@ -57,7 +58,10 @@ export default function AdminManageCountImageGames() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
+    <div>
+      <div><AdminHeader/></div>
+
+      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-gradient-to-r from-purple-500 to-indigo-500 rounded-3xl p-6 mb-6 text-white text-center shadow-lg">
@@ -215,6 +219,9 @@ export default function AdminManageCountImageGames() {
         </div>
       )}
     </div>
+
+    </div>
+    
   );
 }
 

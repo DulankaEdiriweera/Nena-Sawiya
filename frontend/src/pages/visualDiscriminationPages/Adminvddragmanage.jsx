@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 const BASE = "http://localhost:5000";
 const LS = {
@@ -80,7 +81,9 @@ export default function AdminVdDragManage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-6">
+    <div>
+      <div><AdminHeader/></div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-6">
       <div className="max-w-5xl mx-auto">
 
         {/* Header */}
@@ -309,6 +312,9 @@ export default function AdminVdDragManage() {
         </div>
       )}
     </div>
+
+    </div>
+    
   );
 }
 
