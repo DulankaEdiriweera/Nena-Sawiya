@@ -70,8 +70,17 @@ const Header = () => {
               </>
             ) : (
               <>
-                <span className="text-[#0A1F44] font-bold text-lg">
+                {/* User Name */}
+                <span className="text-[#0A1F44] font-bold text-lg flex items-center space-x-2">
                   👋 {name}
+                  {/* Progress Icon */}
+                  <button
+                    onClick={() => navigate("/progress")} // navigate to profile/progress page
+                    className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs transition"
+                    title="View Progress"
+                  >
+                    📊
+                  </button>
                 </span>
                 <button
                   onClick={handleLogout}

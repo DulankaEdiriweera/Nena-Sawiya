@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LEVEL_RULES = {
   easy: { bags: 2, options: 4 },
@@ -41,6 +42,7 @@ const UploadCell = ({ onChange }) => {
 };
 
 const AdminCategorizeForm = () => {
+  const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [instruction, setInstruction] = useState("");
   const [bags, setBags] = useState([emptyBag(), emptyBag()]);
@@ -110,6 +112,9 @@ const AdminCategorizeForm = () => {
       handleLevelChange(level);
       setInstruction("");
       setFormKey((k) => k + 1);
+      navigate("/rld-admin-dashboard", {
+        state: { activeCat: "Categorization" },
+      });
     } catch (err) {
       setMessage(err.response?.data?.error || "Error saving set.");
       setIsError(true);

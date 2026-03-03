@@ -22,10 +22,7 @@ from routes.rld_categorize_routes import rld_categorize_bp
 from routes.rld_comprehension_routes import rld_comprehension_bp
 from routes.rld_wh_routes import rld_wh_bp
 from routes.vc_routes import vc_bp
-from routes.vc_jigsaw_routes import vc_jigsaw_bp
-from routes.vc_pic_com_routes import vc_pic_com_bp
-from routes.vc_sha_mat_routes import vc_sha_mat_bp
-
+from routes.eld_progress_bp import eld_progress_bp
 
 # -------------------------------
 # Flask App Setup
@@ -73,6 +70,7 @@ app.register_blueprint(eld_bp)
 app.register_blueprint(picture_bp, url_prefix="/api/picture_mcq")
 app.register_blueprint(story_bp, url_prefix="/api/story_bp")
 app.register_blueprint(sequencing_bp, url_prefix="/api/sequencing_bp")
+app.register_blueprint(eld_progress_bp, url_prefix="/api/eld")
 
 #RLD
 app.register_blueprint(rld_bp)

@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
+import AdminHeader from "../Components/AdminHeader";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const AddPictureMCQ = () => {
   const [level, setLevel] = useState("EASY");
@@ -10,6 +13,7 @@ const AddPictureMCQ = () => {
   const [image, setImage] = useState(null);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
+   const navigate = useNavigate();
 
   const handleOptionChange = (index, value) => {
     const newOptions = [...options];
@@ -21,14 +25,22 @@ const AddPictureMCQ = () => {
     e.preventDefault();
 
     if (!image) {
-      setMessage("Please upload an image.");
-      setIsError(true);
+      Swal.fire({
+        icon: "warning",
+        title: "Image Required",
+        text: "Please upload an image.",
+        confirmButtonColor: "#2563EB",
+      });
       return;
     }
 
     if (!correctAnswer) {
-      setMessage("Please specify the correct answer.");
-      setIsError(true);
+      Swal.fire({
+        icon: "warning",
+        title: "Answer Required",
+        text: "Please specify the correct answer.",
+        confirmButtonColor: "#2563EB",
+      });
       return;
     }
 
@@ -41,14 +53,18 @@ const AddPictureMCQ = () => {
     formData.append("image", image);
 
     try {
-      await axios.post(
-        "http://localhost:5000/api/picture_mcq/add",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+      await axios.post("http://localhost:5000/api/picture_mcq/add", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
 
-      setMessage("MCQ added successfully.");
-      setIsError(false);
+      Swal.fire({
+        icon: "success",
+        title: "MCQ Added!",
+        text: "Picture MCQ added successfully.",
+        confirmButtonColor: "#16A34A",
+      }).then((result) => {
+      navigate('/pictureMCQManage')
+    });
 
       // Reset form
       setQuestion("");
@@ -57,147 +73,151 @@ const AddPictureMCQ = () => {
       setTaskNumber("");
       setImage(null);
       setLevel("EASY");
-
     } catch (error) {
       console.error(error);
-      setMessage("Error adding MCQ.");
-      setIsError(true);
+      Swal.fire({
+        icon: "error",
+        title: "Failed",
+        text: "Error adding MCQ.",
+        confirmButtonColor: "#DC2626",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 flex items-center justify-center px-4 py-10">
-      
-      {/* Main Container */}
-      <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-3xl shadow-2xl p-10">
-
-        {/* Header */}
-        <div className="mb-8 text-center">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Add Picture MCQ
-          </h2>
-          <p className="text-gray-500 text-sm mt-2">
-            Create a new picture-based multiple choice question
-          </p>
-        </div>
-
-        {/* Message */}
-        {message && (
-          <div
-            className={`mb-6 p-3 rounded-lg text-sm font-medium ${
-              isError
-                ? "bg-red-100 text-red-600 border border-red-300"
-                : "bg-green-100 text-green-700 border border-green-300"
-            }`}
-          >
-            {message}
+    <div>
+      <div>
+        <AdminHeader />
+      </div>
+      <div className="min-h-screen bg-gradient-to-b from-gray-100 to-gray-200 flex items-center justify-center px-4 py-10">
+        {/* Main Container */}
+        <div className="w-full max-w-3xl bg-white border border-gray-300 rounded-3xl shadow-2xl p-10">
+          {/* Header */}
+          <div className="mb-8 text-center">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Add Picture MCQ
+            </h2>
+            <p className="text-gray-500 text-sm mt-2">
+              Create a new picture-based multiple choice question
+            </p>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-
-          {/* Level */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Difficulty Level
-            </label>
-            <select
-              value={level}
-              onChange={(e) => setLevel(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
+          {/* Message */}
+          {message && (
+            <div
+              className={`mb-6 p-3 rounded-lg text-sm font-medium ${
+                isError
+                  ? "bg-red-100 text-red-600 border border-red-300"
+                  : "bg-green-100 text-green-700 border border-green-300"
+              }`}
             >
-              <option value="EASY">EASY</option>
-              <option value="MEDIUM">MEDIUM</option>
-              <option value="HARD">HARD</option>
-            </select>
-          </div>
+              {message}
+            </div>
+          )}
 
-          {/* Question */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Question
-            </label>
-            <input
-              type="text"
-              value={question}
-              onChange={(e) => setQuestion(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Level */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Difficulty Level
+              </label>
+              <select
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                required
+              >
+                <option value="EASY">EASY</option>
+                <option value="MEDIUM">MEDIUM</option>
+                <option value="HARD">HARD</option>
+              </select>
+            </div>
 
-          {/* Options */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-2">
-              Options
-            </label>
-            {options.map((opt, i) => (
+            {/* Question */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Question
+              </label>
               <input
-                key={i}
                 type="text"
-                placeholder={`Option ${i + 1}`}
-                value={opt}
-                onChange={(e) => handleOptionChange(i, e.target.value)}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                value={question}
+                onChange={(e) => setQuestion(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 required
               />
-            ))}
-          </div>
+            </div>
 
-          {/* Correct Answer */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Correct Answer
-            </label>
-            <input
-              type="text"
-              value={correctAnswer}
-              onChange={(e) => setCorrectAnswer(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-          </div>
+            {/* Options */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-2">
+                Options
+              </label>
+              {options.map((opt, i) => (
+                <input
+                  key={i}
+                  type="text"
+                  placeholder={`Option ${i + 1}`}
+                  value={opt}
+                  onChange={(e) => handleOptionChange(i, e.target.value)}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 mb-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  required
+                />
+              ))}
+            </div>
 
-          {/* Task Number */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Task Number
-            </label>
-            <input
-              type="number"
-              value={taskNumber}
-              onChange={(e) => setTaskNumber(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-              required
-            />
-          </div>
+            {/* Correct Answer */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Correct Answer
+              </label>
+              <input
+                type="text"
+                value={correctAnswer}
+                onChange={(e) => setCorrectAnswer(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                required
+              />
+            </div>
 
-          {/* Image Upload */}
-          <div>
-            <label className="block font-medium text-gray-700 mb-1">
-              Upload Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImage(e.target.files[0])}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
-              required
-            />
-          </div>
+            {/* Task Number */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Task Number
+              </label>
+              <input
+                type="number"
+                value={taskNumber}
+                onChange={(e) => setTaskNumber(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                required
+              />
+            </div>
 
-          {/* Submit */}
-          <div className="pt-4">
-            <button
-              type="submit"
-              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md transition"
-            >
-              Add MCQ
-            </button>
-          </div>
+            {/* Image Upload */}
+            <div>
+              <label className="block font-medium text-gray-700 mb-1">
+                Upload Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => setImage(e.target.files[0])}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-white"
+                required
+              />
+            </div>
 
-        </form>
+            {/* Submit */}
+            <div className="pt-4">
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md transition"
+              >
+                Add MCQ
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
