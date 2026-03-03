@@ -35,6 +35,19 @@ import ProtectedRoute from "./Components/ProtectedRoute";
 import Register from "./Components/Register";
 import Login from "./Components/Login";
 
+import UserVdDragTextImage from "./pages/visualDiscriminationPages/UserVdDragTextImage";
+import AdminVdDragTextImage from "./pages/visualDiscriminationPages/AdminVdDragTextImage";
+import AdminVdDragManage from "./pages/visualDiscriminationPages/Adminvddragmanage";
+import AdminPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1";
+import UserVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDIntUser1";
+import AdminManageVdPictureMCQ from "./pages/visualDiscriminationPages/VisualDAdminQ1manage";
+import MemoryGamePage from "./pages/visualDiscriminationPages/VDImageMemoryMCQActivity";
+import AdminAddMemoryGame from "./pages/visualDiscriminationPages/AdminMemoryImageQuestions";
+import AdminViewMemoryGames from "./pages/visualDiscriminationPages/AdminViewMemoryImageGames";
+import AdminAddCountImageGame from "./pages/visualDiscriminationPages/AdminAddObjectCountVD";
+import AdminManageCountImageGames from "./pages/visualDiscriminationPages/AdminManageObjectCVD";
+import CountImageGame from "./pages/visualDiscriminationPages/UserObjectCountVD";
+
 function App() {
   return (
     <Router>
@@ -186,6 +199,22 @@ function App() {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
+        <Route path="/userVD1Drag" element={<UserVdDragTextImage />} />
+        <Route path="/AdminVdDragTextImage" element={<AdminVdDragTextImage />} />
+        <Route path="/AdminVdDragmanage" element={<AdminVdDragManage />} />
+        <Route path="/adminVD1" element={<AdminPictureMCQ />} />
+        <Route path="/userVD1" element={<UserVdPictureMCQ />} />
+        <Route path="/AdminManageVdPictureMCQ1" element={<AdminManageVdPictureMCQ />} />
+        <Route path="/UserMemoryGamePage" element={<MemoryGamePage />} />
+        <Route path="/AdminAddMemoryGame1" element={<AdminAddMemoryGame />} />
+        <Route path="/AdminViewMemoryGames1" element={<AdminViewMemoryGames />} />
+        <Route path="/AdminAddCountImageGame1" element={<AdminAddCountImageGame />} />
+        <Route path="/AdminManageCountImageGames1" element={<AdminManageCountImageGames />} />
+        <Route path="/CountImageGameVD" element={<CountImageGame />} />
+
+
+
       </Routes>
     </Router>
   );
