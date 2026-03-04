@@ -587,7 +587,7 @@ function App() {
         <Route
           path="/vcJigsaw/:puzzleId"
           element={
-            <ProtectedRoute role="user">
+            <ProtectedRoute roles={["admin", "user"]}>
               <VCJigsawPage />
             </ProtectedRoute>
           }
@@ -614,7 +614,7 @@ function App() {
         <Route
           path="/vcPicCom/:activityId"
           element={
-            <ProtectedRoute role="user">
+            <ProtectedRoute roles={["admin", "user"]}>
               <VCPicComPage />
             </ProtectedRoute>
           }
@@ -650,7 +650,7 @@ function App() {
         <Route
           path="/vcShadowMatch/:activityId"
           element={
-            <ProtectedRoute role="user">
+            <ProtectedRoute roles={["admin", "user"]}>
               <VCShaMatPage />
             </ProtectedRoute>
           }
