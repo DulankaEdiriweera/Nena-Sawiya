@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import AdminHeader from "../../Components/AdminHeader";
 
 const BASE = "http://localhost:5000";
 
-const levelConfig = {
-  EASY: { label: "පහසු", bg: "#d1fae5", color: "#065f46", emoji: "🌟" },
-  MEDIUM: { label: "මධ්‍යම", bg: "#fef3c7", color: "#92400e", emoji: "🔥" },
-  HARD: { label: "දුෂ්කර", bg: "#fee2e2", color: "#991b1b", emoji: "🏆" },
+const LS = {
+  EASY:   { bg: "bg-emerald-100", text: "text-emerald-700", dot: "bg-emerald-400", label: "Easy" },
+  MEDIUM: { bg: "bg-amber-100",   text: "text-amber-700",   dot: "bg-amber-400",   label: "Medium" },
+  HARD:   { bg: "bg-rose-100",    text: "text-rose-700",    dot: "bg-rose-400",    label: "Hard" },
 };
 
 const emptyQuestion = () => ({ question: "", options: ["", "", "", ""], correct: 0, mark: 1 });
@@ -15,7 +16,7 @@ export default function AdminViewMemoryGames() {
   const [games, setGames] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterLevel, setFilterLevel] = useState("ALL");
-  const [editingGame, setEditingGame] = useState(null); // game being edited
+  const [editingGame, setEditingGame] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editLevel, setEditLevel] = useState("EASY");
   const [editImage, setEditImage] = useState(null);
@@ -36,7 +37,7 @@ export default function AdminViewMemoryGames() {
       const res = await axios.get(`${BASE}/api/vd_memory/all`);
       setGames(res.data);
     } catch {
-      showMsg("ක්‍රීඩා불러올 නොහැකිය", "error");
+      showMsg("Failed to load games", "error");
     }
     setLoading(false);
   };
@@ -46,11 +47,11 @@ export default function AdminViewMemoryGames() {
   const handleDelete = async (id) => {
     try {
       await axios.delete(`${BASE}/api/vd_memory/delete/${id}`);
-      showMsg("ක්‍රීඩාව සාර්ථකව මකා දමන ලදී! 🗑️");
+      showMsg("Game deleted successfully! 🗑️");
       setDeleteConfirm(null);
       fetchGames();
     } catch (e) {
-      showMsg(e.response?.data?.error || "මකා දැමීම අසාර්ථකයි", "error");
+      showMsg(e.response?.data?.error || "Failed to delete", "error");
     }
   };
 
@@ -61,7 +62,6 @@ export default function AdminViewMemoryGames() {
     setEditImagePreview(`${BASE}${game.image_url}`);
     setEditImage(null);
     setEditQuestions(game.questions.map((q) => ({ ...q, options: [...q.options] })));
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const updateEditQuestion = (qIdx, field, value, oIdx = null) => {
@@ -88,13 +88,12 @@ export default function AdminViewMemoryGames() {
         editQuestions.map((q) => ({ ...q, correct: parseInt(q.correct), mark: parseInt(q.mark) }))
       ));
       if (editImage) fd.append("image", editImage);
-
       await axios.put(`${BASE}/api/vd_memory/update/${editingGame._id}`, fd);
-      showMsg("ක්‍රීඩාව සාර්ථකව යාවත්කාලීන කරන ලදී! ✅");
+      showMsg("Game updated successfully! ✅");
       setEditingGame(null);
       fetchGames();
     } catch (e) {
-      showMsg(e.response?.data?.error || "යාවත්කාලීන කිරීම අසාර්ථකයි", "error");
+      showMsg(e.response?.data?.error || "Failed to update", "error");
     }
     setSaving(false);
   };
@@ -102,231 +101,106 @@ export default function AdminViewMemoryGames() {
   const filteredGames = filterLevel === "ALL" ? games : games.filter((g) => g.level === filterLevel);
 
   return (
-    <div
-      className="min-h-screen p-6"
-      style={{ background: "linear-gradient(135deg, #f0f9ff 0%, #fdf4ff 100%)", fontFamily: "'Nunito', sans-serif" }}
-    >
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
-        .card { background: white; border-radius: 24px; box-shadow: 0 6px 24px rgba(0,0,0,0.08); }
-        .input-field { width: 100%; border: 2.5px solid #e0e7ff; border-radius: 12px; padding: 10px 14px; font-size: 0.95rem; font-family: 'Nunito', sans-serif; font-weight: 700; outline: none; box-sizing: border-box; transition: border-color 0.2s; }
-        .input-field:focus { border-color: #6366f1; }
-        .btn { border: none; border-radius: 14px; padding: 10px 20px; font-weight: 800; cursor: pointer; font-family: 'Nunito', sans-serif; transition: transform 0.15s, box-shadow 0.15s; }
-        .btn:hover { transform: scale(1.04); }
-        .game-card { background: white; border-radius: 22px; box-shadow: 0 4px 20px rgba(0,0,0,0.07); overflow: hidden; transition: box-shadow 0.2s, transform 0.2s; }
-        .game-card:hover { box-shadow: 0 8px 32px rgba(99,102,241,0.15); transform: translateY(-2px); }
-      `}</style>
+    <div className="min-h-screen bg-slate-50">
+      <AdminHeader />
 
-      <div className="max-w-5xl mx-auto">
-        {/* Header */}
-        <div style={{ textAlign: "center", marginBottom: 32 }}>
-          <div style={{ fontSize: "3rem" }}>🎮</div>
-          <h1 style={{ fontWeight: 900, fontSize: "2rem", color: "#4f46e5", margin: "8px 0 4px" }}>
-            සියලු ක්‍රීඩා
-          </h1>
-          <p style={{ color: "#9ca3af", fontWeight: 700 }}>දෘශ්‍ය වෙනස් කිරීමේ ක්‍රීඩා කළමනාකරණය</p>
+      {/* Toast */}
+      {msg.text && (
+        <div className={`fixed top-5 right-5 z-50 px-5 py-3 rounded-2xl font-bold text-sm shadow-lg ${msg.type === "error" ? "bg-rose-50 text-rose-700 border border-rose-200" : "bg-emerald-50 text-emerald-700 border border-emerald-200"}`}>
+          {msg.text}
+        </div>
+      )}
+
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Page Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <p className="text-xs font-semibold text-indigo-400 uppercase tracking-widest mb-1">Visual Discrimination & Memory</p>
+            <h1 className="text-2xl font-black text-slate-800">Memory Games Management</h1>
+            <p className="text-slate-400 text-sm mt-1">{games.length} game{games.length !== 1 ? "s" : ""} available</p>
+          </div>
+          <a href="/AdminAddMemoryGame1"
+            className="inline-flex items-center gap-2 bg-indigo-600 text-white font-bold px-5 py-2.5 rounded-xl hover:bg-indigo-700 transition shadow-sm text-sm">
+            + Add New Activity
+          </a>
         </div>
 
-        {/* Toast */}
-        {msg.text && (
-          <div style={{
-            position: "fixed", top: 24, right: 24, zIndex: 1000,
-            background: msg.type === "error" ? "#fee2e2" : "#d1fae5",
-            color: msg.type === "error" ? "#dc2626" : "#065f46",
-            borderRadius: 16, padding: "14px 24px", fontWeight: 800, boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
-            animation: "fadeIn 0.3s ease-out",
-          }}>
-            {msg.text}
-          </div>
-        )}
-
-        {/* Edit Modal */}
-        {editingGame && (
-          <div style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 900,
-            display: "flex", alignItems: "flex-start", justifyContent: "center",
-            overflowY: "auto", padding: "24px 16px",
-          }}>
-            <div className="card" style={{ width: "100%", maxWidth: 600, padding: 32 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-                <h2 style={{ fontWeight: 900, color: "#4f46e5", fontSize: "1.4rem", margin: 0 }}>✏️ ක්‍රීඩාව සංස්කරණය කරන්න</h2>
-                <button className="btn" onClick={() => setEditingGame(null)} style={{ background: "#f3f4f6", color: "#6b7280", padding: "8px 16px" }}>✕ වසන්න</button>
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                {/* Title */}
-                <div>
-                  <label style={{ fontWeight: 800, color: "#374151", display: "block", marginBottom: 6 }}>🎮 ක්‍රීඩා නම</label>
-                  <input className="input-field" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
-                </div>
-
-                {/* Level */}
-                <div>
-                  <label style={{ fontWeight: 800, color: "#374151", display: "block", marginBottom: 8 }}>📊 මට්ටම</label>
-                  <div style={{ display: "flex", gap: 10 }}>
-                    {["EASY", "MEDIUM", "HARD"].map((l) => (
-                      <button key={l} type="button" className="btn" onClick={() => setEditLevel(l)}
-                        style={{
-                          flex: 1, background: editLevel === l ? "#6366f1" : "#f3f4f6",
-                          color: editLevel === l ? "white" : "#6b7280",
-                        }}
-                      >
-                        {levelConfig[l].emoji} {levelConfig[l].label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Image */}
-                <div>
-                  <label style={{ fontWeight: 800, color: "#374151", display: "block", marginBottom: 8 }}>🖼️ පින්තූරය</label>
-                  <img src={editImagePreview} alt="current" style={{ width: "100%", maxHeight: 160, objectFit: "contain", borderRadius: 14, border: "2px solid #e0e7ff", marginBottom: 8 }} />
-                  <label style={{ cursor: "pointer", display: "block", textAlign: "center", color: "#6366f1", fontWeight: 700, fontSize: "0.85rem" }}>
-                    🔄 නව පින්තූරයක් තෝරන්න
-                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => { const f = e.target.files[0]; if (f) { setEditImage(f); setEditImagePreview(URL.createObjectURL(f)); } }} />
-                  </label>
-                </div>
-
-                {/* Questions */}
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-                    <label style={{ fontWeight: 800, color: "#374151" }}>❓ ප්‍රශ්න</label>
-                    <button className="btn" onClick={() => setEditQuestions([...editQuestions, emptyQuestion()])}
-                      style={{ background: "#ede9fe", color: "#6d28d9", fontSize: "0.8rem", padding: "6px 14px" }}>
-                      + එකතු කරන්න
-                    </button>
-                  </div>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 14, maxHeight: 360, overflowY: "auto", paddingRight: 4 }}>
-                    {editQuestions.map((q, qIdx) => (
-                      <div key={qIdx} style={{ border: "2px solid #e0e7ff", borderRadius: 16, padding: 16, background: "#fafafa" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                          <span style={{ fontWeight: 800, color: "#6366f1", fontSize: "0.85rem" }}>ප්‍රශ්නය {qIdx + 1}</span>
-                          {editQuestions.length > 1 && (
-                            <button className="btn" onClick={() => setEditQuestions(editQuestions.filter((_, i) => i !== qIdx))}
-                              style={{ background: "#fee2e2", color: "#dc2626", padding: "2px 10px", fontSize: "0.75rem" }}>✕</button>
-                          )}
-                        </div>
-                        <input className="input-field" value={q.question} placeholder="ප්‍රශ්නය" onChange={(e) => updateEditQuestion(qIdx, "question", e.target.value)} style={{ marginBottom: 8 }} />
-                        {q.options.map((opt, oIdx) => (
-                          <div key={oIdx} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                            <input type="radio" name={`edit-correct-${qIdx}`} checked={parseInt(q.correct) === oIdx} onChange={() => updateEditQuestion(qIdx, "correct", oIdx)} style={{ width: 18, height: 18, accentColor: "#10b981", cursor: "pointer", flexShrink: 0 }} />
-                            <input className="input-field" value={opt} placeholder={`විකල්පය ${String.fromCharCode(65 + oIdx)}`} onChange={(e) => updateEditQuestion(qIdx, "options", e.target.value, oIdx)}
-                              style={{ borderColor: parseInt(q.correct) === oIdx ? "#10b981" : "#e0e7ff", background: parseInt(q.correct) === oIdx ? "#f0fdf4" : "white" }} />
-                          </div>
-                        ))}
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 6 }}>
-                          <label style={{ fontWeight: 700, color: "#6b7280", fontSize: "0.8rem" }}>ලකුණු:</label>
-                          <input type="number" min={1} className="input-field" value={q.mark} onChange={(e) => updateEditQuestion(qIdx, "mark", e.target.value)} style={{ width: 70, padding: "6px 10px" }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <button className="btn" onClick={saveEdit} disabled={saving}
-                  style={{ background: "linear-gradient(135deg, #6366f1, #ec4899)", color: "white", padding: "14px", fontSize: "1rem", width: "100%" }}>
-                  {saving ? "⏳ සුරකිනවා..." : "💾 වෙනස්කම් සුරකින්න"}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Delete Confirm Modal */}
-        {deleteConfirm && (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)", zIndex: 900, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
-            <div className="card" style={{ padding: 36, maxWidth: 400, width: "100%", textAlign: "center" }}>
-              <div style={{ fontSize: "3rem", marginBottom: 12 }}>🗑️</div>
-              <h3 style={{ fontWeight: 900, color: "#374151", marginBottom: 8 }}>ක්‍රීඩාව මකා දමන්නද?</h3>
-              <p style={{ color: "#9ca3af", fontWeight: 700, marginBottom: 24 }}>"{deleteConfirm.title}" ස්ථිරවම මකා දැමෙනු ඇත.</p>
-              <div style={{ display: "flex", gap: 12 }}>
-                <button className="btn" onClick={() => setDeleteConfirm(null)} style={{ flex: 1, background: "#f3f4f6", color: "#6b7280" }}>අවලංගු කරන්න</button>
-                <button className="btn" onClick={() => handleDelete(deleteConfirm._id)} style={{ flex: 1, background: "#dc2626", color: "white" }}>ඔව්, මකන්න</button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Filter tabs */}
-        <div style={{ display: "flex", gap: 10, marginBottom: 28, flexWrap: "wrap" }}>
-          {["ALL", "EASY", "MEDIUM", "HARD"].map((l) => (
-            <button key={l} className="btn" onClick={() => setFilterLevel(l)}
-              style={{
-                background: filterLevel === l ? "#6366f1" : "white",
-                color: filterLevel === l ? "white" : "#6b7280",
-                boxShadow: filterLevel === l ? "0 4px 16px rgba(99,102,241,0.3)" : "0 2px 8px rgba(0,0,0,0.06)",
-                padding: "10px 20px",
-              }}>
-              {l === "ALL" ? "🎯 සියල්ල" : `${levelConfig[l].emoji} ${levelConfig[l].label}`}
-              <span style={{ marginLeft: 6, background: filterLevel  === l ? "rgba(255,255,255,0.25)" : "#f3f4f6", borderRadius: 8, padding: "1px 8px", fontSize: "0.8rem", color: filterLevel === l ? "white" : "#6b7280" }}>
-                {l === "ALL" ? games.length : games.filter((g) => g.level === l).length}
-              </span>
-            </button>
-          ))}
+        {/* Filter Tabs */}
+        <div className="flex gap-2 mb-6 bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 w-fit">
+          {[["ALL","All"],["EASY","Easy"],["MEDIUM","Medium"],["HARD","Hard"]].map(([lvl, label]) => {
+            const s = LS[lvl] || {};
+            const active = filterLevel === lvl;
+            const count = lvl === "ALL" ? games.length : games.filter(g => g.level === lvl).length;
+            return (
+              <button key={lvl} onClick={() => setFilterLevel(lvl)}
+                className={`px-4 py-2 rounded-xl font-bold text-sm transition-all flex items-center gap-1.5 ${active ? lvl === "ALL" ? "bg-indigo-600 text-white shadow" : `${s.bg} ${s.text} shadow` : "text-slate-400 hover:text-slate-600"}`}>
+                {label}
+                <span className={`text-xs rounded-full px-1.5 py-0.5 ${active && lvl !== "ALL" ? s.bg : "bg-slate-100 text-slate-500"}`}>{count}</span>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Games list */}
+        {/* Game List */}
         {loading ? (
-          <div style={{ textAlign: "center", paddingTop: 80 }}>
-            <div style={{ fontSize: "3rem" }}>⏳</div>
-            <p style={{ color: "#9ca3af", fontWeight: 700, marginTop: 12 }}>පූරණය වෙමින්...</p>
+          <div className="text-center py-20">
+            <div className="text-4xl animate-bounce">⏳</div>
+            <p className="text-slate-400 font-bold mt-3">Loading...</p>
           </div>
         ) : filteredGames.length === 0 ? (
-          <div className="card" style={{ padding: 60, textAlign: "center" }}>
-            <div style={{ fontSize: "3rem" }}>📭</div>
-            <p style={{ color: "#9ca3af", fontWeight: 800, marginTop: 12, fontSize: "1.1rem" }}>ක්‍රීඩා නොමැත</p>
+          <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-300">
+            <div className="text-4xl mb-3">📭</div>
+            <p className="font-bold text-slate-400">No games found</p>
           </div>
         ) : (
-          <div style={{ display: "grid", gap: 20 }}>
+          <div className="space-y-4">
             {filteredGames.map((game) => {
-              const lcfg = levelConfig[game.level] || levelConfig.EASY;
+              const s = LS[game.level] || LS.EASY;
               return (
-                <div key={game._id} className="game-card">
-                  <div style={{ display: "flex", gap: 0 }}>
-                    {/* Image */}
-                    <div style={{ width: 140, flexShrink: 0 }}>
-                      <img
-                        src={`${BASE}${game.image_url}`}
-                        alt={game.title}
-                        style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "22px 0 0 22px", minHeight: 130 }}
-                      />
-                    </div>
-                    {/* Content */}
-                    <div style={{ flex: 1, padding: "20px 20px 20px 20px" }}>
-                      <div style={{ display: "flex", alignItems: "flex-start", gap: 10, marginBottom: 8 }}>
-                        <h3 style={{ fontWeight: 900, color: "#1f2937", fontSize: "1.1rem", margin: 0, flex: 1 }}>{game.title}</h3>
-                        <span style={{ background: lcfg.bg, color: lcfg.color, borderRadius: 10, padding: "3px 12px", fontSize: "0.75rem", fontWeight: 800, flexShrink: 0 }}>
-                          {lcfg.emoji} {lcfg.label}
-                        </span>
+                <div key={game._id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <div className="flex">
+                    <img
+                      src={`${BASE}${game.image_url}`}
+                      alt={game.title}
+                      className="w-32 h-full object-cover flex-shrink-0 min-h-[120px]"
+                      style={{ borderRadius: "16px 0 0 16px" }}
+                    />
+                    <div className="flex-1 p-5">
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <div>
+                          <h3 className="font-black text-slate-800 text-lg leading-tight">{game.title}</h3>
+                          <span className={`inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1 rounded-full mt-1.5 ${s.bg} ${s.text}`}>
+                            <span className={`w-2 h-2 rounded-full ${s.dot}`}></span>
+                            {s.label}
+                          </span>
+                        </div>
+                        <div className="flex gap-2 shrink-0">
+                          <button onClick={() => openEdit(game)}
+                            className="px-4 py-1.5 bg-indigo-50 text-indigo-700 font-bold text-sm rounded-lg hover:bg-indigo-100 border border-indigo-200">
+                            Edit
+                          </button>
+                          <button onClick={() => setDeleteConfirm(game)}
+                            className="px-4 py-1.5 bg-rose-50 text-rose-600 font-bold text-sm rounded-lg hover:bg-rose-100 border border-rose-200">
+                            Delete
+                          </button>
+                        </div>
                       </div>
 
-                      <p style={{ color: "#9ca3af", fontWeight: 700, fontSize: "0.8rem", margin: "0 0 12px" }}>
-                        ❓ ප්‍රශ්න {game.questions?.length || 0}ක් · 🏅 සම්පූර්ණ ලකුණු: {game.questions?.reduce((s, q) => s + (q.mark || 1), 0)}
+                      <p className="text-slate-400 text-xs font-semibold mb-2">
+                        {game.questions?.length || 0} question{(game.questions?.length || 0) !== 1 ? "s" : ""} · Total: {game.questions?.reduce((s, q) => s + (q.mark || 1), 0)}pt
                       </p>
 
-                      {/* Question preview */}
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 16 }}>
+                      <div className="flex flex-wrap gap-2">
                         {game.questions?.slice(0, 2).map((q, i) => (
-                          <span key={i} style={{ background: "#f3f4f6", color: "#374151", borderRadius: 8, padding: "3px 10px", fontSize: "0.75rem", fontWeight: 700 }}>
-                            {q.question.length > 30 ? q.question.slice(0, 30) + "..." : q.question}
+                          <span key={i} className="bg-slate-100 text-slate-600 rounded-lg px-2 py-1 text-xs font-semibold">
+                            {q.question.length > 35 ? q.question.slice(0, 35) + "…" : q.question}
                           </span>
                         ))}
                         {(game.questions?.length || 0) > 2 && (
-                          <span style={{ background: "#ede9fe", color: "#6d28d9", borderRadius: 8, padding: "3px 10px", fontSize: "0.75rem", fontWeight: 700 }}>
-                            +{game.questions.length - 2} තවත්
+                          <span className="bg-indigo-50 text-indigo-600 rounded-lg px-2 py-1 text-xs font-bold">
+                            +{game.questions.length - 2} more
                           </span>
                         )}
-                      </div>
-
-                      <div style={{ display: "flex", gap: 10 }}>
-                        <button className="btn" onClick={() => openEdit(game)}
-                          style={{ background: "#dbeafe", color: "#1d4ed8", fontSize: "0.85rem", padding: "8px 18px" }}>
-                          ✏️ සංස්කරණය
-                        </button>
-                        <button className="btn" onClick={() => setDeleteConfirm(game)}
-                          style={{ background: "#fee2e2", color: "#dc2626", fontSize: "0.85rem", padding: "8px 18px" }}>
-                          🗑️ මකන්න
-                        </button>
                       </div>
                     </div>
                   </div>
@@ -336,6 +210,126 @@ export default function AdminViewMemoryGames() {
           </div>
         )}
       </div>
+
+      {/* Edit Modal */}
+      {editingGame && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-start justify-center z-50 p-6 overflow-y-auto">
+          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg my-4">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+              <h2 className="text-lg font-black text-slate-800">Edit Game</h2>
+              <button onClick={() => setEditingGame(null)}
+                className="text-slate-400 hover:text-slate-600 font-bold text-sm bg-slate-100 px-3 py-1.5 rounded-lg">
+                ✕ Close
+              </button>
+            </div>
+
+            <div className="p-6 space-y-4">
+              {/* Title */}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-1 block">Game Title</label>
+                <input className="w-full border-2 border-indigo-200 rounded-xl p-3 focus:outline-none focus:border-indigo-400 text-slate-700 font-semibold"
+                  value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+              </div>
+
+              {/* Level */}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Difficulty Level</label>
+                <div className="flex gap-2">
+                  {[["EASY","Easy"],["MEDIUM","Medium"],["HARD","Hard"]].map(([l, label]) => (
+                    <button key={l} type="button" onClick={() => setEditLevel(l)}
+                      className={`flex-1 py-2 rounded-xl font-bold border-2 text-sm transition-all ${editLevel === l ? `${LS[l].bg} ${LS[l].text} scale-105` : "bg-white text-slate-400 border-slate-200"}`}>
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Image */}
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase mb-2 block">Game Image</label>
+                <img src={editImagePreview} alt="" className="w-full max-h-40 object-contain rounded-xl border-2 border-slate-200 mb-2" />
+                <label className="block text-center text-indigo-600 font-bold text-sm cursor-pointer hover:text-indigo-700">
+                  🔄 Replace Image
+                  <input type="file" accept="image/*" className="hidden"
+                    onChange={(e) => { const f = e.target.files[0]; if (f) { setEditImage(f); setEditImagePreview(URL.createObjectURL(f)); } }} />
+                </label>
+              </div>
+
+              {/* Questions */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-500 uppercase">Questions</label>
+                  <button onClick={() => setEditQuestions([...editQuestions, emptyQuestion()])}
+                    className="text-xs font-bold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-100">
+                    + Add Question
+                  </button>
+                </div>
+                <div className="space-y-3 max-h-80 overflow-y-auto pr-1">
+                  {editQuestions.map((q, qIdx) => (
+                    <div key={qIdx} className="border-2 border-slate-200 rounded-xl p-4 bg-slate-50">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs font-bold text-indigo-500">Question {qIdx + 1}</span>
+                        {editQuestions.length > 1 && (
+                          <button onClick={() => setEditQuestions(editQuestions.filter((_, i) => i !== qIdx))}
+                            className="text-xs font-bold bg-rose-50 text-rose-500 px-2 py-1 rounded-lg hover:bg-rose-100">
+                            ✕ Remove
+                          </button>
+                        )}
+                      </div>
+                      <input className="w-full border-2 border-indigo-200 rounded-xl p-2 text-sm focus:outline-none focus:border-indigo-400 mb-2 font-semibold"
+                        placeholder="Question text"
+                        value={q.question} onChange={(e) => updateEditQuestion(qIdx, "question", e.target.value)} />
+                      {q.options.map((opt, oIdx) => (
+                        <div key={oIdx} className="flex items-center gap-2 mb-1.5">
+                          <input type="radio" name={`edit-correct-${qIdx}`}
+                            checked={parseInt(q.correct) === oIdx}
+                            onChange={() => updateEditQuestion(qIdx, "correct", oIdx)}
+                            className="w-4 h-4 accent-emerald-500 cursor-pointer flex-shrink-0" />
+                          <input className={`flex-1 border-2 rounded-xl p-2 text-sm focus:outline-none font-semibold ${parseInt(q.correct) === oIdx ? "border-emerald-400 bg-emerald-50" : "border-slate-200 bg-white focus:border-indigo-400"}`}
+                            placeholder={`Option ${String.fromCharCode(65 + oIdx)}`}
+                            value={opt} onChange={(e) => updateEditQuestion(qIdx, "options", e.target.value, oIdx)} />
+                        </div>
+                      ))}
+                      <div className="flex items-center gap-2 mt-2">
+                        <label className="text-xs text-slate-500 font-semibold">Marks:</label>
+                        <input type="number" min={1}
+                          className="w-16 border-2 border-indigo-200 rounded-lg p-1.5 text-sm text-center font-bold focus:outline-none focus:border-indigo-400"
+                          value={q.mark} onChange={(e) => updateEditQuestion(qIdx, "mark", e.target.value)} />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <button onClick={saveEdit} disabled={saving}
+                className="w-full py-3 bg-indigo-600 text-white font-black rounded-2xl hover:bg-indigo-700 disabled:opacity-60 transition">
+                {saving ? "⏳ Saving..." : "💾 Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirm Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center">
+            <div className="text-5xl mb-4">🗑️</div>
+            <h3 className="text-xl font-black text-slate-800 mb-2">Delete this game?</h3>
+            <p className="text-slate-400 font-semibold mb-6">"{deleteConfirm.title}" will be permanently removed.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteConfirm(null)}
+                className="flex-1 py-3 bg-slate-100 text-slate-600 font-bold rounded-2xl hover:bg-slate-200">
+                Cancel
+              </button>
+              <button onClick={() => handleDelete(deleteConfirm._id)}
+                className="flex-1 py-3 bg-rose-500 text-white font-black rounded-2xl hover:bg-rose-600">
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
