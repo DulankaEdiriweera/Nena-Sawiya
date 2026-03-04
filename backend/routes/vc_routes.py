@@ -207,31 +207,3 @@ def predict_vc_route():
         "ml_vs_rule_mismatch": mismatch
     })
 
-# -------------------------------
-# Route: latest progress 
-# -------------------------------
-@vc_bp.route("/vc_latest_progress", methods=["GET"])
-def vc_latest_progress():
-    assessments = list(
-        mongo.db.vc_assessments
-        .find()
-        .sort("created_at", 1)
-    )
-
-    if len(assessments) < 2:
-        return jsonify({"message": "Not enough assessments to calculate progress"})
-
-    previous = assessments[-2]
-    latest = assessments[-1]
-
-    percent_change = round(latest["final_marks_percent"] - previous["final_marks_percent"], 2)
-
-    return jsonify({
-        "previous_percent": previous["final_marks_percent"],
-        "latest_percent": latest["final_marks_percent"],
-        "percent_change": percent_change,
-        "previous_level": previous["vc_level"],
-        "latest_level": latest["vc_level"],
-        "previous_date": previous["created_at"],
-        "latest_date": latest["created_at"]
-    })

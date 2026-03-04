@@ -35,6 +35,7 @@ from routes.vc_jigsaw_routes import vc_jigsaw_bp
 from routes.vc_pic_com_routes import vc_pic_com_bp
 from routes.vc_sha_mat_routes import vc_sha_mat_bp
 from routes.rld_progress_bp import rld_progress_bp
+from routes.vc_progress_bp import vc_progress_bp
 
 # -------------------------------
 # Flask App Setup
@@ -100,11 +101,13 @@ app.register_blueprint(rld_categorize_bp, url_prefix="/api/rld_categorize")
 app.register_blueprint(rld_comprehension_bp, url_prefix="/api/rld_comprehension")
 app.register_blueprint(rld_wh_bp, url_prefix="/api/rld_wh")
 app.register_blueprint(rld_progress_bp, url_prefix="/api/rld")
+
 # VISUAL CLOSURE 
 app.register_blueprint(vc_bp)
 app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")
 app.register_blueprint(vc_pic_com_bp, url_prefix="/api/vc_pic_com")
 app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
+app.register_blueprint(vc_progress_bp, url_prefix="/api/vc")
 
 #VISUAL DISCRIMINATION
 app.register_blueprint(vd_bp)
