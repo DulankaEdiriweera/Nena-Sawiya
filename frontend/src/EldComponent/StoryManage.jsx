@@ -161,9 +161,19 @@ const StoryManage = () => {
         <AdminHeader />
       </div>
       <div className="p-6 bg-white min-h-screen">
-        <h2 className="text-3xl font-bold mb-6 text-gray-800">
-          Story Completion Task Management
-        </h2>
+        {/* Back Icon + Title Row */}
+        <div className="flex items-center gap-4 mb-6">
+          <button
+            onClick={() => navigate("/eldAdminIntervention")}
+            className="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 hover:bg-indigo-200 text-indigo-600 hover:scale-110 transition-transform shadow-sm"
+          >
+            ←
+          </button>
+
+          <h2 className="text-3xl font-bold text-gray-800">
+            Story Completion Task Management
+          </h2>
+        </div>
         <button
           onClick={() => navigate("/addStoryCloze")} // navigate to the add page
           className="bg-indigo-400 hover:bg-indigo-600 text-white px-6 py-2 rounded-lg shadow mb-5"

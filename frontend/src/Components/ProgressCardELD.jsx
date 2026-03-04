@@ -32,35 +32,40 @@ const ProgressCardELD = () => {
 
   if (error) {
     return (
-      <div className="bg-yellow-100 p-4 rounded shadow">
-        <p className="text-yellow-700">{error}</p>
+      <div className="bg-yellow-50 p-4 rounded-lg shadow-md max-w-md mx-auto mt-6">
+        <p className="text-yellow-800 text-center font-medium">{error}</p>
       </div>
     );
   }
 
   if (!progress) {
-    return <p>Loading progress...</p>;
+    return (
+      <p className="text-gray-500 text-center mt-6">ප්‍රගතිය පූරණය වෙමින් පවතී...</p>
+    );
   }
 
   return (
-    <div>
-      <div>
-        <Header />
-      </div>
-      <div className="bg-white shadow-lg rounded-xl p-6 max-w-xl mx-auto mt-6">
-        <h2 className="text-2xl font-bold mb-4 text-center">
-          📊 Progress Overview of ELD
-        </h2>
+    <div className="min-h-screen bg-gray-50 pb-10">
+      <Header />
 
-        <div className="space-y-3">
-          <p>
-            <strong>Previous Score:</strong> {progress.previous_percentage}%
-          </p>
-          <p>
-            <strong>Latest Score:</strong> {progress.latest_percentage}%
-          </p>
-          <p>
-            <strong>Improvement:</strong>{" "}
+      <div className="bg-white shadow-md rounded-2xl p-6 max-w-lg mx-auto mt-8 border border-gray-100">
+        <div className="bg-blue-50 rounded-xl p-4 mb-6 text-center">
+          <h2 className="text-xl md:text-2xl font-semibold text-blue-800">
+            ප්‍රකාශන භාෂා ප්‍රගති විශ්ලේෂණය
+          </h2>
+        </div>
+
+        <div className="space-y-4 text-gray-700">
+          <div className="flex justify-between">
+            <span className="font-medium">පෙර ලකුණු:</span>
+            <span>{progress.previous_percentage}%</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium">නවතම ලකුණු:</span>
+            <span>{progress.latest_percentage}%</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium">ප්‍රගතිය:</span>
             {progress.percentage_change > 0 ? (
               <span className="text-green-600 font-semibold">
                 +{progress.percentage_change}%
@@ -70,13 +75,15 @@ const ProgressCardELD = () => {
                 {progress.percentage_change}%
               </span>
             )}
-          </p>
-          <p>
-            <strong>Previous Level:</strong> {progress.previous_level}
-          </p>
-          <p>
-            <strong>Latest Level:</strong> {progress.latest_level}
-          </p>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium">පෙර මට්ටම:</span>
+            <span>{progress.previous_level}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="font-medium">නවතම මට්ටම:</span>
+            <span>{progress.latest_level}</span>
+          </div>
         </div>
       </div>
     </div>
