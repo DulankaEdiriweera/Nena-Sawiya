@@ -10,68 +10,29 @@ export default function FinalSummary() {
     total: 0,
   });
 
-  const [predictedLevel, setPredictedLevel] = useState(null);
-  const [advice, setAdvice] = useState(null); // ✅ New state for advice
+  const [predictedLevel, setPredictedLevel] = useState("N/A");
+  const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // ✅ Get submission data from localStorage
     const submissionData = JSON.parse(localStorage.getItem("submissionData") || "{}");
+    const predictionResult = JSON.parse(localStorage.getItem("predictionResult") || "{}");
+
     const parseScore = (val) => parseInt(val) || 0;
 
-    const L1 = parseScore(submissionData["Marks(Level 1)"]);
-    const L2 = parseScore(submissionData["Marks(Level 2)"]);
-    const L3 = parseScore(submissionData["Marks (Level 3)"]);
-    const time = parseScore(submissionData["Time"]);
-    const total = parseScore(submissionData["Total"]);
+    setScores({
+      L1: parseScore(submissionData["Marks(Level 1)"]),
+      L2: parseScore(submissionData["Marks(Level 2)"]),
+      L3: parseScore(submissionData["Marks (Level 3)"]),
+      time: parseScore(submissionData["Time"]),
+      total: parseScore(submissionData["Total"]),
+    });
 
-    setScores({ L1, L2, L3, time, total });
+    setPredictedLevel(predictionResult.VD_Level || "N/A");
+    setAdvice(predictionResult.Advice || "");
 
-    const payload = [
-      {
-        L1Q1: parseScore(submissionData.L1Q1),
-        L1Q2: parseScore(submissionData.L1Q2),
-        L1Q3: parseScore(submissionData.L1Q3),
-        L1Q4: parseScore(submissionData.L1Q4),
-        L1Q5: parseScore(submissionData.L1Q5),
-        L1Q6: parseScore(submissionData.L1Q6),
-        "Total Marks": L1,
-        "Shape 1": parseScore(submissionData["Shape 1"]),
-        "shape 2": parseScore(submissionData["shape 2"]),
-        "shape 3": parseScore(submissionData["shape 3"]),
-        "shape 4": parseScore(submissionData["shape 4"]),
-        "Marks(Level 2)": L2,
-        "Level 3 Question": submissionData["Level 3 Question"] || "",
-        "Marks (Level 3)": L3,
-        "Marks For Time": parseScore(submissionData["Marks For Time"]),
-        "Total": total,
-        "Time": time,
-      }
-    ];
-
-    console.log("📤 Sending payload to backend:", JSON.stringify(payload, null, 2));
-    // ✅ Get the JWT token here
-    const token = localStorage.getItem("token");
-
-    fetch("http://127.0.0.1:5000/predictVDH", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`, // send token in header
-      },
-      body: JSON.stringify(payload),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("✅ Backend response:", data);
-        setPredictedLevel(data.VD_Level || "N/A");
-        setAdvice(data.Advice || null); // ✅ Capture advice
-      })
-      .catch((err) => {
-        console.error("❌ Prediction error:", err.message);
-        setPredictedLevel("Error fetching prediction");
-        setAdvice(null);
-      })
-      .finally(() => setLoading(false));
+    setLoading(false);
   }, []);
 
   const handleRestart = () => {
@@ -92,7 +53,7 @@ export default function FinalSummary() {
             <p className="text-lg text-gray-600">Your Results</p>
           </div>
 
-          {/* Scores (reuse ScoreCard component) */}
+          {/* Scores */}
           <div className="space-y-4 mb-6">
             <ScoreCard icon="📚" level="මට්ටම 1 - Level 1" description="Basic Questions" score={scores.L1} max={18} colors={["green-100","green-200","green-800"]}/>
             <ScoreCard icon="🔷" level="මට්ටම 2 - Level 2" description="Shape Counting" score={scores.L2} max={12} colors={["blue-100","blue-200","blue-800"]}/>
