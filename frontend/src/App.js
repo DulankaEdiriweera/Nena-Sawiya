@@ -61,6 +61,7 @@ import AdminAddCountImageGame from "./pages/visualDiscriminationPages/AdminAddOb
 import AdminManageCountImageGames from "./pages/visualDiscriminationPages/AdminManageObjectCVD";
 import CountImageGame from "./pages/visualDiscriminationPages/UserObjectCountVD";
 import VDAdminDashboard from "./pages/visualDiscriminationPages/VisualDAdminDashBoard";
+import VdStudentDashboard from "./pages/visualDiscriminationPages/VisualDINTDashboard";
 
 
 import AdminAddVCJigsaw from "./VCcomponent/AdminAddVCJigsaw";
@@ -554,6 +555,15 @@ function App() {
   element={
     <ProtectedRoute role="admin">
       <VDAdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/VDUserDashboard"
+  element={
+    <ProtectedRoute role="user">
+      <VdStudentDashboard />
     </ProtectedRoute>
   }
 />
