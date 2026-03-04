@@ -1,6 +1,8 @@
 from flask import Blueprint, request, jsonify
 from database.db import mongo
 from models.vc_model import VCModel
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_cors import CORS
 
 import os
 import json
@@ -163,7 +165,10 @@ def predict_vc(payload: dict):
 # Route: predict + store
 # -------------------------------
 @vc_bp.route("/predict_vc", methods=["POST"])
+@jwt_required()
 def predict_vc_route():
+
+    user_id = get_jwt_identity()
     payload = request.get_json(force=True)
 
     ml_result = predict_vc(payload)
@@ -178,6 +183,7 @@ def predict_vc_route():
     vc_record = VCModel(
         answers=answers,
         times=times,
+        user_id=user_id, 
 
         ml_label_en=ml_result["ml_label_en"],
         vc_level_si=ml_result["VC_Level"],
@@ -201,31 +207,3 @@ def predict_vc_route():
         "ml_vs_rule_mismatch": mismatch
     })
 
-# -------------------------------
-# Route: latest progress 
-# -------------------------------
-@vc_bp.route("/vc_latest_progress", methods=["GET"])
-def vc_latest_progress():
-    assessments = list(
-        mongo.db.vc_assessments
-        .find()
-        .sort("created_at", 1)
-    )
-
-    if len(assessments) < 2:
-        return jsonify({"message": "Not enough assessments to calculate progress"})
-
-    previous = assessments[-2]
-    latest = assessments[-1]
-
-    percent_change = round(latest["final_marks_percent"] - previous["final_marks_percent"], 2)
-
-    return jsonify({
-        "previous_percent": previous["final_marks_percent"],
-        "latest_percent": latest["final_marks_percent"],
-        "percent_change": percent_change,
-        "previous_level": previous["vc_level"],
-        "latest_level": latest["vc_level"],
-        "previous_date": previous["created_at"],
-        "latest_date": latest["created_at"]
-    })
