@@ -25,7 +25,7 @@ export default function AdminAddCountImageGame() {
 
   const submit = async () => {
     if (!title || !questionImage) {
-      alert("කරුණාකර මාතෘකාව සහ ප්‍රශ්න රූපය ඇතුළු කරන්න");
+      alert("Please enter a title and question image");
       return;
     }
     setLoading(true);
@@ -35,7 +35,7 @@ export default function AdminAddCountImageGame() {
       fd.append("level", level);
       fd.append("question_image", questionImage);
 
-      const itemsMeta = items.map((item, idx) => ({
+      const itemsMeta = items.map((item) => ({
         label: item.label,
         image_url: "",
         correct_answer: item.correct_answer,
@@ -48,14 +48,14 @@ export default function AdminAddCountImageGame() {
       });
 
       await axios.post("http://localhost:5000/api/vd_count/add", fd);
-      alert("✅ ක්‍රීඩාව සාර්ථකව එකතු කරන ලදී!");
+      alert("✅ Game added successfully!");
       setTitle("");
       setLevel("EASY");
       setQuestionImage(null);
       setItems([{ label: "", imageFile: null, correct_answer: 0, mark: 1 }]);
     } catch (err) {
       console.error(err);
-      alert("❌ ක්‍රීඩාව එකතු කිරීම අසාර්ථක විය");
+      alert("❌ Failed to add game");
     } finally {
       setLoading(false);
     }
@@ -64,137 +64,145 @@ export default function AdminAddCountImageGame() {
   return (
     <div>
       <div><AdminHeader/></div>
-      <div className="min-h-screen bg-gradient-to-br from-yellow-50 to-orange-50 p-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-orange-400 to-pink-500 rounded-3xl p-6 mb-6 text-white text-center shadow-lg">
-          <div className="text-4xl mb-2">🎮</div>
-          <h1 className="text-2xl font-bold">ගණන් කිරීමේ ක්‍රීඩාව එකතු කරන්න</h1>
-          <p className="text-orange-100 text-sm mt-1">නව ක්‍රීඩාවක් සාදන්න</p>
-        </div>
+      <div style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');`}</style>
+      
+      <div className="min-h-screen p-6" style={{ background: "linear-gradient(135deg, #f0f4ff 0%, #fdf2ff 100%)" }}>
+        <div className="max-w-2xl mx-auto">
 
-        <div className="bg-white rounded-3xl shadow-lg p-6 space-y-5">
-          {/* Title */}
-          <div>
-            <label className="block text-sm font-bold text-gray-600 mb-1">🏷️ ක්‍රීඩාවේ මාතෘකාව</label>
-            <input
-              className="border-2 border-orange-200 rounded-2xl p-3 w-full focus:outline-none focus:border-orange-400 text-gray-700"
-              placeholder="උදා: වනජීවී ගණනය"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-            />
+          {/* Page Header */}
+          <div className="rounded-2xl p-6 mb-6 text-white text-center shadow-lg" style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)" }}>
+            <div className="text-4xl mb-2">🎮</div>
+            <h1 className="text-2xl font-bold">Add Count Image Game</h1>
+            <p className="text-sm mt-1" style={{ color: "#ddd6fe" }}>Create a new counting activity</p>
           </div>
 
-          {/* Level */}
-          <div>
-            <label className="block text-sm font-bold text-gray-600 mb-1">⭐ මට්ටම</label>
-            <select
-              className="border-2 border-orange-200 rounded-2xl p-3 w-full focus:outline-none focus:border-orange-400 text-gray-700"
-              value={level}
-              onChange={e => setLevel(e.target.value)}
-            >
-              <option value="EASY">🟢 පහසු</option>
-              <option value="MEDIUM">🟡 මධ්‍යම</option>
-              <option value="HARD">🔴 දුෂ්කර</option>
-            </select>
-          </div>
+          <div className="bg-white rounded-2xl shadow p-6 space-y-5" style={{ border: "1.5px solid #ede9fe" }}>
 
-          {/* Question Image */}
-          <div>
-            <label className="block text-sm font-bold text-gray-600 mb-1">🖼️ ප්‍රශ්න රූපය</label>
-            <label className="flex flex-col items-center justify-center border-2 border-dashed border-orange-300 rounded-2xl p-6 cursor-pointer hover:bg-orange-50 transition">
-              {questionImage ? (
-                <div className="text-center">
-                  <img src={URL.createObjectURL(questionImage)} className="w-40 h-28 object-cover rounded-xl mx-auto mb-2" />
-                  <p className="text-sm text-gray-500">{questionImage.name}</p>
-                </div>
-              ) : (
-                <>
-                  <span className="text-4xl">📷</span>
-                  <span className="text-sm text-gray-400 mt-2">රූපය ඇතුළු කරන්න</span>
-                </>
-              )}
-              <input type="file" accept="image/*" className="hidden" onChange={e => setQuestionImage(e.target.files[0])} />
-            </label>
-          </div>
-
-          {/* Items */}
-          <div>
-            <label className="block text-sm font-bold text-gray-600 mb-3">📋 පිළිතුරු අයිතම</label>
-            <div className="space-y-4">
-              {items.map((item, idx) => (
-                <div key={idx} className="bg-orange-50 border-2 border-orange-100 rounded-2xl p-4 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <span className="font-bold text-orange-600 text-sm">අයිතමය {idx + 1}</span>
-                    {items.length > 1 && (
-                      <button onClick={() => removeItem(idx)} className="text-red-400 hover:text-red-600 text-xl">✕</button>
-                    )}
-                  </div>
-
-                  <input
-                    className="border-2 border-orange-200 rounded-xl p-2 w-full text-sm focus:outline-none focus:border-orange-400"
-                    placeholder="නම (උදා: බල්ලා)"
-                    value={item.label}
-                    onChange={e => updateItem(idx, "label", e.target.value)}
-                  />
-
-                  <label className="flex items-center gap-3 border-2 border-dashed border-orange-200 rounded-xl p-3 cursor-pointer hover:bg-orange-100 transition">
-                    {item.imageFile ? (
-                      <img src={URL.createObjectURL(item.imageFile)} className="w-12 h-12 object-cover rounded-lg" />
-                    ) : (
-                      <span className="text-2xl">🖼️</span>
-                    )}
-                    <span className="text-sm text-gray-500">{item.imageFile ? item.imageFile.name : "අයිතම රූපය"}</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={e => updateItem(idx, "imageFile", e.target.files[0])} />
-                  </label>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="text-xs text-gray-500 font-bold">✅ නිවැරදි පිළිතුර</label>
-                      <input
-                        type="number"
-                        min="0"
-                        className="border-2 border-orange-200 rounded-xl p-2 w-full text-sm focus:outline-none focus:border-orange-400"
-                        value={item.correct_answer}
-                        onChange={e => updateItem(idx, "correct_answer", Number(e.target.value))}
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs text-gray-500 font-bold">⭐ ලකුණු</label>
-                      <input
-                        type="number"
-                        min="1"
-                        className="border-2 border-orange-200 rounded-xl p-2 w-full text-sm focus:outline-none focus:border-orange-400"
-                        value={item.mark}
-                        onChange={e => updateItem(idx, "mark", Number(e.target.value))}
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {/* Title */}
+            <div>
+              <label className="block text-sm font-bold mb-1" style={{ color: "#4b5563" }}>🏷️ Game Title</label>
+              <input
+                className="rounded-xl p-3 w-full focus:outline-none text-gray-700"
+                style={{ border: "2px solid #ddd6fe" }}
+                placeholder="e.g. Wildlife Counting"
+                value={title}
+                onChange={e => setTitle(e.target.value)}
+              />
             </div>
 
-            <button
-              onClick={addItem}
-              className="mt-3 w-full border-2 border-dashed border-orange-300 rounded-2xl p-3 text-orange-500 font-bold hover:bg-orange-50 transition"
-            >
-              + නව අයිතමයක් එකතු කරන්න
+            {/* Level */}
+            <div>
+              <label className="block text-sm font-bold mb-2" style={{ color: "#4b5563" }}>⭐ Difficulty Level</label>
+              <div className="flex gap-3">
+                {[
+                  ["EASY", "🟢 Easy", "#d1fae5", "#065f46"],
+                  ["MEDIUM", "🟡 Medium", "#fef9c3", "#713f12"],
+                  ["HARD", "🔴 Hard", "#fee2e2", "#7f1d1d"]
+                ].map(([val, label, bg, col]) => (
+                  <button key={val} type="button" onClick={() => setLevel(val)}
+                    className="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all"
+                    style={{
+                      background: level === val ? bg : "#f9fafb",
+                      color: level === val ? col : "#9ca3af",
+                      border: `2px solid ${level === val ? col : "#e5e7eb"}`,
+                      transform: level === val ? "scale(1.04)" : "scale(1)"
+                    }}>
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Question Image */}
+            <div>
+              <label className="block text-sm font-bold mb-1" style={{ color: "#4b5563" }}>🖼️ Question Image</label>
+              <label className="flex flex-col items-center justify-center p-6 cursor-pointer rounded-xl transition"
+                style={{ border: "2px dashed #a78bfa", background: "#faf5ff" }}>
+                {questionImage ? (
+                  <div className="text-center">
+                    <img src={URL.createObjectURL(questionImage)} className="w-40 h-28 object-cover rounded-xl mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">{questionImage.name}</p>
+                  </div>
+                ) : (
+                  <>
+                    <span className="text-4xl">📷</span>
+                    <span className="text-sm mt-2" style={{ color: "#7c3aed" }}>Click to upload image</span>
+                  </>
+                )}
+                <input type="file" accept="image/*" className="hidden" onChange={e => setQuestionImage(e.target.files[0])} />
+              </label>
+            </div>
+
+            {/* Items */}
+            <div>
+              <label className="block text-sm font-bold mb-3" style={{ color: "#4b5563" }}>📋 Answer Items</label>
+              <div className="space-y-4">
+                {items.map((item, idx) => (
+                  <div key={idx} className="rounded-xl p-4 space-y-3" style={{ background: "#faf5ff", border: "1.5px solid #ede9fe" }}>
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-sm" style={{ color: "#7c3aed" }}>Item {idx + 1}</span>
+                      {items.length > 1 && (
+                        <button onClick={() => removeItem(idx)} className="text-red-400 hover:text-red-600 text-xl">✕</button>
+                      )}
+                    </div>
+                    <input
+                      className="rounded-xl p-2 w-full text-sm focus:outline-none"
+                      style={{ border: "2px solid #ddd6fe" }}
+                      placeholder="Label (e.g. Dog)"
+                      value={item.label}
+                      onChange={e => updateItem(idx, "label", e.target.value)}
+                    />
+                    <label className="flex items-center gap-3 p-3 cursor-pointer rounded-xl"
+                      style={{ border: "2px dashed #c4b5fd" }}>
+                      {item.imageFile ? (
+                        <img src={URL.createObjectURL(item.imageFile)} className="w-12 h-12 object-cover rounded-lg" />
+                      ) : (
+                        <span className="text-2xl">🖼️</span>
+                      )}
+                      <span className="text-sm text-gray-500">{item.imageFile ? item.imageFile.name : "Item image"}</span>
+                      <input type="file" accept="image/*" className="hidden" onChange={e => updateItem(idx, "imageFile", e.target.files[0])} />
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="text-xs font-bold" style={{ color: "#6b7280" }}>✅ Correct Answer</label>
+                        <input type="number" min="0"
+                          className="rounded-xl p-2 w-full text-sm focus:outline-none mt-1"
+                          style={{ border: "2px solid #ddd6fe" }}
+                          value={item.correct_answer}
+                          onChange={e => updateItem(idx, "correct_answer", Number(e.target.value))} />
+                      </div>
+                      <div>
+                        <label className="text-xs font-bold" style={{ color: "#6b7280" }}>⭐ Marks</label>
+                        <input type="number" min="1"
+                          className="rounded-xl p-2 w-full text-sm focus:outline-none mt-1"
+                          style={{ border: "2px solid #ddd6fe" }}
+                          value={item.mark}
+                          onChange={e => updateItem(idx, "mark", Number(e.target.value))} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <button onClick={addItem}
+                className="mt-3 w-full p-3 font-bold rounded-xl transition"
+                style={{ border: "2px dashed #a78bfa", color: "#7c3aed", background: "transparent" }}>
+                + Add New Item
+              </button>
+            </div>
+
+            {/* Submit */}
+            <button onClick={submit} disabled={loading}
+              className="w-full text-white font-bold py-4 rounded-xl text-lg shadow transition"
+              style={{ background: "linear-gradient(135deg, #6366f1, #a855f7)", opacity: loading ? 0.6 : 1 }}>
+              {loading ? "⏳ Saving..." : "💾 Save Game"}
             </button>
           </div>
-
-          {/* Submit */}
-          <button
-            onClick={submit}
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-orange-400 to-pink-500 text-white font-bold py-4 rounded-2xl text-lg shadow-md hover:opacity-90 transition disabled:opacity-50"
-          >
-            {loading ? "⏳ සුරකිමින්..." : "💾 ක්‍රීඩාව සුරකින්න"}
-          </button>
         </div>
       </div>
     </div>
+
     </div>
     
   );
 }
-

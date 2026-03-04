@@ -60,6 +60,9 @@ import AdminViewMemoryGames from "./pages/visualDiscriminationPages/AdminViewMem
 import AdminAddCountImageGame from "./pages/visualDiscriminationPages/AdminAddObjectCountVD";
 import AdminManageCountImageGames from "./pages/visualDiscriminationPages/AdminManageObjectCVD";
 import CountImageGame from "./pages/visualDiscriminationPages/UserObjectCountVD";
+import VDAdminDashboard from "./pages/visualDiscriminationPages/VisualDAdminDashBoard";
+import VdStudentDashboard from "./pages/visualDiscriminationPages/VisualDINTDashboard";
+
 
 import AdminAddVCJigsaw from "./VCcomponent/AdminAddVCJigsaw";
 import VCJigsawList from "./VCcomponent/VCJigsawList";
@@ -546,6 +549,25 @@ function App() {
     </ProtectedRoute>
   }
 />
+
+<Route
+  path="/VDAdminDashboard"
+  element={
+    <ProtectedRoute role="admin">
+      <VDAdminDashboard />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/VDUserDashboard"
+  element={
+    <ProtectedRoute role="user">
+      <VdStudentDashboard />
+    </ProtectedRoute>
+  }
+/>
+
    {/*VC Intervention Routes)*/}
         
                 <Route
