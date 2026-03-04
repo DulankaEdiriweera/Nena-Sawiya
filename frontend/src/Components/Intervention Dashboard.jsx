@@ -45,7 +45,7 @@ export default function InterventionDashboard() {
         {/* Mascot / Header */}
         <div className="text-5xl mb-2">🦉</div>
         <h1 className="text-3xl font-extrabold text-gray-800 mb-1">
-          🏫 Intervention Activities
+          🏫 උපකාරක ක්‍රියාකාරකම්
         </h1>
         <p className="text-gray-700 font-semibold mb-8 text-center max-w-md">
           ඔබේ දරුවාට සුදුසු ක්‍රියාකාරකමක් තෝරන්න 🎯

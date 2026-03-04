@@ -87,7 +87,7 @@ const Progress = () => {
   if (!progress && !rldProgress && !vcProgress) {
     return (
       <div className="text-center mt-10 p-6 text-gray-600">
-        No progress data available yet.
+         තවමත් ප්‍රගති දත්ත නොමැත.
       </div>
     );
   }
