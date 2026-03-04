@@ -182,7 +182,7 @@ const SequencingTask = () => {
                   onDragOver={(e) => e.preventDefault()}
                   onDrop={(e) => handleDrop(e, index)}
                   onClick={() => handleClearBox(index)}
-                  className={`w-full h-40 border-4 ${borderColor} rounded-xl flex items-center justify-center bg-gray-100 cursor-pointer`}
+                  className={`w-full h-full border-4 ${borderColor} rounded-xl flex items-center justify-center bg-gray-100 cursor-pointer`}
                 >
                   {img ? (
                     <img
@@ -191,7 +191,7 @@ const SequencingTask = () => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   ) : (
-                    <span className="text-gray-400">Drop Here</span>
+                    <span className="text-gray-400">මෙතනට දාන්න</span>
                   )}
                 </div>
               );

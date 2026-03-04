@@ -103,39 +103,3 @@ def predict_rld():
         "Feedback": feedback,
         "answers": data
     })
-
-
-# ==============================
-# Progress Checking Route
-# ==============================
-
-@rld_bp.route("/latest_progress_rld", methods=["GET"])
-def get_latest_progress_rld():
-
-    assessments = list(
-        mongo.db.rld_assessments
-        .find()
-        .sort("created_at", 1)
-    )
-
-    if len(assessments) < 2:
-        return jsonify({
-            "message": "Not enough assessments to calculate progress"
-        })
-
-    previous = assessments[-2]
-    latest = assessments[-1]
-
-    percentage_change = round(
-        latest["Percentage"] - previous["Percentage"], 2
-    )
-
-    return jsonify({
-        "previous_percentage": previous["Percentage"],
-        "latest_percentage": latest["Percentage"],
-        "percentage_change": percentage_change,
-        "previous_level": previous["RLD_level"],
-        "latest_level": latest["RLD_level"],
-        "previous_date": previous["created_at"],
-        "latest_date": latest["created_at"]
-    })
