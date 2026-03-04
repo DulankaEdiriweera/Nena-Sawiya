@@ -107,32 +107,65 @@ def get_single(question_id):
 
 
 # -------------------------------
-# Update question (text, level, task_number, correct_index)
+# Update question — supports image replacement via multipart/form-data
 # -------------------------------
 @vd_picture_bp.route("/update/<question_id>", methods=["PUT"])
 def update_picture_mcq(question_id):
     try:
-        data = request.get_json()
-        allowed_fields = ["level", "task_number", "question_text", "correct_index"]
-        update_data = {k: v for k, v in data.items() if k in allowed_fields}
+        vd_upload_folder = current_app.config["VD_UPLOAD_FOLDER"]
+        os.makedirs(vd_upload_folder, exist_ok=True)
 
-        if "level" in update_data:
-            update_data["level"] = update_data["level"].upper()
+        # Read text fields from form data
+        level        = request.form.get("level")
+        task_number  = request.form.get("task_number")
+        question_text = request.form.get("question_text")
+        correct_index = request.form.get("correct_index")
 
-        # If correct_index changed, recalculate marks
+        # Fetch existing question from DB
         q = get_question_by_id(question_id)
         if not q:
             return jsonify({"error": "Question not found"}), 404
 
-        if "correct_index" in update_data:
-            new_correct = int(update_data["correct_index"])
-            answers = q["answers"]
-            # Find old mark value (from previously correct answer)
-            old_mark = max(a["mark"] for a in answers)
+        update_data = {}
+
+        if level:
+            update_data["level"] = level.upper()
+        if task_number is not None:
+            update_data["task_number"] = int(task_number)
+        if question_text:
+            update_data["question_text"] = question_text
+
+        # Handle question image replacement
+        if "question_image" in request.files:
+            q_file = request.files["question_image"]
+            if q_file and q_file.filename:
+                q_filename = secure_filename(q_file.filename)
+                q_file.save(os.path.join(vd_upload_folder, q_filename))
+                update_data["question_image"] = f"/vd_uploads/{q_filename}"
+
+        # Handle answer images + correct_index update
+        answers = q["answers"]
+
+        # Replace any answer images that were uploaded
+        for i in range(5):
+            key = f"answer_image_{i}"
+            if key in request.files:
+                file = request.files[key]
+                if file and file.filename:
+                    filename = secure_filename(file.filename)
+                    file.save(os.path.join(vd_upload_folder, filename))
+                    answers[i]["image_url"] = f"/vd_uploads/{filename}"
+
+        # Recalculate marks if correct_index changed
+        if correct_index is not None:
+            new_correct = int(correct_index)
+            old_mark = max((a["mark"] for a in answers), default=1)
+            if old_mark == 0:
+                old_mark = 1
             for i, a in enumerate(answers):
                 a["mark"] = old_mark if i == new_correct else 0
-            update_data["answers"] = answers
-            del update_data["correct_index"]
+
+        update_data["answers"] = answers
 
         success = update_question(question_id, update_data)
         if success:

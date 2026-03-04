@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
-
 import L3A1 from "../../Assets/visualD/level3/L3A1.jpg";
 import L3A2 from "../../Assets/visualD/level3/L3A2.jpg";
 import L3A3 from "../../Assets/visualD/level3/L3A3.jpg";
@@ -42,18 +41,24 @@ export default function DiscriminationL3p2() {
     setSelected(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
   };
 
-  const handleSubmit = () => {
+  // -----------------------
+  // Updated handleSubmit
+  // -----------------------
+  const handleSubmit = async () => {
     if (selected.length === 0) {
       alert("⚠️ කරුණාකර අයිතමයක්වත් තෝරන්න!");
       return;
     }
 
+    // Calculate marks
     let marks = 0;
     selected.forEach(i => marks += correctIndexes.includes(i) ? marksPerCorrect : marksPerIncorrect);
     const timeBonus = secondsElapsed <= bonusTimeThreshold ? bonusMarks : 0;
     marks = Math.max(0, marks + timeBonus);
 
+    // Get existing submissionData
     const submissionData = JSON.parse(localStorage.getItem("submissionData") || "{}");
+
     submissionData["Level 3 Question"] = selected.join(", ");
     submissionData["Marks (Level 3)"] = marks;
     submissionData["Marks For Time"] = timeBonus;
@@ -63,69 +68,96 @@ export default function DiscriminationL3p2() {
     const L2Score = parseInt(submissionData["Marks(Level 2)"]) || 0;
     submissionData["Total"] = L1Score + L2Score + marks;
 
+    // Save submissionData locally
     localStorage.setItem("submissionData", JSON.stringify(submissionData));
+
+    // -----------------------
+    // Call backend /predictVDH
+    // -----------------------
+    const token = localStorage.getItem("token");
+    const payload = [ { ...submissionData } ];
+
+    try {
+      const response = await fetch("http://127.0.0.1:5000/predictVDH", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      // Save prediction result in localStorage
+      localStorage.setItem("predictionResult", JSON.stringify(result));
+
+    } catch (error) {
+      console.error("❌ Prediction error:", error);
+      // Optional default to prevent UI crash
+      localStorage.setItem("predictionResult", JSON.stringify({ VD_Level: "N/A", Advice: "" }));
+    }
+
+    // Navigate to summary page
     navigate("/summary");
   };
 
   return (
     <div>
       <Header/>
-      <div>
-        <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-yellow-100 p-6 flex items-center justify-center">
-      <div className="bg-white w-full max-w-5xl p-10 rounded-3xl shadow-2xl">
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="w-full text-center text-4xl font-bold text-purple-700 p-2 mb-2 border-2 border-transparent hover:border-purple-200 rounded"
-        />
-        <input
-          type="text"
-          value={subtitle}
-          onChange={(e) => setSubtitle(e.target.value)}
-          className="w-full text-center text-lg text-purple-500 p-2 mb-6 border-2 border-transparent hover:border-purple-200 rounded"
-        />
-
-        <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-5 rounded-2xl border-2 border-purple-200 shadow-md mb-8">
-          <textarea
-            rows="2"
-            value={instructions}
-            onChange={(e) => setInstructions(e.target.value)}
-            className="w-full bg-transparent text-center text-xl font-semibold focus:outline-none resize-none"
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-pink-100 to-yellow-100 p-6 flex items-center justify-center">
+        <div className="bg-white w-full max-w-5xl p-10 rounded-3xl shadow-2xl">
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="w-full text-center text-4xl font-bold text-purple-700 p-2 mb-2 border-2 border-transparent hover:border-purple-200 rounded"
           />
-        </div>
+          <input
+            type="text"
+            value={subtitle}
+            onChange={(e) => setSubtitle(e.target.value)}
+            className="w-full text-center text-lg text-purple-500 p-2 mb-6 border-2 border-transparent hover:border-purple-200 rounded"
+          />
 
-        
-        <div className="text-center mb-4 text-2xl font-bold text-blue-600">
-          ⏱️ Time: {secondsElapsed}s
-        </div>
+          <div className="bg-gradient-to-r from-purple-100 to-pink-100 p-5 rounded-2xl border-2 border-purple-200 shadow-md mb-8">
+            <textarea
+              rows="2"
+              value={instructions}
+              onChange={(e) => setInstructions(e.target.value)}
+              className="w-full bg-transparent text-center text-xl font-semibold focus:outline-none resize-none"
+            />
+          </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
-          {images.map((src, index) => (
-            <div
-              key={index}
-              onClick={() => toggleSelection(index)}
-              className={`cursor-pointer rounded-3xl p-2 shadow-lg border-4 transition-all duration-300 ${
-                selected.includes(index)
-                  ? "border-purple-600 scale-105 shadow-xl"
-                  : "border-transparent hover:border-purple-300"
-              }`}
+          <div className="text-center mb-4 text-2xl font-bold text-blue-600">
+            ⏱️ Time: {secondsElapsed}s
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6">
+            {images.map((src, index) => (
+              <div
+                key={index}
+                onClick={() => toggleSelection(index)}
+                className={`cursor-pointer rounded-3xl p-2 shadow-lg border-4 transition-all duration-300 ${
+                  selected.includes(index)
+                    ? "border-purple-600 scale-105 shadow-xl"
+                    : "border-transparent hover:border-purple-300"
+                }`}
+              >
+                <img src={src} alt={`Choice ${index + 1}`} className="rounded-2xl w-full h-32 object-contain" />
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center mt-6">
+            <button
+              onClick={handleSubmit}
+              className="px-16 py-4 bg-gradient-to-r from-green-400 to-green-600 text-white text-2xl font-bold rounded-full shadow-xl hover:scale-105 transition-all"
             >
-              <img src={src} alt={`Choice ${index + 1}`} className="rounded-2xl w-full h-32 object-contain" />
-            </div>
-          ))}
+              Submit ✔️
+            </button>
+          </div>
         </div>
-
-        <div className="text-center mt-6">
-          <button
-            onClick={handleSubmit}
-            className="px-16 py-4 bg-gradient-to-r from-green-400 to-green-600 text-white text-2xl font-bold rounded-full shadow-xl hover:scale-105 transition-all"
-          >
-            Submit ✔️
-          </button>
-        </div>
-      </div>
-    </div>
       </div>
     </div>
   );

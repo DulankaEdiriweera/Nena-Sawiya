@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Header from "./Header";
+//import Header from "./Header";
 
 const ProgressCardELD = () => {
   const [progress, setProgress] = useState(null);
@@ -40,13 +40,15 @@ const ProgressCardELD = () => {
 
   if (!progress) {
     return (
-      <p className="text-gray-500 text-center mt-6">ප්‍රගතිය පූරණය වෙමින් පවතී...</p>
+      <p className="text-gray-500 text-center mt-6">
+        ප්‍රගතිය පූරණය වෙමින් පවතී...
+      </p>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-10">
-      <Header />
+    <div className="max-w-xl mx-auto mt-10 bg-gray-50 pb-10">
+      {/* <Header /> */}
 
       <div className="bg-white shadow-md rounded-2xl p-6 max-w-lg mx-auto mt-8 border border-gray-100">
         <div className="bg-blue-50 rounded-xl p-4 mb-6 text-center">
