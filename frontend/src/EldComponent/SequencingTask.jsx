@@ -191,7 +191,7 @@ const SequencingTask = () => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   ) : (
-                    <span className="text-gray-400">මෙතනට දාන්න</span>
+                    <span className="text-gray-400 text-xl p-6">මෙතනට දාන්න</span>
                   )}
                 </div>
               );
@@ -211,7 +211,7 @@ const SequencingTask = () => {
                 key={img.id}
                 draggable={!submitted}
                 onDragStart={(e) => handleDragStart(e, img)}
-                className="w-32 h-32 border-4 border-indigo-400 rounded-xl overflow-hidden cursor-grab hover:scale-105 transition"
+                className="w-36 h-36 border-4 border-indigo-400 rounded-xl overflow-hidden cursor-grab hover:scale-105 transition"
               >
                 <img
                   src={`http://localhost:5000${img.url}`}
