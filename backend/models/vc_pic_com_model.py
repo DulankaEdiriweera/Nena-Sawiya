@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 class VCPicComModel:
     def __init__(
         self,
@@ -8,10 +9,10 @@ class VCPicComModel:
         rows,
         cols,
         activity_id,
-        original_url,
-        question_url,
+        original_url,        # saved file path in /vc_uploads/...
+        question_url,        # DYNAMIC endpoint: /api/vc_pic_com/<id>/question
         missing_index,
-        correct_piece,       # {index,row,col,url,thumb_url}
+        correct_piece,       # {index,row,col}
         options,             # list {id,index,url,thumb_url,is_correct}
         task_number=None
     ):
@@ -41,5 +42,5 @@ class VCPicComModel:
             "correct_piece": self.correct_piece,
             "options": self.options,
             "task_number": self.task_number,
-            "created_at": self.created_at
+            "created_at": self.created_at,
         }

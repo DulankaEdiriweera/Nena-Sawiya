@@ -1,7 +1,7 @@
-// VCResults.jsx
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Trophy, Star, Clock, Award, CheckCircle, Home, Download, AlertTriangle } from "lucide-react";
+import { Trophy, Star, Clock, Award, CheckCircle, Home, Download } from "lucide-react";
+//import AlertTriangle  from "lucide-react";
 import Header from "../Components/Header";
 
 const VCResults = () => {
@@ -54,9 +54,9 @@ const VCResults = () => {
     marks_level3,
     total_marks,
     final_marks_percent,
-    rule_based_label,
-    ml_label_en,
-    ml_vs_rule_mismatch,
+    //rule_based_label,
+    //ml_label_en,
+    //ml_vs_rule_mismatch,
     levelMarks, // UI summary from assessment
   } = results;
 
@@ -164,14 +164,14 @@ const VCResults = () => {
               </div> */}
 
               {/* Optional: mismatch warning */}
-              {ml_vs_rule_mismatch && (
+              {/* {ml_vs_rule_mismatch && (
                 <div className="mt-4 bg-white bg-opacity-25 rounded-lg p-3 border-2 border-white">
                   <p className="text-white font-bold flex items-center justify-center">
                     <AlertTriangle className="w-5 h-5 mr-2" />
                     සටහන: (ML) {ml_label_en} සහ (Marks) {rule_based_label} අතර වෙනසක් ඇත.
                   </p>
                 </div>
-              )}
+              )} */}
             </div>
           </div>
 

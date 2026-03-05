@@ -23,9 +23,9 @@ const MainActivitiesAdminDashboard = () => {
     },
     {
       title: "දෘශ්‍ය විභේදන සහ මතක ඇගයීම",
-      subtitle: "/VDAdminDashboard",
+      subtitle: "Visual Discrimination and Memory Disorders",
       icon: <FaEye size={40} />,
-      path: "/visualAdminDashboard",
+      path: "/VDAdminDashboard",
       color: "from-green-500 to-emerald-600",
     },
     {

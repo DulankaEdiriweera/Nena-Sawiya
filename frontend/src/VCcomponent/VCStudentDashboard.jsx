@@ -1,25 +1,26 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../Components/Header";
 
 const ACTIVITIES = [
   {
     path: "/vcJigsawList",
     emoji: "🧩",
-    label: "ජිග්සෝ පස්ල්",
+    label: "රූප ප්‍රහේලිකා",
     sub: "Jigsaw Puzzle",
     bg: "from-yellow-200 to-amber-200",
   },
   {
     path: "/vcPicCom",
     emoji: "🖼️",
-    label: "පිංතූර පුරවමු",
+    label: "පිංතූර සම්පූර්ණ කරමු",
     sub: "Picture Completion",
     bg: "from-blue-200 to-indigo-200",
   },
   {
     path: "/vcShadowMatch",
     emoji: "👤",
-    label: "සෙවණැලි ගැළපෙමු",
+    label: "සෙවණැලි ගලපමු",
     sub: "Shadow Match",
     bg: "from-purple-200 to-pink-200",
   },
@@ -29,7 +30,9 @@ export default function VCStudentDashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center py-10 px-4">
+    <div>
+      <div><Header/></div>
+          <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center py-10 px-4">
       {/* Mascot / Header */}
       <div className="text-5xl mb-2">🦁</div>
       <h1 className="text-3xl font-extrabold text-gray-800 mb-1">ආයුබෝවන්!</h1>
@@ -68,5 +71,7 @@ export default function VCStudentDashboard() {
         </p>
       </div>
     </div>
+    </div>
+
   );
 }
