@@ -18,7 +18,7 @@ const INTERVENTIONS = [
     bg: "from-purple-200 to-indigo-200",
   },
   {
-    path: "/visual",
+    path: "/VDUserDashboard",
     emoji: "👁️",
     label: "දෘශ්‍ය විභේදන සහ මතක",
     sub: "Visual Discrimination",

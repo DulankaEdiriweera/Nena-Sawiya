@@ -78,12 +78,47 @@ def delete_game(game_id):
 # ── UPDATE ─────────────────────────────────────────────────
 @vd_count_bp.route("/update/<game_id>", methods=["PUT"])
 def update_game(game_id):
-    data = request.json
-    data.pop("_id", None)
-    data.pop("created_at", None)
+    title  = request.form.get("title")
+    level  = request.form.get("level")
+    items_json = request.form.get("items")
+    items_data = json.loads(items_json)
+
+    # Question image: new upload or keep existing
+    question_img = request.files.get("question_image")
+    if question_img:
+        q_filename = secure_filename(question_img.filename)
+        q_path = os.path.join(current_app.config["VD_UPLOAD_FOLDER"], q_filename)
+        question_img.save(q_path)
+        question_image_url = f"/vd_uploads/{q_filename}"
+    else:
+        question_image_url = request.form.get("existing_question_image")
+
+    # Items: handle optional per-item image uploads
+    items = []
+    for idx, item in enumerate(items_data):
+        item_img = request.files.get(f"item_image_{idx}")
+        if item_img:
+            i_filename = secure_filename(item_img.filename)
+            i_path = os.path.join(current_app.config["VD_UPLOAD_FOLDER"], i_filename)
+            item_img.save(i_path)
+            image_url = f"/vd_uploads/{i_filename}"
+        else:
+            image_url = item.get("image_url", "")
+
+        items.append(vd_count_item_schema(
+            item["label"],
+            image_url,
+            item["correct_answer"],
+            item.get("mark", 1)
+        ))
+
     mongo.db.vd_count_games.update_one(
         {"_id": ObjectId(game_id)},
-        {"$set": data}
+        {"$set": {
+            "title": title,
+            "level": level.upper(),
+            "question_image_url": question_image_url,
+            "items": items
+        }}
     )
     return jsonify({"message": "ක්‍රීඩාව යාවත්කාලීන කරන ලදී"})
-
