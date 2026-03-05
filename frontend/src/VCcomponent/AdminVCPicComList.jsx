@@ -116,6 +116,15 @@ export default function AdminVCPicComList() {
               >
                 + Add New
               </button>
+
+              <button
+                type="button"
+                onClick={() => nav("/vcAdminDashboard")}
+                className="rounded-xl px-3 py-2 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600"
+              >
+                ← Dashboard
+              </button>
+              
             </div>
           </div>
 
@@ -141,7 +150,8 @@ export default function AdminVCPicComList() {
                             {it.title}
                           </div>
                           <div className="mt-1 text-xs text-slate-500">
-                            ID: {it.activity_id} • Level:{" "}
+                            {/* ID: {it.activity_id}  */}
+                            • Level:{" "}
                             <span className="font-semibold text-slate-700">
                               {lvl}
                             </span>

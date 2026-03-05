@@ -122,6 +122,15 @@ export default function AdminVCJigsawList() {
               >
                 + Add New
               </button>
+
+              <button
+                type="button"
+                onClick={() => nav("/vcAdminDashboard")}
+                className="rounded-xl px-3 py-2 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600"
+              >
+                ← Dashboard
+              </button>
+
             </div>
           </div>
 
@@ -145,7 +154,8 @@ export default function AdminVCJigsawList() {
                             {it.title}
                           </div>
                           <div className="mt-1 text-xs text-slate-500">
-                            ID: {it.puzzle_id} • Grid: {it.rows}×{it.cols} • Level:{" "}
+                            {/* ID: {it.puzzle_id}  */}
+                            • Grid: {it.rows}×{it.cols} • Level:{" "}
                             <span className="font-semibold text-slate-700">
                               {lvl}
                             </span>
