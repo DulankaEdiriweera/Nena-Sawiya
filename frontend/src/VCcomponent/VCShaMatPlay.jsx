@@ -62,7 +62,7 @@ export default function VCShaMatPlay({ activityId }) {
 
   // Adaptive option sizing based on count
   const optCount  = options.length;
-  const optSize   = optCount <= 4 ? 150 : optCount <= 6 ? 130 : 110;
+  const optSize   = optCount <= 4 ? 200 : optCount <= 6 ? 180 : 160;
   const optCols   = optCount <= 4 ? 2 : optCount <= 6 ? 3 : 4;
 
   return (

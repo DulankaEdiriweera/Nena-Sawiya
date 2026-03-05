@@ -150,7 +150,8 @@ export default function AdminVCPicComList() {
                             {it.title}
                           </div>
                           <div className="mt-1 text-xs text-slate-500">
-                            ID: {it.activity_id} • Level:{" "}
+                            {/* ID: {it.activity_id}  */}
+                            • Level:{" "}
                             <span className="font-semibold text-slate-700">
                               {lvl}
                             </span>
