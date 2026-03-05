@@ -107,6 +107,17 @@ export default function AdminAddVCPicCom() {
       <AdminHeader />
 
       <div className="mx-auto w-full max-w-5xl px-4 py-6">
+
+        <div className="flex justify-end mb-3">
+          <button
+            type="button"
+            onClick={() => navigate("/vcAdminDashboard")}
+            className="rounded-xl bg-blue-500 text-white px-4 py-1.5 text-sm font-semibold shadow hover:bg-blue-600 transition"
+          >
+            ← Dashboard
+          </button>
+        </div>
+
         <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200">
           <div className="flex items-center justify-between border-b border-slate-200 px-6 py-4">
             <h2 className="text-lg font-semibold text-slate-800">

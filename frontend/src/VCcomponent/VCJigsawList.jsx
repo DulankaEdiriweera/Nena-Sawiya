@@ -40,9 +40,9 @@ export default function VCJigsawList() {
       <div className="text-center mb-8">
         <div className="text-5xl mb-2">🧩</div>
         <h1 className="text-4xl font-extrabold text-indigo-700 drop-shadow-sm tracking-tight">
-          Jigsaw Fun!
+          ප්‍රහේලිකාවක් තෝරාගෙන ක්‍රීඩා කරන්න
         </h1>
-        <p className="text-indigo-400 mt-1 text-lg font-semibold">Pick a puzzle and play!</p>
+        {/* <p className="text-indigo-400 mt-1 text-lg font-semibold">Pick a puzzle and play!</p> */}
         <div className="mt-4">
     <button
       onClick={() => nav("/vcStudentDashboard")}

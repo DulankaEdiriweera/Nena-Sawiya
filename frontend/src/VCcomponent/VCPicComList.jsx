@@ -44,11 +44,11 @@ export default function VCPicComList() {
       <div className="text-center mb-8">
         <div className="text-5xl mb-2">🖼️</div>
         <h1 className="text-4xl font-extrabold text-indigo-700 drop-shadow-sm tracking-tight">
-          Picture Fun!
+          රූපය සම්පූර්ණ කරමු!
         </h1>
-        <p className="text-indigo-400 mt-1 text-lg font-semibold">
+        {/* <p className="text-indigo-400 mt-1 text-lg font-semibold">
           Complete the missing picture!
-        </p>
+        </p> */}
 
         {/* Added navigation button */}
         <div className="mt-4">

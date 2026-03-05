@@ -109,8 +109,18 @@ export default function AdminAddVCJigsaw() {
       <AdminHeader />
 
       <div className="mx-auto max-w-5xl px-4 py-6">
-        <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        {/* Dashboard button OUTSIDE the form/card */}
+        <div className="flex justify-end mb-3">
+          <button
+            type="button"
+            onClick={() => navigate("/vcAdminDashboard")}
+            className="rounded-xl bg-blue-500 text-white px-4 py-1.5 text-sm font-semibold shadow hover:bg-blue-600 transition"
+          >
+            ← Dashboard
+          </button>
+        </div>
 
+        <div className="rounded-2xl bg-white shadow-sm ring-1 ring-slate-200 overflow-hidden">
           <div className="flex items-center justify-between px-6 py-4 border-b">
             <h2 className="text-lg font-semibold">Admin - Add VC Jigsaw</h2>
             <span className="text-xs text-slate-500">
@@ -120,9 +130,7 @@ export default function AdminAddVCJigsaw() {
 
           <div className="p-6">
             <form onSubmit={handleSubmit} className="grid gap-5 lg:grid-cols-2">
-
               <div className="space-y-4">
-
                 <div>
                   <label className="text-sm font-medium">Title</label>
                   <input
@@ -177,9 +185,7 @@ export default function AdminAddVCJigsaw() {
                       <label
                         key={lvl}
                         className={`flex justify-center rounded-xl border px-3 py-2 text-sm cursor-pointer ${
-                          level === lvl
-                            ? "bg-slate-900 text-white"
-                            : "bg-white"
+                          level === lvl ? "bg-slate-900 text-white" : "bg-white"
                         }`}
                       >
                         <input
@@ -234,7 +240,6 @@ export default function AdminAddVCJigsaw() {
                   />
                 )}
               </div>
-
             </form>
           </div>
         </div>

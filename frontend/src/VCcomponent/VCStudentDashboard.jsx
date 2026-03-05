@@ -6,7 +6,7 @@ const ACTIVITIES = [
   {
     path: "/vcJigsawList",
     emoji: "🧩",
-    label: "ජිග්සෝ පස්ල්",
+    label: "රූප ප්‍රහේලිකා",
     sub: "Jigsaw Puzzle",
     bg: "from-yellow-200 to-amber-200",
   },
@@ -20,7 +20,7 @@ const ACTIVITIES = [
   {
     path: "/vcShadowMatch",
     emoji: "👤",
-    label: "සෙවණැලි ගැළපෙමු",
+    label: "සෙවණැලි ගලපමු",
     sub: "Shadow Match",
     bg: "from-purple-200 to-pink-200",
   },

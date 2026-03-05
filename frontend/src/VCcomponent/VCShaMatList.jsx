@@ -46,9 +46,9 @@ export default function VCShaMatList() {
         <h1 className="text-4xl font-extrabold text-indigo-700 drop-shadow-sm tracking-tight">
           Shadow Match!
         </h1>
-        <p className="text-indigo-400 mt-1 text-lg font-semibold">
+        {/* <p className="text-indigo-400 mt-1 text-lg font-semibold">
           Match the shape to its shadow!
-        </p>
+        </p> */}
 
         {/* Added navigation button */}
         <div className="mt-4">

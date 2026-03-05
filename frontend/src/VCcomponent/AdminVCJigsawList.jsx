@@ -122,6 +122,15 @@ export default function AdminVCJigsawList() {
               >
                 + Add New
               </button>
+
+              <button
+                type="button"
+                onClick={() => nav("/vcAdminDashboard")}
+                className="rounded-xl px-3 py-2 text-sm font-semibold bg-blue-500 text-white hover:bg-blue-600"
+              >
+                ← Dashboard
+              </button>
+
             </div>
           </div>
 
