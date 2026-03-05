@@ -48,7 +48,7 @@ export default function VCAdminDashboard() {
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8">
           <div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">
-              VC Intervention Admin Dashboard
+              Visual Closure - Admin Dashboard
             </h1>
             <p className="text-slate-600 mt-2">
               Manage Visual Closure intervention activities (Add / View lists).
@@ -56,11 +56,11 @@ export default function VCAdminDashboard() {
           </div>
 
           <button
-            onClick={() => navigate("/vcDashboard")}
+            onClick={() => navigate("/admin-dashboard")}
             className="self-start md:self-auto bg-white border border-slate-200 text-slate-700 px-4 py-2 rounded-xl shadow-sm hover:shadow transition"
             title="Go to VC main dashboard"
           >
-            Back to VC Dashboard
+            Back Main Dashboard
           </button>
         </div>
 
