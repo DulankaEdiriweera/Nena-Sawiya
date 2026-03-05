@@ -1,12 +1,15 @@
 import os
 import uuid
 import random
-from flask import Blueprint, request, jsonify, current_app
+from io import BytesIO
+
+from flask import Blueprint, request, jsonify, current_app, send_file
 from werkzeug.utils import secure_filename
 from PIL import Image, ImageDraw, ImageOps
 
 from database.db import mongo
 from models.vc_pic_com_model import VCPicComModel
+
 
 vc_pic_com_bp = Blueprint("vc_pic_com_bp", __name__)
 
@@ -18,110 +21,75 @@ LEVEL_TO_GRID = {
     "hard": (2, 2),
 }
 
-def allowed_file(filename):
+
+# -------------------------
+# Helpers
+# -------------------------
+def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
-def ensure_dir(path):
+
+def ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
 
-def split_image_to_tiles(img_rgba, rows, cols):
-    w, h = img_rgba.size
-    tile_w = w // cols
-    tile_h = h // rows
 
-    tiles = []
-    idx = 0
-    for r in range(rows):
-        for c in range(cols):
-            left = c * tile_w
-            top = r * tile_h
-            right = (c + 1) * tile_w if c < cols - 1 else w
-            bottom = (r + 1) * tile_h if r < rows - 1 else h
-            box = (left, top, right, bottom)
-            tile = img_rgba.crop(box)
-            tiles.append({"index": idx, "row": r, "col": c, "box": box, "tile": tile})
-            idx += 1
-    return tiles
+def get_original_path(base_upload_dir: str, activity_id: str, original_url: str) -> str:
+    # original_url example: /vc_uploads/<id>/original_filename.png
+    fname = os.path.basename(original_url)
+    return os.path.join(base_upload_dir, activity_id, fname)
 
-def save_tiles_and_thumbs(tiles, base_upload_dir, activity_id, thumb_size=256):
+
+def get_tile_box(img_w: int, img_h: int, rows: int, cols: int, index: int):
     """
-    Saves:
-      /tiles/tile_XX.png        (original tile)
-      /thumbs/thumb_XX.png      (square padded thumbnail - NO CROP)
-    Returns list of {index,row,col,url,thumb_url}
+    Calculate cropping box for the given tile index.
+    Handles last row/col edges safely.
     """
-    tiles_dir = os.path.join(base_upload_dir, activity_id, "tiles")
-    thumbs_dir = os.path.join(base_upload_dir, activity_id, "thumbs")
-    ensure_dir(tiles_dir)
-    ensure_dir(thumbs_dir)
+    tile_w = img_w // cols
+    tile_h = img_h // rows
 
-    out = []
-    for t in tiles:
-        idx = t["index"]
+    r = index // cols
+    c = index % cols
 
-        tile_fname = f"tile_{idx:02d}.png"
-        tile_path = os.path.join(tiles_dir, tile_fname)
-        t["tile"].save(tile_path, "PNG")
+    left = c * tile_w
+    top = r * tile_h
+    right = (c + 1) * tile_w if c < cols - 1 else img_w
+    bottom = (r + 1) * tile_h if r < rows - 1 else img_h
 
-        # square padded thumbnail (no crop)
-        thumb = ImageOps.pad(
-            t["tile"].convert("RGBA"),
-            (thumb_size, thumb_size),
-            method=Image.Resampling.LANCZOS,
-            color=(255, 255, 255, 255),
-            centering=(0.5, 0.5),
-        )
-        thumb_fname = f"thumb_{idx:02d}.png"
-        thumb_path = os.path.join(thumbs_dir, thumb_fname)
-        thumb.save(thumb_path, "PNG")
+    return (left, top, right, bottom)
 
-        out.append({
-            "index": idx,
-            "row": t["row"],
-            "col": t["col"],
-            "url": f"/vc_uploads/{activity_id}/tiles/{tile_fname}",
-            "thumb_url": f"/vc_uploads/{activity_id}/thumbs/{thumb_fname}",
-        })
-    return out
 
-def make_question_image(original_rgba, missing_box, question_path):
-    q = original_rgba.copy()
-    draw = ImageDraw.Draw(q)
-    draw.rectangle(missing_box, fill=(255, 255, 255, 255))
-    q.save(question_path, "PNG")
+def make_thumb(tile_rgba: Image.Image, size: int = 256) -> Image.Image:
+    """
+    Square padded thumbnail (no crop).
+    """
+    return ImageOps.pad(
+        tile_rgba.convert("RGBA"),
+        (size, size),
+        method=Image.Resampling.LANCZOS,
+        color=(255, 255, 255, 255),
+        centering=(0.5, 0.5),
+    )
 
-def build_options(tiles_meta, missing_index, options_count=4):
-    options_count = max(2, min(options_count, len(tiles_meta)))
 
-    all_indices = [t["index"] for t in tiles_meta]
+def build_option_indices(rows: int, cols: int, missing_index: int, options_count: int):
+    total = rows * cols
+    options_count = max(2, min(options_count, total))
+
+    all_indices = list(range(total))
     distractors = [i for i in all_indices if i != missing_index]
     random.shuffle(distractors)
 
     chosen = [missing_index] + distractors[: options_count - 1]
     random.shuffle(chosen)
-
-    def meta_of(idx):
-        return next(t for t in tiles_meta if t["index"] == idx)
-
-    options = []
-    for k, idx in enumerate(chosen):
-        m = meta_of(idx)
-        options.append({
-            "id": f"opt_{k+1}",
-            "index": idx,
-            "url": m["url"],
-            "thumb_url": m["thumb_url"],
-            "is_correct": (idx == missing_index),
-        })
-    return options
+    return chosen
 
 
 # -------------------------------------------------
-# ADMIN: Add Picture Completion Activity (AUTO GRID)
+# ADMIN: Add Picture Completion Activity (NO tile files)
 # POST /api/vc_pic_com/add
 # form-data:
 #   title, task_number, options_count(optional),
-#   levels[] (easy/medium/hard)  [use ONE main level ideally]
+#   levels[] (easy/medium/hard)   (store ONE main level)
 #   image(file)
 # -------------------------------------------------
 @vc_pic_com_bp.route("/add", methods=["POST"])
@@ -130,12 +98,11 @@ def add_vc_pic_com():
     task_number = request.form.get("task_number")
     options_count = int(request.form.get("options_count", 4))
 
-    levels = request.form.getlist("levels[]")  # IMPORTANT
+    levels = request.form.getlist("levels[]")
     if not levels:
         levels = ["easy"]
 
-    # Use the first selected level to decide grid
-    main_level = levels[0].lower().strip()
+    main_level = (levels[0] or "easy").lower().strip()
     if main_level not in LEVEL_TO_GRID:
         return jsonify({"error": "Invalid level. Use easy / medium / hard"}), 400
 
@@ -155,35 +122,44 @@ def add_vc_pic_com():
     ensure_dir(act_dir)
 
     original_name = secure_filename(image.filename)
-    original_path = os.path.join(act_dir, f"original_{original_name}")
+    original_fname = f"original_{original_name}"
+    original_path = os.path.join(act_dir, original_fname)
     image.save(original_path)
-    original_url = f"/vc_uploads/{activity_id}/original_{original_name}"
 
-    img = Image.open(original_path).convert("RGBA")
+    original_url = f"/vc_uploads/{activity_id}/{original_fname}"
 
-    tiles = split_image_to_tiles(img, rows, cols)
-    tiles_meta = save_tiles_and_thumbs(tiles, base_upload_dir, activity_id, thumb_size=256)
+    # Pick missing tile
+    total_tiles = rows * cols
+    missing_index = random.randint(0, total_tiles - 1)
 
-    max_index = rows * cols - 1
-    missing_index = random.randint(0, max_index)
+    # Choose option indices (correct + distractors)
+    option_indices = build_option_indices(rows, cols, missing_index, options_count)
 
-    missing_box = next(t["box"] for t in tiles if t["index"] == missing_index)
+    # Build options (DYNAMIC image URLs)
+    options = []
+    for k, idx in enumerate(option_indices):
+        options.append({
+            "id": f"opt_{k+1}",
+            "index": idx,
+            "url": f"/api/vc_pic_com/{activity_id}/tile/{idx}",
+            "thumb_url": f"/api/vc_pic_com/{activity_id}/tile/{idx}?thumb=1",
+            "is_correct": (idx == missing_index),
+        })
 
-    question_path = os.path.join(act_dir, "question.png")
-    make_question_image(img, missing_box, question_path)
-    question_url = f"/vc_uploads/{activity_id}/question.png"
-
-    correct_piece = next(t for t in tiles_meta if t["index"] == missing_index)
-    options = build_options(tiles_meta, missing_index, options_count=options_count)
+    correct_piece = {
+        "index": missing_index,
+        "row": missing_index // cols,
+        "col": missing_index % cols,
+    }
 
     activity = VCPicComModel(
         title=title,
-        levels=[main_level],  # store main level only (clean filtering)
+        levels=[main_level],
         rows=rows,
         cols=cols,
         activity_id=activity_id,
         original_url=original_url,
-        question_url=question_url,
+        question_url=f"/api/vc_pic_com/{activity_id}/question",  # DYNAMIC
         missing_index=missing_index,
         correct_piece=correct_piece,
         options=options,
@@ -210,7 +186,7 @@ def get_all_vc_pic_com():
 
 
 # ---------------------------------------------
-# USER: Get one by activity_id
+# USER: Get one by activity_id (meta)
 # GET /api/vc_pic_com/<activity_id>
 # ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>", methods=["GET"])
@@ -222,7 +198,78 @@ def get_vc_pic_com(activity_id):
 
 
 # ---------------------------------------------
-# ADMIN: Delete activity
+# DYNAMIC: Question Image
+# GET /api/vc_pic_com/<activity_id>/question
+# ---------------------------------------------
+@vc_pic_com_bp.route("/<activity_id>/question", methods=["GET"])
+def get_question_image(activity_id):
+    doc = mongo.db.vc_pic_com.find_one({"activity_id": activity_id}, {"_id": 0})
+    if not doc:
+        return jsonify({"error": "Activity not found"}), 404
+
+    base_upload_dir = current_app.config["VC_UPLOAD_FOLDER"]
+    original_path = get_original_path(base_upload_dir, activity_id, doc["original_url"])
+
+    if not os.path.exists(original_path):
+        return jsonify({"error": "Original image file missing on server"}), 500
+
+    img = Image.open(original_path).convert("RGBA")
+
+    rows = int(doc["rows"])
+    cols = int(doc["cols"])
+    missing_index = int(doc["missing_index"])
+
+    box = get_tile_box(img.size[0], img.size[1], rows, cols, missing_index)
+
+    q = img.copy()
+    draw = ImageDraw.Draw(q)
+    draw.rectangle(box, fill=(255, 255, 255, 255))
+
+    bio = BytesIO()
+    q.save(bio, "PNG")
+    bio.seek(0)
+    return send_file(bio, mimetype="image/png")
+
+
+# ---------------------------------------------
+# DYNAMIC: Tile or Thumbnail
+# GET /api/vc_pic_com/<activity_id>/tile/<index>
+#   ?thumb=1  -> returns padded thumbnail
+# ---------------------------------------------
+@vc_pic_com_bp.route("/<activity_id>/tile/<int:index>", methods=["GET"])
+def get_tile_image(activity_id, index):
+    doc = mongo.db.vc_pic_com.find_one({"activity_id": activity_id}, {"_id": 0})
+    if not doc:
+        return jsonify({"error": "Activity not found"}), 404
+
+    rows = int(doc["rows"])
+    cols = int(doc["cols"])
+    total = rows * cols
+
+    if index < 0 or index >= total:
+        return jsonify({"error": "Invalid tile index"}), 400
+
+    base_upload_dir = current_app.config["VC_UPLOAD_FOLDER"]
+    original_path = get_original_path(base_upload_dir, activity_id, doc["original_url"])
+
+    if not os.path.exists(original_path):
+        return jsonify({"error": "Original image file missing on server"}), 500
+
+    img = Image.open(original_path).convert("RGBA")
+    box = get_tile_box(img.size[0], img.size[1], rows, cols, index)
+    tile = img.crop(box)
+
+    if request.args.get("thumb", "0") == "1":
+        tile = make_thumb(tile, size=256)
+
+    bio = BytesIO()
+    tile.save(bio, "PNG")
+    bio.seek(0)
+    return send_file(bio, mimetype="image/png")
+
+
+# ---------------------------------------------
+# ADMIN: Delete activity (removes ONLY original folder)
 # DELETE /api/vc_pic_com/<activity_id>
 # ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>", methods=["DELETE"])
@@ -232,12 +279,22 @@ def delete_vc_pic_com(activity_id):
 
     mongo.db.vc_pic_com.delete_one({"activity_id": activity_id})
 
+    # remove folder with original image
     if os.path.exists(act_dir):
         for root, dirs, files in os.walk(act_dir, topdown=False):
             for f in files:
-                os.remove(os.path.join(root, f))
+                try:
+                    os.remove(os.path.join(root, f))
+                except:
+                    pass
             for d in dirs:
-                os.rmdir(os.path.join(root, d))
-        os.rmdir(act_dir)
+                try:
+                    os.rmdir(os.path.join(root, d))
+                except:
+                    pass
+        try:
+            os.rmdir(act_dir)
+        except:
+            pass
 
     return jsonify({"message": "Deleted"}), 200

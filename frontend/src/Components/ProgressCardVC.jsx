@@ -1,56 +1,72 @@
 import React from "react";
 
-export default function ProgressCardVC({ progress }) {
-  if (!progress) return null;
+const levelMap = {
+  High: "ඉතා හොදයි",
+  Average: "සාමාන්‍ය",
+  Weak: "දුර්වල",
+};
 
-  const improved = progress.percentage_change > 0;
-  const same = progress.percentage_change === 0;
+export default function ProgressCardVC({ progress }) {
+  if (!progress) {
+    return (
+      <p className="text-gray-500 text-center mt-6">
+        ප්‍රගතිය පූරණය වෙමින් පවතී...
+      </p>
+    );
+  }
+
+  const change = Number(progress.percentage_change ?? 0);
 
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-6 max-w-xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4 text-center">
-        🧩 Progress Overview of VC
-      </h2>
+    <div className="max-w-xl mx-auto mt-10 bg-gray-50 pb-10">
+      <div className="bg-white shadow-md rounded-2xl p-6 max-w-lg mx-auto mt-8 border border-gray-100">
+        {/* Header Box */}
+        <div className="bg-yellow-50 rounded-xl p-4 mb-6 text-center">
+          <h2 className="text-xl md:text-2xl font-semibold text-yellow-500">
+            දෘශ්‍ය සම්පූර්ණතා (Visual Closure) ප්‍රගති විශ්ලේෂණය
+          </h2>
+        </div>
 
-      <div className="space-y-3 text-base">
-        <p>
-          <strong>Previous Score:</strong> {progress.previous_percentage}%
-        </p>
-        <p>
-          <strong>Latest Score:</strong> {progress.latest_percentage}%
-        </p>
+        {/* Data Section */}
+        <div className="space-y-4 text-gray-700">
+          <div className="flex justify-between">
+            <span className="font-medium">පෙර ලකුණු:</span>
+            <span>{progress.previous_percentage}%</span>
+          </div>
 
-        <p>
-          <strong>Change:</strong>{" "}
-          {improved ? (
-            <span className="text-green-600 font-semibold">
-              +{progress.percentage_change}%
+          <div className="flex justify-between">
+            <span className="font-medium">නවතම ලකුණු:</span>
+            <span>{progress.latest_percentage}%</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span className="font-medium">ප්‍රගතිය:</span>
+            {change > 0 ? (
+              <span className="text-green-600 font-semibold">
+                +{progress.percentage_change}%
+              </span>
+            ) : (
+              <span className="text-red-600 font-semibold">
+                {progress.percentage_change}%
+              </span>
+            )}
+          </div>
+
+          <div className="flex justify-between">
+            <span className="font-medium">පෙර මට්ටම:</span>
+            <span>
+              {levelMap[progress.previous_rule_level] ||
+                progress.previous_rule_level}
             </span>
-          ) : same ? (
-            <span className="text-gray-600 font-semibold">0%</span>
-          ) : (
-            <span className="text-red-600 font-semibold">
-              {progress.percentage_change}%
+          </div>
+
+          <div className="flex justify-between">
+            <span className="font-medium">නවතම මට්ටම:</span>
+            <span>
+              {levelMap[progress.latest_rule_level] || progress.latest_rule_level}
             </span>
-          )}
-        </p>
-
-        <hr className="my-2" />
-
-        <p>
-          <strong>Previous Level (Rule):</strong> {progress.previous_rule_level}
-        </p>
-        <p>
-          <strong>Latest Level (Rule):</strong> {progress.latest_rule_level}
-        </p>
-
-        <p>
-          <strong>Latest Sinhala Level:</strong> {progress.latest_vc_level_si}
-        </p>
-
-        <p className="text-sm text-gray-500 pt-2">
-          ⭐ Tip: Do the VC activities regularly to improve your score!
-        </p>
+          </div>
+        </div>
       </div>
     </div>
   );

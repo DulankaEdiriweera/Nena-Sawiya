@@ -1,14 +1,36 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+import Header from "../../Components/Header";
 
 const BASE = "http://localhost:5000";
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
-const LEVELS = {
-  EASY:   { label: "පහසු",   emoji: "😊", bg: "from-emerald-400 to-teal-500"  },
-  MEDIUM: { label: "මධ්‍යම", emoji: "🤔", bg: "from-amber-400 to-orange-500"  },
-  HARD:   { label: "දුෂ්කර", emoji: "😤", bg: "from-rose-400 to-pink-500"     },
+const LEVELS_LIST = [
+  { key: "EASY",   label: "පහසු",   emoji: "😊", bg: "from-emerald-400 to-teal-500" },
+  { key: "MEDIUM", label: "මධ්‍යම", emoji: "🤔", bg: "from-amber-400 to-orange-500" },
+  { key: "HARD",   label: "දුෂ්කර", emoji: "😤", bg: "from-rose-400 to-pink-500"    },
+];
+
+const LEVELS = Object.fromEntries(LEVELS_LIST.map(l => [l.key, l]));
+
+// Returns next level object or null if on last level
+const getNextLevel = (currentKey) => {
+  const idx = LEVELS_LIST.findIndex(l => l.key === currentKey);
+  return idx !== -1 && idx < LEVELS_LIST.length - 1 ? LEVELS_LIST[idx + 1] : null;
 };
+
+function GameInstructions() {
+  return (
+    <div className="bg-white bg-opacity-80 rounded-2xl shadow p-4 mb-6 max-w-2xl mx-auto border border-violet-100">
+      <h3 className="text-base font-black text-violet-700 mb-2">📋 ක්‍රීඩා උපදෙස් (Game Instructions)</h3>
+      <p className="text-sm text-gray-700 leading-relaxed">
+        මෙම ක්‍රීඩාවේදී ඔබට අකුරු හෝ ඉලක්කම් කිහිපයක් පෙන්වනු ලැබේ. ඔබ කළ යුත්තේ, ආවෘතව හෝ අනිත් දිශාවට හැරී ඇති (rotated/flipped) අකුරු හෝ ඉලක්කම් ඇතුළත් වස්තු අතරින් නිවැරදි එක හඳුනාගෙන එය නිවැරදි ස්ථානයට <strong>Drag and Drop</strong> කිරීමයි. ඔබට ඒවා සමීප අමුතු අකුරු/අංක සමඟ යුගල කරනු ඇත (match and couple them).
+      </p>
+      <p className="text-xs text-green-600 font-bold mt-3">🔄 නැවත ක්‍රීඩා කිරීමට "නැවත ක්‍රීඩා කරන්න" බොත්තම තෝරන්න.</p>
+      <p className="text-xs text-gray-500 mt-1">🎮 වෙනත් මට්ටමක් සඳහා "වෙනත් මට්ටමක් ක්‍රීඩා කරන්න" බොත්තම තෝරන්න.</p>
+    </div>
+  );
+}
 
 export default function UserVdDragTextImage() {
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -24,12 +46,18 @@ export default function UserVdDragTextImage() {
   const totalMarks = useRef(0);
 
   const activity = activities[actIndex] || null;
+  const nextLevel = getNextLevel(selectedLevel);
 
   useEffect(() => {
     if (!selectedLevel) return;
     setLoading(true);
     axios.get(`${BASE}/api/vd_drag_text/level/${selectedLevel}`)
-      .then((r) => { setActivities(r.data); setActIndex(0); })
+      .then((r) => {
+        // Randomly pick 1 game from the fetched level's games
+        const randomGame = shuffle(r.data).slice(0, 1);
+        setActivities(randomGame);
+        setActIndex(0);
+      })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [selectedLevel]);
@@ -99,22 +127,30 @@ export default function UserVdDragTextImage() {
     else setSelectedLevel(null);
   };
 
-  // ── Level select ──
+  const goNextLevel = () => {
+    setActivities([]); setResults({}); setScore(0); setActIndex(0); setFinished(false);
+    setSelectedLevel(nextLevel.key);
+  };
+
+  // ── Level select (Header only here) ──
   if (!selectedLevel) return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-violet-50 to-pink-100 flex flex-col items-center justify-center p-6">
-      <div className="text-center mb-10">
-        <div className="text-6xl mb-3">🧩</div>
-        <h1 className="text-4xl font-black text-violet-700">අකුරු ගලපන්න!</h1>
-        <p className="text-gray-500 mt-2 text-lg">ඔබේ මට්ටම තෝරන්න</p>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
-        {Object.entries(LEVELS).map(([level, cfg]) => (
-          <button key={level} onClick={() => setSelectedLevel(level)}
-            className={`flex-1 py-7 rounded-3xl bg-gradient-to-br ${cfg.bg} text-white font-black text-xl shadow-xl hover:scale-105 transition-transform flex flex-col items-center gap-2`}>
-            <span className="text-5xl">{cfg.emoji}</span>
-            {cfg.label}
-          </button>
-        ))}
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
+      <Header />
+      <div className="flex flex-col items-center justify-center p-6 pt-10">
+        <div className="text-center mb-10">
+          <div className="text-6xl mb-3">🧩</div>
+          <h1 className="text-4xl font-black text-violet-700">අකුරු ගලපන්න!</h1>
+          <p className="text-gray-500 mt-2 text-lg">ඔබේ මට්ටම තෝරන්න</p>
+        </div>
+        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
+          {LEVELS_LIST.map((l) => (
+            <button key={l.key} onClick={() => setSelectedLevel(l.key)}
+              className={`flex-1 py-7 rounded-3xl bg-gradient-to-br ${l.bg} text-white font-black text-xl shadow-xl hover:scale-105 transition-transform flex flex-col items-center gap-2`}>
+              <span className="text-5xl">{l.emoji}</span>
+              {l.label}
+            </button>
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -122,7 +158,7 @@ export default function UserVdDragTextImage() {
   const cfg = LEVELS[selectedLevel];
 
   if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-violet-50 to-pink-100 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex items-center justify-center">
       <div className="text-center">
         <div className="text-7xl animate-bounce mb-3">🌟</div>
         <p className="text-2xl font-black text-violet-500">පූරණය වෙමින්...</p>
@@ -131,7 +167,7 @@ export default function UserVdDragTextImage() {
   );
 
   if (!activity) return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-violet-50 to-pink-100 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex items-center justify-center p-6">
       <div className="text-center">
         <div className="text-6xl mb-3">📭</div>
         <p className="text-2xl font-black text-gray-500">{cfg.label} මට්ටමේ ක්‍රියාකාරකම් නැත!</p>
@@ -144,7 +180,7 @@ export default function UserVdDragTextImage() {
   if (finished) {
     const percent = Math.round((score / totalMarks.current) * 100);
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-violet-50 to-pink-100 flex items-center justify-center p-6">
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex items-center justify-center p-6">
         <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full text-center border-4 border-violet-200">
           <div className="text-7xl mb-3">{percent === 100 ? "🏆" : percent >= 60 ? "🌟" : "💪"}</div>
           <h2 className="text-3xl font-black text-violet-700 mb-1">
@@ -168,12 +204,23 @@ export default function UserVdDragTextImage() {
               );
             })}
           </div>
-          <div className="flex gap-2">
-            <button onClick={restart} className="flex-1 py-3 border-2 border-violet-200 text-violet-600 font-black rounded-2xl hover:bg-violet-50">
-              🔄 නැවත කරන්න
-            </button>
-            <button onClick={nextActivity} className={`flex-1 py-3 bg-gradient-to-r ${cfg.bg} text-white font-black rounded-2xl hover:scale-105 transition`}>
-              {actIndex < activities.length - 1 ? "ඊළඟ ➡️" : "🏠 මුල් පිටුව"}
+          <div className="flex flex-col gap-2">
+            <div className="flex gap-2">
+              <button onClick={restart} className="flex-1 py-3 border-2 border-violet-200 text-violet-600 font-black rounded-2xl hover:bg-violet-50">
+                🔄 නැවත කරන්න
+              </button>
+              <button onClick={nextActivity} className={`flex-1 py-3 bg-gradient-to-r ${cfg.bg} text-white font-black rounded-2xl hover:scale-105 transition`}>
+                {actIndex < activities.length - 1 ? "ඊළඟ ➡️" : "🏠 මුල් පිටුව"}
+              </button>
+            </div>
+            {nextLevel && (
+              <button onClick={goNextLevel}
+                className={`w-full py-3 bg-gradient-to-r ${nextLevel.bg} text-white font-black rounded-2xl hover:opacity-90 transition`}>
+                {nextLevel.emoji} {nextLevel.label} මට්ටමට යන්න →
+              </button>
+            )}
+            <button onClick={() => setSelectedLevel(null)} className="w-full py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black rounded-2xl hover:opacity-90 transition">
+              🎮 වෙනත් මට්ටමක් ක්‍රීඩා කරන්න
             </button>
           </div>
         </div>
@@ -181,9 +228,11 @@ export default function UserVdDragTextImage() {
     );
   }
 
-  // ── Main game ──
+  // ── Main game (no Header) ──
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-violet-50 to-pink-100 p-4 md:p-8 select-none">
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 select-none p-4 md:p-8">
+      <GameInstructions />
+
       <div className="flex items-center justify-between mb-5 max-w-3xl mx-auto">
         <button onClick={() => setSelectedLevel(null)} className="text-violet-500 font-bold text-sm hover:text-violet-700">← මට්ටම්</button>
         <span className={`px-3 py-1 rounded-full text-sm font-black bg-gradient-to-r ${cfg.bg} text-white`}>{cfg.emoji} {cfg.label}</span>
@@ -251,10 +300,14 @@ export default function UserVdDragTextImage() {
           )}
       </div>
 
-      <div className="text-center mt-7">
+      <div className="text-center mt-7 flex flex-col items-center gap-3">
         <button onClick={checkFinished}
           className={`px-10 py-4 bg-gradient-to-r ${cfg.bg} text-white font-black text-xl rounded-2xl shadow-lg hover:scale-105 transition-transform`}>
           ✅ මගේ පිළිතුරු පරීක්ෂා කරන්න!
+        </button>
+        <button onClick={() => setSelectedLevel(null)}
+          className="px-8 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-black text-base rounded-2xl shadow hover:opacity-90 transition">
+          🎮 වෙනත් මට්ටමක් ක්‍රීඩා කරන්න
         </button>
       </div>
     </div>

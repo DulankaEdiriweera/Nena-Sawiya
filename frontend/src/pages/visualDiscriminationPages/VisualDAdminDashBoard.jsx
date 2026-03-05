@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { FaPuzzlePiece, FaBookOpen, FaImages, FaBrain } from "react-icons/fa";
 import AdminHeader from "../../Components/AdminHeader";
 
+
 const activities = [
   {
     title: "Drag and Drop Activity",
