@@ -31,8 +31,10 @@ export default function AdminAddVCPicCom() {
     setLevel("easy");
     setOptionsCount(4);
     setImage(null);
+
     if (previewUrl) URL.revokeObjectURL(previewUrl);
     setPreviewUrl("");
+
     if (fileRef.current) fileRef.current.value = "";
   };
 
@@ -48,6 +50,7 @@ export default function AdminAddVCPicCom() {
       });
       return;
     }
+
     if (!taskNumber) {
       await Swal.fire({
         icon: "warning",
@@ -62,22 +65,19 @@ export default function AdminAddVCPicCom() {
     formData.append("title", title || "VC Picture Completion");
     formData.append("task_number", String(taskNumber));
     formData.append("options_count", String(optionsCount));
-    formData.append("levels[]", level); // send ONE level
+    formData.append("levels[]", level);
     formData.append("image", image);
 
     try {
       setSubmitting(true);
 
-      const res = await axios.post(`${apiBase}/api/vc_pic_com/add`, formData, {
+      await axios.post(`${apiBase}/api/vc_pic_com/add`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
       await Swal.fire({
         icon: "success",
-        title: "Picture completion added ✅",
-        html: res?.data?.activity_id
-          ? `<div style="font-size:14px;opacity:.9">Activity ID: <b>${res.data.activity_id}</b></div>`
-          : undefined,
+        title: "Added successfully ✅",
         confirmButtonText: "OK",
         confirmButtonColor: "#0f172a",
       });
@@ -119,8 +119,10 @@ export default function AdminAddVCPicCom() {
 
           <div className="p-6">
             <form onSubmit={handleSubmit} className="grid gap-5 lg:grid-cols-2">
+
               {/* Left */}
               <div className="space-y-4">
+
                 <div>
                   <label className="block text-sm font-medium text-slate-700">
                     Title
@@ -129,7 +131,7 @@ export default function AdminAddVCPicCom() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="e.g., Complete the Animal"
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   />
                 </div>
 
@@ -142,7 +144,7 @@ export default function AdminAddVCPicCom() {
                     value={taskNumber}
                     onChange={(e) => setTaskNumber(e.target.value)}
                     required
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   />
                 </div>
 
@@ -156,56 +158,44 @@ export default function AdminAddVCPicCom() {
                     max={8}
                     value={optionsCount}
                     onChange={(e) => setOptionsCount(Number(e.target.value))}
-                    className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-slate-300"
+                    className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm"
                   />
-                  <p className="mt-1 text-xs text-slate-500">
-                    Choose between 2 and 8 options.
-                  </p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700">
-                    Level (select one)
+                    Level
                   </label>
+
                   <div className="mt-2 grid grid-cols-3 gap-2">
-                    {[
-                      { k: "easy", label: "Easy" },
-                      { k: "medium", label: "Medium" },
-                      { k: "hard", label: "Hard" },
-                    ].map((opt) => (
+                    {["easy", "medium", "hard"].map((lvl) => (
                       <label
-                        key={opt.k}
-                        className={[
-                          "flex cursor-pointer items-center justify-center rounded-xl border px-3 py-2 text-sm font-medium",
-                          level === opt.k
+                        key={lvl}
+                        className={`flex cursor-pointer items-center justify-center rounded-xl border px-3 py-2 text-sm ${
+                          level === lvl
                             ? "border-slate-900 bg-slate-900 text-white"
-                            : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                        ].join(" ")}
+                            : "border-slate-200 bg-white"
+                        }`}
                       >
                         <input
                           type="radio"
                           name="level"
-                          value={opt.k}
-                          checked={level === opt.k}
-                          onChange={() => setLevel(opt.k)}
-                          className="sr-only"
+                          value={lvl}
+                          checked={level === lvl}
+                          onChange={() => setLevel(lvl)}
+                          className="hidden"
                         />
-                        {opt.label}
+                        {lvl}
                       </label>
                     ))}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-1">
+                <div className="flex gap-3">
                   <button
                     type="submit"
                     disabled={submitting}
-                    className={[
-                      "inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold",
-                      submitting
-                        ? "cursor-not-allowed bg-slate-300 text-slate-600"
-                        : "bg-slate-900 text-white hover:bg-slate-800",
-                    ].join(" ")}
+                    className="rounded-xl bg-slate-900 text-white px-4 py-2 text-sm"
                   >
                     {submitting ? "Adding..." : "Add Activity"}
                   </button>
@@ -213,8 +203,7 @@ export default function AdminAddVCPicCom() {
                   <button
                     type="button"
                     onClick={resetForm}
-                    disabled={submitting}
-                    className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
+                    className="rounded-xl border px-4 py-2 text-sm"
                   >
                     Reset
                   </button>
@@ -223,44 +212,32 @@ export default function AdminAddVCPicCom() {
 
               {/* Right */}
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700">
-                    Upload Image
-                  </label>
-                  <input
-                    ref={fileRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => onPickImage(e.target.files?.[0] || null)}
-                    required
-                    className="mt-1 block w-full text-sm file:mr-3 file:rounded-xl file:border-0 file:bg-slate-900 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-800"
+                <label className="block text-sm font-medium text-slate-700">
+                  Upload Image
+                </label>
+
+                <input
+                  ref={fileRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => onPickImage(e.target.files?.[0] || null)}
+                  className="mt-1 w-full"
+                  required
+                />
+
+                {previewUrl ? (
+                  <img
+                    src={previewUrl}
+                    alt="preview"
+                    className="mt-4 h-72 w-full object-cover rounded-xl"
                   />
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                  <div className="mb-2 text-sm font-semibold text-slate-700">
-                    Preview
+                ) : (
+                  <div className="flex h-72 items-center justify-center rounded-xl border border-dashed text-sm text-slate-500">
+                    No image selected
                   </div>
-
-                  {previewUrl ? (
-                    <img
-                      src={previewUrl}
-                      alt="preview"
-                      className="h-72 w-full rounded-xl object-cover ring-1 ring-slate-200"
-                      draggable={false}
-                    />
-                  ) : (
-                    <div className="flex h-72 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white text-sm text-slate-500">
-                      No image selected
-                    </div>
-                  )}
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-white p-4 text-xs text-slate-600">
-                  Tip: Use a clear image so the missing part and options look
-                  sharp for kids.
-                </div>
+                )}
               </div>
+
             </form>
           </div>
         </div>

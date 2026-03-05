@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../Components/Header";
 
 const ACTIVITIES = [
   {
@@ -29,7 +30,9 @@ export default function VCStudentDashboard() {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center py-10 px-4">
+    <div>
+      <div><Header/></div>
+          <div className="min-h-screen bg-gradient-to-b from-blue-50 via-purple-50 to-pink-50 flex flex-col items-center py-10 px-4">
       {/* Mascot / Header */}
       <div className="text-5xl mb-2">🦁</div>
       <h1 className="text-3xl font-extrabold text-gray-800 mb-1">ආයුබෝවන්!</h1>
@@ -68,5 +71,7 @@ export default function VCStudentDashboard() {
         </p>
       </div>
     </div>
+    </div>
+
   );
 }

@@ -1,24 +1,25 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import Header from "../Components/Header";
 
 export default function VCShaMatPlay({ activityId }) {
   const apiBase = "http://localhost:5000";
+  const nav = useNavigate();
 
-  const [meta, setMeta] = useState(null);
-  const [attempts, setAttempts] = useState(0);
-  const [startTs, setStartTs] = useState(null);
+  const [meta, setMeta]           = useState(null);
+  const [attempts, setAttempts]   = useState(0);
+  const [startTs, setStartTs]     = useState(null);
   const [completed, setCompleted] = useState(false);
-  const [seconds, setSeconds] = useState(null);
-  const [feedback, setFeedback] = useState(null); // {ok:boolean, text:string}
+  const [seconds, setSeconds]     = useState(null);
+  const [feedback, setFeedback]   = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [shake, setShake]         = useState(false);
 
   useEffect(() => {
     async function load() {
-      setMeta(null);
-      setAttempts(0);
-      setCompleted(false);
-      setSeconds(null);
-      setFeedback(null);
-
+      setMeta(null); setAttempts(0); setCompleted(false);
+      setSeconds(null); setFeedback(null); setSelectedId(null); setShake(false);
       const res = await axios.get(`${apiBase}/api/vc_sha_mat/${activityId}`);
       setMeta(res.data);
       setStartTs(Date.now());
@@ -30,159 +31,203 @@ export default function VCShaMatPlay({ activityId }) {
 
   const pick = (opt) => {
     if (completed) return;
-
     setAttempts((a) => a + 1);
-
+    setSelectedId(opt.id);
     if (opt.is_correct) {
       setCompleted(true);
       setSeconds(Math.round((Date.now() - startTs) / 1000));
-      setFeedback({ ok: true, text: "✅ Great job! That’s correct!" });
+      setFeedback({ ok: true });
     } else {
-      setFeedback({ ok: false, text: "❌ Oops! Try again!" });
+      setFeedback({ ok: false });
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
     }
   };
 
   const reset = () => {
     if (!meta) return;
-    setAttempts(0);
-    setCompleted(false);
-    setSeconds(null);
-    setFeedback(null);
+    setAttempts(0); setCompleted(false); setSeconds(null);
+    setFeedback(null); setSelectedId(null); setShake(false);
     setStartTs(Date.now());
   };
 
-  if (!meta) return <div style={{ padding: 24 }}>Loading...</div>;
+  if (!meta) return (
+    <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex flex-col items-center justify-center gap-4"
+      style={{ fontFamily: "'Nunito', sans-serif" }}>
+      <div className="text-6xl animate-bounce">🌑</div>
+      <p className="text-indigo-600 font-extrabold text-xl">Loading activity…</p>
+      <style>{`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');`}</style>
+    </div>
+  );
+
+  // Adaptive option sizing based on count
+  const optCount  = options.length;
+  const optSize   = optCount <= 4 ? 150 : optCount <= 6 ? 130 : 110;
+  const optCols   = optCount <= 4 ? 2 : optCount <= 6 ? 3 : 4;
 
   return (
-    <div style={{ padding: 24, maxWidth: 980, margin: "0 auto" }}>
-      <h2>{meta.title}</h2>
+    <div>
+      <div><Header/></div>
+          <div
+      className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 px-4 py-6"
+      style={{ fontFamily: "'Nunito', sans-serif" }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');
+        @keyframes shake {
+          0%,100% { transform: translateX(0); }
+          20%      { transform: translateX(-6px); }
+          40%      { transform: translateX(6px); }
+          60%      { transform: translateX(-4px); }
+          80%      { transform: translateX(4px); }
+        }
+        .shake { animation: shake 0.45s ease; }
+        @keyframes pop {
+          0%   { transform: scale(1); }
+          50%  { transform: scale(1.06); }
+          100% { transform: scale(1); }
+        }
+        .pop { animation: pop 0.35s ease; }
+      `}</style>
 
-      <div style={{ opacity: 0.85, marginBottom: 14 }}>
-        Moves: <b>{attempts}</b> • Status: <b>{completed ? "✅ Completed" : "In progress"}</b>
-        {completed && <> • Time: <b>{seconds}s</b></>}
+      {/* ── Header ── */}
+      <div className="text-center mb-5">
+        <div className="text-4xl mb-1">🌑</div>
+        <h1 className="text-3xl font-extrabold text-indigo-700 drop-shadow-sm">{meta.title}</h1>
+
+        <button
+          onClick={() => nav("/vcShadowMatch")}
+          className="mt-3 bg-white rounded-2xl px-4 py-2 shadow font-extrabold text-indigo-600 text-sm hover:bg-indigo-50 transition-all"
+        >
+          ← Back to Shadow Match List
+        </button>
+
+        <div className="flex justify-center flex-wrap gap-2 mt-3">
+          <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm">
+            🎯 Attempts: {attempts}
+          </span>
+          <span className={`font-bold px-4 py-1.5 rounded-full shadow text-sm
+            ${completed ? "bg-green-400 text-white" : "bg-white text-indigo-400"}`}>
+            {completed ? `🎉 Done in ${seconds}s!` : "⏳ In progress…"}
+          </span>
+        </div>
       </div>
 
-      {feedback && (
-        <div
-          style={{
-            padding: 12,
-            borderRadius: 12,
-            border: "1px solid",
-            borderColor: feedback.ok ? "#9aff9a" : "#ffb3b3",
-            background: feedback.ok ? "#eaffea" : "#ffeaea",
-            marginBottom: 14,
-            fontSize: 16,
-            fontWeight: 700,
-          }}
-        >
-          {feedback.text}
+      {/* ── Completion Banner ── */}
+      {completed && (
+        <div className="max-w-lg mx-auto mb-5 bg-green-400 text-white rounded-3xl p-4 text-center shadow-lg pop">
+          <div className="text-4xl mb-1">🎊</div>
+          <p className="font-extrabold text-xl">Amazing! You matched it!</p>
+          <p className="text-green-100 font-semibold mt-1">Time: {seconds}s • Attempts: {attempts}</p>
+          <button
+            onClick={reset}
+            className="mt-3 bg-white text-green-600 font-extrabold px-6 py-2 rounded-2xl shadow hover:bg-green-50 active:scale-95 transition-all"
+          >
+            🔄 Play Again
+          </button>
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 18, flexWrap: "wrap", alignItems: "flex-start" }}>
+      {/* ── Main layout: Shadow | Options ── */}
+      <div className="flex flex-row justify-center items-start gap-5 flex-wrap">
+
         {/* Shadow */}
-        <div style={{ flex: "0 0 auto" }}>
-          <h3>Shadow</h3>
-          <div
-            style={{
-              width: 360,
-              height: 260,
-              borderRadius: 16,
-              border: "1px solid #ddd",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-            }}
-          >
+        <div className="flex flex-col items-center gap-2">
+          <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
+            🌑 Find this shadow!
+          </div>
+          <div className="bg-white p-2 rounded-3xl shadow-md border-2 border-indigo-100 flex items-center justify-center"
+            style={{ width: 300, height: 240 }}>
             <img
               src={`${apiBase}${meta.shadow_url}`}
               alt="shadow"
-              style={{ width: "100%", height: "100%", objectFit: "contain" }}
+              style={{ width: "100%", height: "100%", objectFit: "contain", display: "block" }}
               draggable={false}
             />
           </div>
+          <p className="text-indigo-400 font-bold text-sm mt-1">👆 Which picture matches?</p>
 
-          <button
-            onClick={reset}
-            style={{ marginTop: 12, padding: "10px 14px" }}
-          >
-            Reset
-          </button>
+          {!completed && (
+            <button
+              onClick={reset}
+              className="w-full py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-base shadow transition-all flex items-center justify-center gap-2"
+              style={{ width: 300 }}
+            >
+              🔄 Try Again
+            </button>
+          )}
         </div>
 
         {/* Options */}
-        <div style={{ flex: 1, minWidth: 320 }}>
-          <h3>Pick the correct picture</h3>
+        <div className="flex flex-col items-center gap-2">
+          <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
+            🖼️ Choose one!
+          </div>
 
           <div
+            className={`bg-white p-3 rounded-3xl shadow-md border-2 border-indigo-100 ${shake ? "shake" : ""}`}
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(150px, 1fr))",
-              gap: 12,
+              gridTemplateColumns: `repeat(${optCols}, ${optSize}px)`,
+              gap: 10,
             }}
           >
-            {options.map((opt) => (
-              <button
-                key={opt.id}
-                onClick={() => pick(opt)}
-                disabled={completed}
-                style={{
-                  borderRadius: 16,
-                  border: "2px solid #e5e5e5",
-                  background: "#fff",
-                  padding: 8,
-                  cursor: completed ? "not-allowed" : "pointer",
-                }}
-              >
-                <img
-                  src={`${apiBase}${opt.url}`}
-                  alt="option"
-                  style={{
-                    width: "100%",
-                    height: 120,
-                    objectFit: "cover",
-                    borderRadius: 12,
-                    display: "block",
-                  }}
-                  draggable={false}
-                />
-                <div style={{ marginTop: 6, fontWeight: 700 }}>
-                  Choose
-                </div>
-              </button>
-            ))}
+            {options.map((opt) => {
+              const isPicked = selectedId === opt.id;
+              const isRight  = isPicked && opt.is_correct;
+              const isWrong  = isPicked && !opt.is_correct;
+
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => pick(opt)}
+                  disabled={completed}
+                  className={`
+                    rounded-2xl overflow-hidden transition-all duration-200 border-4 flex flex-col items-center
+                    ${!isPicked && !completed ? "border-transparent hover:border-indigo-300 hover:scale-105 hover:shadow-lg cursor-pointer" : ""}
+                    ${isRight  ? "border-green-400 scale-105 shadow-lg"  : ""}
+                    ${isWrong  ? "border-red-400"                        : ""}
+                    ${completed && !isPicked ? "opacity-50 cursor-not-allowed" : ""}
+                  `}
+                  style={{ width: optSize, padding: 6, background: "white" }}
+                >
+                  <img
+                    src={`${apiBase}${opt.url}`}
+                    alt="option"
+                    style={{
+                      width: optSize - 12,
+                      height: optSize - 12,
+                      objectFit: "cover",
+                      borderRadius: 14,
+                      display: "block",
+                    }}
+                    draggable={false}
+                  />
+                  <span className={`mt-1.5 text-xs font-extrabold
+                    ${isRight ? "text-green-500" : isWrong ? "text-red-400" : "text-indigo-400"}`}>
+                    {isRight ? "✅ Correct!" : isWrong ? "❌ Wrong" : "Pick me!"}
+                  </span>
+                </button>
+              );
+            })}
           </div>
+
+          {/* Inline feedback */}
+          {feedback && !completed && (
+            <div className={`mt-1 w-full font-extrabold text-base rounded-2xl px-4 py-3 text-center
+              ${feedback.ok
+                ? "bg-green-100 border-2 border-green-300 text-green-700"
+                : "bg-red-100 border-2 border-red-300 text-red-600"}`}
+              style={{ width: optCols * optSize + (optCols - 1) * 10 + 24 }}
+            >
+              {feedback.ok ? "✅ Correct! Well done!" : "❌ Oops! Try again!"}
+            </div>
+          )}
         </div>
 
-        {/* Reference (optional for kids, show only when completed) */}
-        {/* <div style={{ flex: "0 0 auto" }}>
-          <h3>Answer</h3>
-          <div
-            style={{
-              width: 280,
-              height: 200,
-              borderRadius: 16,
-              border: "1px solid #ddd",
-              background: "#fff",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              overflow: "hidden",
-              opacity: completed ? 1 : 0.25,
-            }}
-            title={completed ? "Correct image" : "Unlock after correct"}
-          >
-            <img
-              src={`${apiBase}${meta.original_url}`}
-              alt="original"
-              style={{ width: "100%", height: "100%", objectFit: "cover" }}
-              draggable={false}
-            />
-          </div>
-        </div> */}
       </div>
     </div>
+    </div>
+
   );
 }
