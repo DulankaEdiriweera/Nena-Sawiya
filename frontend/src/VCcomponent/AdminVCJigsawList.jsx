@@ -154,7 +154,8 @@ export default function AdminVCJigsawList() {
                             {it.title}
                           </div>
                           <div className="mt-1 text-xs text-slate-500">
-                            ID: {it.puzzle_id} • Grid: {it.rows}×{it.cols} • Level:{" "}
+                            {/* ID: {it.puzzle_id}  */}
+                            • Grid: {it.rows}×{it.cols} • Level:{" "}
                             <span className="font-semibold text-slate-700">
                               {lvl}
                             </span>

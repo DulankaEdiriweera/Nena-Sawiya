@@ -13,7 +13,7 @@ const ACTIVITIES = [
   {
     path: "/vcPicCom",
     emoji: "🖼️",
-    label: "පිංතූර පුරවමු",
+    label: "පිංතූර සම්පූර්ණ කරමු",
     sub: "Picture Completion",
     bg: "from-blue-200 to-indigo-200",
   },
