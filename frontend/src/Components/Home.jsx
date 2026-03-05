@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../Components/Header";
 import Logo from "../Assets/Logo.jpeg";
-import Owl from "../Assets/Owl.png";
 import { useNavigate } from "react-router-dom";
+import Slide1 from "../Assets/HomePageSlider/student.png";
+import Slide2 from "../Assets/HomePageSlider/StudentParent.png";
+import Slide3 from "../Assets/HomePageSlider/StudentTeacher.jpeg";
 
 const Home = () => {
   const [hoveredCard, setHoveredCard] = useState(null);
+  const [slideIndex, setSlideIndex] = useState(0);
   const navigate = useNavigate();
+
+  const slides = [Slide1, Slide2, Slide3];
+
+  useEffect(() => {
+    const t = setInterval(
+      () => setSlideIndex((p) => (p + 1) % slides.length),
+      3000,
+    );
+    return () => clearInterval(t);
+  }, []);
 
   const components = [
     {
@@ -58,15 +71,29 @@ const Home = () => {
 
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
-        {/* Hero Section */}
-        <div className="text-center mb-5">
-          <div className="flex justify-center mb-2">
-            <img
-              src={Owl}
-              alt="Mascot"
-              className="w-40 h-40 object-contain animate-bounce rounded-3xl"
-              style={{ animationDuration: "2s" }}
-            />
+        {/* Hero Section - Slideshow */}
+        <div className="flex justify-center mb-5">
+          <div
+            className="relative w-full rounded-3xl overflow-hidden shadow-2xl"
+            style={{ height: "550px" }}
+          >
+            {slides.map((src, i) => (
+              <img
+                key={i}
+                src={src}
+                alt={`slide-${i}`}
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === slideIndex ? "opacity-100" : "opacity-0"}`}
+              />
+            ))}
+            <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSlideIndex(i)}
+                  className={`w-3 h-3 rounded-full transition-all ${i === slideIndex ? "bg-white scale-125" : "bg-white/50"}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
 
