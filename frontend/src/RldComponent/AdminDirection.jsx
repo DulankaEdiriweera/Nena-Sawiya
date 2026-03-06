@@ -269,7 +269,7 @@ const AdminDirectionForm = () => {
                   value={question}
                   required
                   onChange={(e) => setQuestion(e.target.value)}
-                  placeholder="ගාඩිය ගෙදරට වමට ඇදගෙන යන්න..."
+                  placeholder="ගස නිවසේ වමට ඇදගෙන යන්න..."
                   className="focus-ring sinhala w-full border border-slate-200 rounded-lg px-3.5 py-2.5 text-sm text-slate-900 bg-white outline-none"
                 />
               </div>

@@ -102,7 +102,7 @@ const StudentJumbledGame = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <h2 className="text-2xl font-semibold text-indigo-800">
-              අවුල් වූ වාක්‍යය සකසන්න
+              මාරු වූ වචන නිවැරදි පිළිවෙලට තබා අර්ථවත් වාක්‍යය සකසන්න
             </h2>
             <p className="text-gray-500 mt-1 text-sm">
               වචන ඇදගෙන නිවැරදි පිළිවෙලට තබන්න
@@ -137,7 +137,7 @@ const StudentJumbledGame = () => {
               {/* Jumbled reference */}
               <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-center">
                 <p className="text-xs text-amber-600 font-semibold mb-2 uppercase tracking-wide">
-                  අවුල් වූ වාක්‍යය
+                  වචන මාරු වූ වාක්‍යය
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {jumbled.map((word, i) => (
