@@ -99,16 +99,16 @@ export default function VCShaMatPlay({ activityId }) {
           onClick={() => nav("/vcShadowMatch")}
           className="mt-3 bg-white rounded-2xl px-4 py-2 shadow font-extrabold text-indigo-600 text-sm hover:bg-indigo-50 transition-all"
         >
-          ← Back to Shadow Match List
+          ← ආපසු ලැයිස්තුවට යන්න 
         </button>
 
         <div className="flex justify-center flex-wrap gap-2 mt-3">
           <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm">
-            🎯 Attempts: {attempts}
+            🎯උත්සාහ කිරීම්: {attempts}
           </span>
           <span className={`font-bold px-4 py-1.5 rounded-full shadow text-sm
             ${completed ? "bg-green-400 text-white" : "bg-white text-indigo-400"}`}>
-            {completed ? `🎉 Done in ${seconds}s!` : "⏳ In progress…"}
+            {completed ? `🎉 නිම කිරීමට ගත වූ කාලය ${seconds}s!` : "⏳ කරමින්……"}
           </span>
         </div>
       </div>
@@ -117,13 +117,13 @@ export default function VCShaMatPlay({ activityId }) {
       {completed && (
         <div className="max-w-lg mx-auto mb-5 bg-green-400 text-white rounded-3xl p-4 text-center shadow-lg pop">
           <div className="text-4xl mb-1">🎊</div>
-          <p className="font-extrabold text-xl">Amazing! You matched it!</p>
-          <p className="text-green-100 font-semibold mt-1">Time: {seconds}s • Attempts: {attempts}</p>
+          <p className="font-extrabold text-xl">අපූරුයි! හරියටම ගැලපුවා!</p>
+          <p className="text-green-100 font-semibold mt-1">කාලය: {seconds}s • උත්සාහ කිරීම්: {attempts}</p>
           <button
             onClick={reset}
             className="mt-3 bg-white text-green-600 font-extrabold px-6 py-2 rounded-2xl shadow hover:bg-green-50 active:scale-95 transition-all"
           >
-            🔄 Play Again
+            🔄 නැවත ක්‍රීඩා කරන්න
           </button>
         </div>
       )}
@@ -134,7 +134,7 @@ export default function VCShaMatPlay({ activityId }) {
         {/* Shadow */}
         <div className="flex flex-col items-center gap-2">
           <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
-            🌑 Find this shadow!
+            🌑 මේ සෙවනැල්ල සොයාගන්න!
           </div>
           <div className="bg-white p-2 rounded-3xl shadow-md border-2 border-indigo-100 flex items-center justify-center"
             style={{ width: 300, height: 240 }}>
@@ -145,7 +145,7 @@ export default function VCShaMatPlay({ activityId }) {
               draggable={false}
             />
           </div>
-          <p className="text-indigo-400 font-bold text-sm mt-1">👆 Which picture matches?</p>
+          <p className="text-indigo-400 font-bold text-sm mt-1">👆 මොන පින්තූරයටද ගැලපෙන්නේ?</p>
 
           {!completed && (
             <button
@@ -153,7 +153,7 @@ export default function VCShaMatPlay({ activityId }) {
               className="w-full py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-base shadow transition-all flex items-center justify-center gap-2"
               style={{ width: 300 }}
             >
-              🔄 Try Again
+              🔄 නැවත උත්සාහ කරන්න!
             </button>
           )}
         </div>
@@ -161,7 +161,7 @@ export default function VCShaMatPlay({ activityId }) {
         {/* Options */}
         <div className="flex flex-col items-center gap-2">
           <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
-            🖼️ Choose one!
+            🖼️ එකක් තෝරන්න!
           </div>
 
           <div
@@ -205,7 +205,7 @@ export default function VCShaMatPlay({ activityId }) {
                   />
                   <span className={`mt-1.5 text-xs font-extrabold
                     ${isRight ? "text-green-500" : isWrong ? "text-red-400" : "text-indigo-400"}`}>
-                    {isRight ? "✅ Correct!" : isWrong ? "❌ Wrong" : "Pick me!"}
+                    {isRight ? "✅ නිවැරදිය! " : isWrong ? "❌ වැරදියි" : "මාව තෝරන්න!"}
                   </span>
                 </button>
               );
@@ -220,7 +220,7 @@ export default function VCShaMatPlay({ activityId }) {
                 : "bg-red-100 border-2 border-red-300 text-red-600"}`}
               style={{ width: optCols * optSize + (optCols - 1) * 10 + 24 }}
             >
-              {feedback.ok ? "✅ Correct! Well done!" : "❌ Oops! Try again!"}
+              {feedback.ok ? "✅ නිවැරදිය! " : "❌ වැරදියි! නැවත උත්සාහ කරන්න!"}
             </div>
           )}
         </div>
