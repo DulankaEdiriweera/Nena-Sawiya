@@ -1,8 +1,9 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify,send_from_directory
 import os
 import joblib
 from scipy.sparse import hstack
 from flask_cors import CORS
+from database.db import init_db
 import pandas as pd
 from visualDiscrimination import preprocess_dataframe
 import json
