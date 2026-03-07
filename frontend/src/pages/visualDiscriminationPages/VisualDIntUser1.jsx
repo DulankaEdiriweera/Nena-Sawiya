@@ -50,10 +50,6 @@ export default function UserVdPictureMCQ() {
     setLoading(true);
     try {
       const res = await axios.get(`${API}/level/${level.id}`);
-      // Randomly pick 1 game from the level's collection
-      const shuffled = [...res.data].sort(() => Math.random() - 0.5);
-      setQuestions(shuffled.slice(0, 1).flatMap(g => g.questions || shuffled));
-      // If API returns array of question sets, pick one randomly; if flat array use directly
       const data = Array.isArray(res.data) && res.data[0]?.questions
         ? [...res.data].sort(() => Math.random() - 0.5)[0].questions
         : [...res.data].sort(() => Math.random() - 0.5);
@@ -91,12 +87,11 @@ export default function UserVdPictureMCQ() {
   const answeredCount = Object.keys(selectedAnswers).length;
   const nextLevel = getNextLevel(selectedLevel?.id);
 
-  // ── Level Select ──
+  // ── Level Select — NO instructions here ──
   if (phase === "select") return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
       <div className="flex flex-col items-center p-6 pt-8">
-        <GameInstructions />
         <div className="text-center mb-8">
           <div className="text-7xl mb-4 animate-bounce">👁️</div>
           <h1 className="text-4xl font-black text-purple-700 mb-2">වෙනස හොයමු!</h1>
@@ -172,7 +167,7 @@ export default function UserVdPictureMCQ() {
     );
   }
 
-  // ── Playing Screen ──
+  // ── Playing Screen — instructions shown here ──
   const q = questions[currentQ];
   if (!q) return null;
   const isLast = currentQ === questions.length - 1;
@@ -180,6 +175,7 @@ export default function UserVdPictureMCQ() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
+
       {/* Top bar */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
@@ -199,6 +195,10 @@ export default function UserVdPictureMCQ() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
+
+        {/* Instructions shown on game page */}
+        <GameInstructions />
+
         {/* Question card */}
         <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
           <p className="text-xl font-black text-gray-800 mb-4">{currentQ+1}. {q.question_text}</p>
