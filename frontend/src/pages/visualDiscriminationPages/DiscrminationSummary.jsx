@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Header from "../../Components/Header";
+import { useNavigate } from "react-router-dom"; 
 
 export default function FinalSummary() {
   const [scores, setScores] = useState({
@@ -14,8 +15,10 @@ export default function FinalSummary() {
   const [advice, setAdvice] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const navigate = useNavigate(); 
+
   useEffect(() => {
-    // ✅ Get submission data from localStorage
+    // Get submission data from localStorage
     const submissionData = JSON.parse(localStorage.getItem("submissionData") || "{}");
     const predictionResult = JSON.parse(localStorage.getItem("predictionResult") || "{}");
 
@@ -38,6 +41,22 @@ export default function FinalSummary() {
   const handleRestart = () => {
     localStorage.clear();
     window.location.href = "/visual";
+  };
+
+  const handleNewButtonClick = () => {
+    //navigate to development activities page
+    navigate("/VDUserDashboard"); 
+  };
+
+  //Custom advice text based on predicted level
+  const getDevelopmentAdvice = () => {
+    if (predictedLevel === "දුර්වල") {
+      return "ප්‍රතිඵලය දැක්වෙන්නේ ‘දුර්වල’ ලෙස නම්, ආරම්භක ක්‍රියාකාරකම් පහසු මට්ටමෙන් ආරම්භ කිරීමට අප විසින් නිර්දේශය කරනු ලැබේ.";
+    } else if (predictedLevel === "සාමාන්‍ය" || predictedLevel === "ඉතා හොඳයි") {
+      return "ප්‍රතිඵලය ‘සාමාන්‍ය’ හෝ ‘ඉතා හොඳයි’ ලෙස නම්, පහසු මට්ටම භාවිතා නොකර, මධ්‍යම මට්ටමෙන් ආරම්භ කිරීම වඩා යෝග්‍ය වේ.";
+    } else {
+      return "";
+    }
   };
 
   return (
@@ -93,6 +112,19 @@ export default function FinalSummary() {
                 {advice && (
                   <p className="text-md text-purple-700 mt-2">{advice}</p>
                 )}
+
+                {/*Development Advice */}
+                <p className="text-sm text-gray-700 mt-4">
+                  {getDevelopmentAdvice()}
+                </p>
+
+                {/* Development Activities Button */}
+                <button
+                  onClick={handleNewButtonClick}
+                  className="mt-3 px-6 py-3 bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400 text-white font-bold rounded-full shadow hover:scale-105 transition-all duration-300"
+                >
+                  සංවර්ධන ක්‍රියාකාරකම් වෙත පිවිසෙන්න
+                </button>
               </div>
             </div>
           )}
@@ -111,9 +143,7 @@ export default function FinalSummary() {
   );
 }
 
-// --------------------
 // Reusable ScoreCard component
-// --------------------
 function ScoreCard({ icon, level, description, score, max, colors }) {
   return (
     <div className={`bg-gradient-to-r from-${colors[0]} to-${colors[1]} p-5 rounded-2xl border-4 border-${colors[1]}`}>
