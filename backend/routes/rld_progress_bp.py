@@ -1,13 +1,11 @@
 from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask_cors import CORS
 from database.db import mongo
 
 rld_progress_bp = Blueprint("rld_progress_bp", __name__)
-CORS(rld_progress_bp)
 
 # -------------------------------
-# Progress Checking Route
+# Progress Checking Route (needs 2+ records)
 # -------------------------------
 
 @rld_progress_bp.route("/latest_rld_progress", methods=["GET"])
@@ -43,4 +41,29 @@ def get_latest_rld_progress():
         "latest_level": latest["RLD_level"],
         "previous_date": previous["created_at"],
         "latest_date": latest["created_at"]
+    }), 200
+
+
+# -------------------------------
+# Latest Single Result (works with 1+ records)
+# -------------------------------
+
+@rld_progress_bp.route("/latest_result", methods=["GET"])
+@jwt_required()
+def get_latest_result():
+
+    user_id = get_jwt_identity()
+
+    record = mongo.db.rld_assessments.find_one(
+        {"user_id": user_id},
+        sort=[("created_at", -1)]
+    )
+
+    if not record:
+        return jsonify({"message": "No assessment found"}), 404
+
+    return jsonify({
+        "RLD_level":  record.get("RLD_level"),
+        "Percentage": record.get("Percentage"),
+        "Feedback":   record.get("Feedback"),
     }), 200
