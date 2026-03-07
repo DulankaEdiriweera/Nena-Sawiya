@@ -57,11 +57,11 @@ export default function VCPicComPlay({ activityId }) {
     </div>
   );
 
-  const level     = (meta.levels || [])[0] ?? "—";
+  // const level     = (meta.levels || [])[0] ?? "—";
   const optCount  = (meta.options || []).length;
   // Option image size: 4 options → 150px, more → 120px
-  const optSize   = optCount <= 4 ? 150 : 120;
-  const optCols   = optCount <= 4 ? 2 : 3;
+  const optSize   = optCount <= 4 ? 220 : 180;
+  const optCols   = optCount <= 4 ? 2 : 2;
 
   return (
     <div>
@@ -97,20 +97,20 @@ export default function VCPicComPlay({ activityId }) {
           onClick={() => nav("/vcPicCom")}
           className="mt-3 bg-white rounded-2xl px-4 py-2 shadow font-extrabold text-indigo-600 text-sm hover:bg-indigo-50 transition-all"
         >
-          ← Back to Picture List
+          ← පින්තූර ලැයිස්තුවට ආපසු යන්න
         </button>
 
         <div className="flex justify-center flex-wrap gap-2 mt-3">
           <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm">
-            🎯 Attempts: {attempts}
+            🎯 උත්සාහ කිරීම්: {attempts}
           </span>
           <span className={`font-bold px-4 py-1.5 rounded-full shadow text-sm
             ${completed ? "bg-green-400 text-white" : "bg-white text-indigo-400"}`}>
-            {completed ? `🎉 Done in ${seconds}s!` : "⏳ In progress…"}
+            {completed ? `🎉 නිම කිරීමට ගත වූ කාලය ${seconds}s!` : "⏳ කරමින්…"}
           </span>
-          <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm capitalize">
+          {/* <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm capitalize">
             {level === "easy" ? "🌱" : level === "medium" ? "⭐" : "🚀"} {level}
-          </span>
+          </span> */}
         </div>
       </div>
 
@@ -118,13 +118,13 @@ export default function VCPicComPlay({ activityId }) {
       {completed && (
         <div className="max-w-lg mx-auto mb-5 bg-green-400 text-white rounded-3xl p-4 text-center shadow-lg pop">
           <div className="text-4xl mb-1">🎊</div>
-          <p className="font-extrabold text-xl">Amazing! You got it right!</p>
-          <p className="text-green-100 font-semibold mt-1">Time: {seconds}s • Attempts: {attempts}</p>
+          <p className="font-extrabold text-xl">නියමයි! ඔයා හරියටම කළා!</p>
+          <p className="text-green-100 font-semibold mt-1">කාලය: {seconds}s • උත්සාහ කිරීම්: {attempts}</p>
           <button
             onClick={reset}
             className="mt-3 bg-white text-green-600 font-extrabold px-6 py-2 rounded-2xl shadow hover:bg-green-50 active:scale-95 transition-all"
           >
-            🔄 Play Again
+            🔄නැවත ක්‍රීඩා කරන්න
           </button>
         </div>
       )}
@@ -135,23 +135,23 @@ export default function VCPicComPlay({ activityId }) {
         {/* Question */}
         <div className="flex flex-col items-center gap-2">
           <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
-            ❓ What's missing?
+            ❓ මොකක්ද අස්ථානගතව තියෙන්නේ?
           </div>
           <div className="bg-white p-2 rounded-3xl shadow-md border-2 border-indigo-100">
             <img
               src={`${apiBase}${meta.question_url}`}
               alt="question"
-              style={{ width: 300, borderRadius: 16, display: "block" }}
+              style={{ width: "100%", maxWidth: 500, borderRadius: 16, display: "block", objectFit: "contain"}}
               draggable={false}
             />
           </div>
-          <p className="text-indigo-400 font-bold text-sm mt-1">👆 Pick the missing piece!</p>
+          <p className="text-indigo-400 font-bold text-sm mt-1">👆 අස්ථානගත කොටස තෝරන්න!</p>
         </div>
 
         {/* Options */}
         <div className="flex flex-col items-center gap-2">
           <div className="bg-white rounded-2xl px-4 py-1.5 shadow font-extrabold text-indigo-600 text-sm">
-            🧩 Choose one!
+            🧩 එකක් තෝරන්න!
           </div>
 
           <div
@@ -182,7 +182,7 @@ export default function VCPicComPlay({ activityId }) {
                   style={{ width: optSize, height: optSize, padding: 0, background: "white" }}
                 >
                   <img
-                    src={`${apiBase}${opt.thumb_url || opt.url}`}
+                    src={`${apiBase}${opt.url}`}
                     alt={`option-${opt.id}`}
                     style={{
                       width: "100%",
@@ -201,12 +201,12 @@ export default function VCPicComPlay({ activityId }) {
           {/* Feedback */}
           {isCorrect === true && (
             <div className="mt-1 w-full bg-green-100 border-2 border-green-300 text-green-700 font-extrabold text-base rounded-2xl px-4 py-3 text-center pop">
-              ✅ Correct! Well done!
+              ✅ නිවැරදිය! 
             </div>
           )}
           {isCorrect === false && (
             <div className="mt-1 w-full bg-red-100 border-2 border-red-300 text-red-600 font-extrabold text-base rounded-2xl px-4 py-3 text-center">
-              ❌ Oops! Try again!
+              ❌ වැරදියි! නැවත උත්සාහ කරන්න!
             </div>
           )}
 
@@ -216,7 +216,7 @@ export default function VCPicComPlay({ activityId }) {
               onClick={reset}
               className="mt-2 w-full py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-base shadow transition-all flex items-center justify-center gap-2"
             >
-              🔄 Try Again
+              🔄 නැවත උත්සාහ කරන්න!
             </button>
           )}
         </div>
