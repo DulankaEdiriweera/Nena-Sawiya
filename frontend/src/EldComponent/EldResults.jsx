@@ -94,12 +94,12 @@ function ResultPage() {
 
           {/* Action Button */}
           <button
-            onClick={() => navigate("/story")}
+            onClick={() => navigate("/eldStudentIntervention")}
             className="bg-gradient-to-r from-green-400 to-emerald-400 hover:from-green-500 hover:to-emerald-500 
                  text-black font-bold py-4 px-8 rounded-full shadow-xl 
                  transform hover:scale-110 transition-all border-4 border-green-300 animate-pulse"
           >
-            නැවත ආරම්භ කරන්න
+            භාෂා කුසලතා වර්ධනය කරමු
           </button>
 
           {/* Bottom Color Strip */}
