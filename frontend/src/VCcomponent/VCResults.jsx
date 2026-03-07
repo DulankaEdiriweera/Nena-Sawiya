@@ -91,6 +91,7 @@ const VCResults = () => {
   };
 
   const colors = colorClasses[performanceColor];
+  const shouldShowInterventionButton = VC_Level !== "ඉතා හොදයි";
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -292,6 +293,16 @@ const VCResults = () => {
               <Home className="w-6 h-6" />
               <span>මුල් පිටුවට</span>
             </button>
+
+            {shouldShowInterventionButton && (
+              <button
+                onClick={() => navigate("/vcStudentDashboard")}
+                className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white text-xl font-bold py-4 px-8 rounded-full shadow-xl transform hover:scale-105 transition-all flex items-center space-x-2"
+              >
+                <CheckCircle className="w-6 h-6" />
+                <span>අභ්‍යාස ක්‍රියාකාරකම් වෙත යන්න</span>
+              </button>
+            )}
 
             <button
               onClick={() => window.print()}
