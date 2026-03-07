@@ -2,11 +2,18 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../Components/Header";
+import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
+
+const ALL_LEVELS = ["easy", "medium", "hard"];
+const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
 
 const StudentCategorizeGame = () => {
+  const { allowedLevels, startLevel, handleLevelClick, ConfirmDialog } =
+    useInterventionLevel();
+
   const [gameSet, setGameSet] = useState(null);
-  const [level, setLevel] = useState("easy");
-  const [dropped, setDropped] = useState({}); // { image_url -> bag_label }
+  const [level, setLevel] = useState(startLevel);
+  const [dropped, setDropped] = useState({});
   const [dragItem, setDragItem] = useState(null);
   const [result, setResult] = useState(null);
   const [score, setScore] = useState(0);
@@ -15,10 +22,8 @@ const StudentCategorizeGame = () => {
   const [error, setError] = useState("");
   const [showWarning, setShowWarning] = useState(false);
 
-  const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
-
   useEffect(() => {
-    fetchSet("easy");
+    fetchSet(startLevel);
   }, []);
 
   const fetchSet = async (lvl) => {
@@ -64,17 +69,14 @@ const StudentCategorizeGame = () => {
 
   const handleSubmit = async () => {
     if (!gameSet) return;
-    const placedCount = Object.keys(dropped).length;
-    if (placedCount < gameSet.options.length) {
+    if (Object.keys(dropped).length < gameSet.options.length) {
       setShowWarning(true);
       return;
     }
-
     const answers = gameSet.options.map((o) => ({
       image_url: o.image_url,
       dropped_bag: dropped[o.image_url] || "",
     }));
-
     try {
       const res = await axios.post(
         "http://localhost:5000/api/rld_categorize/submit",
@@ -88,12 +90,8 @@ const StudentCategorizeGame = () => {
     }
   };
 
-  // Helper: get feedback for a specific image after submit
-  const getFeedback = (image_url) => {
-    if (!result) return null;
-    return result.feedback.find((f) => f.image_url === image_url);
-  };
-
+  const getFeedback = (image_url) =>
+    result?.feedback.find((f) => f.image_url === image_url);
   const allPlaced =
     gameSet && Object.keys(dropped).length === gameSet.options.length;
 
@@ -106,12 +104,10 @@ const StudentCategorizeGame = () => {
 
   return (
     <div>
-      <div>
-        <Header />
-      </div>
+      <ConfirmDialog />
+      <Header />
       <div className="font-sans min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex flex-col items-center justify-center py-10 px-4">
         <div className="w-full max-w-5xl border-4 border-indigo-300 rounded-3xl shadow-2xl bg-white p-8">
-          {/* Header */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-semibold text-indigo-800">
               වර්ගීකරණ ක්‍රියාකාරකම
@@ -122,23 +118,50 @@ const StudentCategorizeGame = () => {
           </div>
 
           {/* Level tabs */}
-          <div className="flex justify-center gap-4 mb-6">
-            {["easy", "medium", "hard"].map((lvl) => (
-              <button
-                key={lvl}
-                onClick={() => fetchSet(lvl)}
-                className={`px-4 py-2 rounded font-semibold transition ${
-                  level === lvl
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {levelLabels[lvl]}
-              </button>
-            ))}
+          <div className="flex justify-center gap-3 mb-2 flex-wrap">
+            {ALL_LEVELS.map((lvl) => {
+              const isPermitted = allowedLevels.includes(lvl);
+              const isActive = level === lvl;
+              return (
+                <button
+                  key={lvl}
+                  onClick={() => handleLevelClick(lvl, fetchSet)}
+                  className={`relative px-5 py-2 rounded-full font-semibold text-sm border-2 transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-blue-500 text-white border-blue-500 shadow-md scale-105"
+                        : isPermitted
+                          ? "bg-white text-blue-600 border-blue-300 hover:bg-blue-50"
+                          : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
+                    }`}
+                >
+                  {levelLabels[lvl]}
+                  {isPermitted && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-400 border border-white" />
+                  )}
+                  {!isPermitted && (
+                    <span
+                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 border border-white flex items-center justify-center text-white font-bold"
+                      style={{ fontSize: "8px" }}
+                    >
+                      !
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex justify-center gap-4 mb-6 text-xs text-gray-400">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+              නිර්දේශිත
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+              නිර්දේශිත නොවේ
+            </span>
           </div>
 
-          {/* Error */}
           {error && (
             <div className="text-center py-10">
               <p className="text-red-500 font-semibold">{error}</p>
@@ -150,7 +173,6 @@ const StudentCategorizeGame = () => {
 
           {!error && gameSet && (
             <>
-              {/* Instruction */}
               <div className="bg-amber-50 border border-amber-300 rounded-2xl p-4 text-center mb-6">
                 <p className="text-xs text-amber-600 font-semibold mb-1 uppercase tracking-wide">
                   උපදෙස
@@ -160,7 +182,6 @@ const StudentCategorizeGame = () => {
                 </p>
               </div>
 
-              {/* Bags row */}
               <div
                 className={`grid gap-4 mb-6 ${gameSet.bags.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
               >
@@ -173,10 +194,8 @@ const StudentCategorizeGame = () => {
                       key={bag.label}
                       onDragOver={(e) => e.preventDefault()}
                       onDrop={() => handleDrop(bag.label)}
-                      className={`rounded-2xl border-2 border-dashed p-3 transition min-h-[200px] flex flex-col items-center
-                      ${dragItem ? "border-indigo-500 bg-indigo-50 scale-[1.01]" : "border-gray-300 bg-gray-50"}`}
+                      className={`rounded-2xl border-2 border-dashed p-3 transition min-h-[200px] flex flex-col items-center ${dragItem ? "border-indigo-500 bg-indigo-50 scale-[1.01]" : "border-gray-300 bg-gray-50"}`}
                     >
-                      {/* Bag image + label */}
                       <img
                         src={bag.image_url}
                         alt={bag.label}
@@ -186,8 +205,6 @@ const StudentCategorizeGame = () => {
                       <p className="font-bold text-indigo-700 text-base mb-3">
                         {bag.label}
                       </p>
-
-                      {/* Items dropped into this bag */}
                       <div className="flex flex-wrap justify-center gap-2 w-full">
                         {itemsInBag.map((opt) => {
                           const fb = getFeedback(opt.image_url);
@@ -202,22 +219,11 @@ const StudentCategorizeGame = () => {
                                 src={opt.image_url}
                                 alt="item"
                                 draggable={false}
-                                className={`w-16 h-16 object-cover rounded-xl shadow border-2 transition ${
-                                  result
-                                    ? fb?.is_correct
-                                      ? "border-green-500 opacity-100"
-                                      : "border-red-500 opacity-80"
-                                    : "border-indigo-300 cursor-pointer hover:border-red-400"
-                                }`}
+                                className={`w-16 h-16 object-cover rounded-xl shadow border-2 transition ${result ? (fb?.is_correct ? "border-green-500" : "border-red-500 opacity-80") : "border-indigo-300 cursor-pointer hover:border-red-400"}`}
                               />
-                              {/* ✅ / ❌ badge after submit */}
                               {result && (
                                 <span
-                                  className={`absolute -top-1 -right-1 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow ${
-                                    fb?.is_correct
-                                      ? "bg-green-500 text-white"
-                                      : "bg-red-500 text-white"
-                                  }`}
+                                  className={`absolute -top-1 -right-1 text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow ${fb?.is_correct ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}
                                 >
                                   {fb?.is_correct ? "✓" : "✗"}
                                 </span>
@@ -231,15 +237,12 @@ const StudentCategorizeGame = () => {
                 })}
               </div>
 
-              {/* Option tray */}
               <div>
                 <p className="text-center font-medium text-gray-700 mb-3">
                   විකල්ප — ඇදගෙන බෑගයට දමන්න:
                 </p>
                 <div
-                  className={`flex flex-wrap justify-center gap-4 p-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50 min-h-[100px] ${
-                    dragItem ? "border-indigo-400" : ""
-                  }`}
+                  className={`flex flex-wrap justify-center gap-4 p-4 rounded-2xl border-2 border-indigo-200 bg-indigo-50 min-h-[100px] ${dragItem ? "border-indigo-400" : ""}`}
                 >
                   {gameSet.options
                     .filter((o) => dropped[o.image_url] === undefined)
@@ -263,31 +266,24 @@ const StudentCategorizeGame = () => {
                 </div>
               </div>
 
-              {/* Warning */}
               {showWarning && !allPlaced && (
                 <p className="text-red-500 text-sm mt-3 text-center">
                   ඉදිරිපත් කිරීමට පෙර සියලු රූප බෑගවලට දමන්න.
                 </p>
               )}
 
-              {/* Submit */}
               {!result && (
                 <div className="flex justify-center mt-5">
                   <button
                     onClick={handleSubmit}
                     disabled={!allPlaced}
-                    className={`py-2 px-10 rounded-lg shadow-md font-semibold transition ${
-                      allPlaced
-                        ? "bg-indigo-600 hover:bg-indigo-700 text-white"
-                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    }`}
+                    className={`py-2 px-10 rounded-lg shadow-md font-semibold transition ${allPlaced ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
                   >
                     ඉදිරිපත් කරන්න
                   </button>
                 </div>
               )}
 
-              {/* Result */}
               {result && (
                 <div className="mt-5 p-4 rounded-xl bg-green-100 text-green-800 font-semibold text-center border border-green-300">
                   <p>ලකුණු: {result.score}%</p>
@@ -297,7 +293,6 @@ const StudentCategorizeGame = () => {
                 </div>
               )}
 
-              {/* Next */}
               {result && (
                 <div className="flex justify-center gap-4 mt-4 flex-wrap">
                   <button
@@ -306,21 +301,19 @@ const StudentCategorizeGame = () => {
                   >
                     තවත් එකක් →
                   </button>
-                  {["easy", "medium", "hard"]
-                    .filter((l) => l !== level)
-                    .map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => fetchSet(l)}
-                        className="py-2 px-5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
-                      >
-                        {levelLabels[l]}
-                      </button>
-                    ))}
+                  {ALL_LEVELS.filter((l) => l !== level).map((l) => (
+                    <button
+                      key={l}
+                      onClick={() => handleLevelClick(l, fetchSet)}
+                      className={`py-2 px-5 font-semibold rounded-lg transition ${allowedLevels.includes(l) ? "bg-gray-200 hover:bg-gray-300 text-gray-700" : "bg-amber-100 hover:bg-amber-200 text-amber-700"}`}
+                    >
+                      {levelLabels[l]}
+                      {!allowedLevels.includes(l) && " ⚠"}
+                    </button>
+                  ))}
                 </div>
               )}
 
-              {/* Score footer */}
               <div className="mt-6 text-indigo-700 font-semibold text-center">
                 ලකුණු: {score} / {totalItems}
               </div>

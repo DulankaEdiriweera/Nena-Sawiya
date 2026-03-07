@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const ResultModal = ({ result, onClose }) => {
+const ResultModal = ({ result, onClose, onIntervention }) => {
+  const navigate = useNavigate();
   if (!result) return null;
 
   const sinhalaLevelMap = {
@@ -8,6 +10,15 @@ const ResultModal = ({ result, onClose }) => {
     Average: "සාමාන්‍ය",
     Normal: "විශිෂ්ඨ",
   };
+
+  // Map disorder level → recommended intervention levels
+  const interventionLevelMap = {
+    Weak: ["easy", "medium", "hard"],
+    Average: ["medium", "hard"],
+    Normal: ["hard"],
+  };
+
+  const recommendedLevels = interventionLevelMap[result.RLD_level] || ["hard"];
 
   const levelConfig = {
     Weak: {
@@ -20,6 +31,8 @@ const ResultModal = ({ result, onClose }) => {
       statColor: "text-red-500",
       sectionBorder: "border-red-200",
       sectionHeaderBg: "bg-red-50",
+      interventionBg: "bg-red-600 hover:bg-red-700",
+      interventionText: "දුර්වල",
     },
     Average: {
       color: "text-yellow-700",
@@ -31,6 +44,8 @@ const ResultModal = ({ result, onClose }) => {
       statColor: "text-yellow-500",
       sectionBorder: "border-yellow-200",
       sectionHeaderBg: "bg-yellow-50",
+      interventionBg: "bg-yellow-500 hover:bg-yellow-600",
+      interventionText: "සාමාන්‍ය",
     },
     Normal: {
       color: "text-green-700",
@@ -42,6 +57,8 @@ const ResultModal = ({ result, onClose }) => {
       statColor: "text-green-500",
       sectionBorder: "border-green-200",
       sectionHeaderBg: "bg-green-50",
+      interventionBg: "bg-green-600 hover:bg-green-700",
+      interventionText: "විශිෂ්ඨ",
     },
   };
 
@@ -57,6 +74,8 @@ const ResultModal = ({ result, onClose }) => {
   const mainFeedback = feedbackParts[0].trim();
   const parentAdvice = feedbackParts[1] ? feedbackParts[1].trim() : null;
 
+  const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
+
   return (
     <>
       <style>{`
@@ -66,6 +85,21 @@ const ResultModal = ({ result, onClose }) => {
         .answer-scroll::-webkit-scrollbar { width: 4px; }
         .answer-scroll::-webkit-scrollbar-track { background: #f0f0f8; border-radius: 2px; }
         .answer-scroll::-webkit-scrollbar-thumb { background: #ccccdd; border-radius: 2px; }
+        .intervention-btn {
+          position: relative;
+          overflow: hidden;
+        }
+        .intervention-btn::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: rgba(255,255,255,0.15);
+          transform: translateX(-100%);
+          transition: transform 0.3s ease;
+        }
+        .intervention-btn:hover::after {
+          transform: translateX(0);
+        }
       `}</style>
 
       <div className="dm-sans text-slate-900 max-h-full overflow-y-auto px-0.5 pb-6">
@@ -118,6 +152,83 @@ const ResultModal = ({ result, onClose }) => {
             </span>
             <span className="text-xs text-slate-400 font-medium">100%</span>
           </div>
+        </div>
+
+        {/* ── Intervention CTA ── */}
+        <div
+          className={`rounded-2xl border-2 ${config.border} ${config.bg} p-5 mb-7`}
+        >
+          <div className="flex items-start gap-3 mb-4">
+            {/* icon */}
+            <div
+              className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${config.badge}`}
+            >
+              <svg
+                className="w-5 h-5 text-white"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path d="M10 2a8 8 0 100 16A8 8 0 0010 2zm1 11H9v-2h2v2zm0-4H9V5h2v4z" />
+              </svg>
+            </div>
+            <div>
+              <p className="dm-sans text-xs font-bold tracking-widest uppercase text-slate-500 mb-0.5">
+                නිර්දේශිත උපකාරක ක්‍රියාකාරකම්
+              </p>
+              <p className="sinhala text-sm font-semibold text-slate-800 leading-snug">
+                ඔබගේ{" "}
+                <span className={`font-bold ${config.color}`}>
+                  {sinhalaLevelMap[result.RLD_level]}
+                </span>{" "}
+                මට්ටම සඳහා නිර්දේශිත උපකාරක ක්‍රියාකාරකම් මට්ටම්:
+              </p>
+            </div>
+          </div>
+
+          {/* Recommended level chips */}
+          <div className="flex gap-2 flex-wrap mb-4">
+            {recommendedLevels.map((lvl) => (
+              <span
+                key={lvl}
+                className={`sinhala text-xs font-bold px-3 py-1 rounded-full text-white ${config.badge}`}
+              >
+                {levelLabels[lvl]}
+              </span>
+            ))}
+          </div>
+
+          <button
+            onClick={() => {
+              const state = {
+                allowedLevels: recommendedLevels,
+                startLevel: recommendedLevels[0],
+                disorderLevel: result.RLD_level,
+              };
+              if (onIntervention) {
+                onIntervention(recommendedLevels, result.RLD_level);
+              } else {
+                navigate("/rld-student-dashboard", { state });
+              }
+            }}
+            className={`intervention-btn w-full py-3 rounded-xl text-white font-bold dm-sans text-sm tracking-wide transition-all duration-200 hover:-translate-y-0.5 shadow-md ${config.interventionBg}`}
+          >
+            <span className="flex items-center justify-center gap-2">
+              <svg
+                className="w-4 h-4"
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+              >
+                <path
+                  d="M4 10h12M12 5l5 5-5 5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <span className="sinhala">උපකාරක ක්‍රියාකාරකම් ආරම්භ කරන්න</span>
+            </span>
+          </button>
         </div>
 
         {/* Feedback Section */}

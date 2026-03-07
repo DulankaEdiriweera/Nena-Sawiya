@@ -2,6 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Header from "../Components/Header";
+import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
+
+const ALL_LEVELS = ["easy", "medium", "hard"];
+const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
 
 const WH_COLORS = {
   කවුද: "bg-purple-100 text-purple-800 border-purple-400",
@@ -14,7 +18,6 @@ const WH_COLORS = {
 const AudioPlayer = ({ src, label, autoPlay = false }) => {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
-
   useEffect(() => {
     setPlaying(false);
     if (autoPlay && audioRef.current) {
@@ -22,7 +25,6 @@ const AudioPlayer = ({ src, label, autoPlay = false }) => {
       setPlaying(true);
     }
   }, [src]);
-
   const toggle = () => {
     if (!audioRef.current) return;
     if (playing) {
@@ -33,17 +35,12 @@ const AudioPlayer = ({ src, label, autoPlay = false }) => {
       setPlaying(true);
     }
   };
-
   return (
     <div className="flex flex-col items-center">
       <audio ref={audioRef} src={src} onEnded={() => setPlaying(false)} />
       <button
         onClick={toggle}
-        className={`flex items-center gap-3 px-6 py-3 rounded-full font-semibold shadow-md transition text-white text-base ${
-          playing
-            ? "bg-indigo-700 scale-95"
-            : "bg-indigo-500 hover:bg-indigo-600"
-        }`}
+        className={`flex items-center gap-3 px-6 py-3 rounded-full font-semibold shadow-md transition text-white text-base ${playing ? "bg-indigo-700 scale-95" : "bg-indigo-500 hover:bg-indigo-600"}`}
       >
         <span className="text-2xl">{playing ? "⏸" : "▶"}</span>
         <span>{playing ? "නවතන්න" : label}</span>
@@ -53,7 +50,10 @@ const AudioPlayer = ({ src, label, autoPlay = false }) => {
 };
 
 const StudentWHGame = () => {
-  const [level, setLevel] = useState("easy");
+  const { allowedLevels, startLevel, handleLevelClick, ConfirmDialog } =
+    useInterventionLevel();
+
+  const [level, setLevel] = useState(startLevel);
   const [question, setQuestion] = useState(null);
   const [selected, setSelected] = useState(null);
   const [result, setResult] = useState(null);
@@ -64,11 +64,10 @@ const StudentWHGame = () => {
   const [seenIds, setSeenIds] = useState({ easy: [], medium: [], hard: [] });
   const [whFilter, setWhFilter] = useState("සියල්ල");
 
-  const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
   const WH_TYPES = ["සියල්ල", "කවුද", "කොහේ", "මොකද", "කවදා", "ඇයි"];
 
   useEffect(() => {
-    fetchQuestion("easy", [], "සියල්ල");
+    fetchQuestion(startLevel, [], "සියල්ල");
   }, []);
 
   const fetchQuestion = async (lvl, currentSeen, wh) => {
@@ -76,12 +75,10 @@ const StudentWHGame = () => {
     setResult(null);
     setSelected(null);
     setError("");
-
     const seen = currentSeen ?? seenIds[lvl];
     const seenParam = seen.length > 0 ? `&seen=${seen.join(",")}` : "";
     const whParam =
       wh !== "සියල්ල" ? `?wh_type=${encodeURIComponent(wh)}` : "?dummy=1";
-
     try {
       const res = await axios.get(
         `http://localhost:5000/api/rld_wh/get_question/${lvl}${whParam}${seenParam}`,
@@ -113,10 +110,6 @@ const StudentWHGame = () => {
   };
 
   const handleNext = () => fetchQuestion(level, seenIds[level], whFilter);
-  const handleLevel = (lvl) => {
-    setWhFilter("සියල්ල");
-    fetchQuestion(lvl, seenIds[lvl], "සියල්ල");
-  };
   const handleWHFilter = (wh) => {
     setWhFilter(wh);
     fetchQuestion(level, seenIds[level], wh);
@@ -133,12 +126,10 @@ const StudentWHGame = () => {
 
   return (
     <div>
-      <div>
-        <Header />
-      </div>
+      <ConfirmDialog />
+      <Header />
       <div className="font-sans min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 flex flex-col items-center justify-center py-10 px-4">
         <div className="w-full max-w-2xl border-4 border-indigo-300 rounded-3xl shadow-2xl bg-white p-8">
-          {/* Header */}
           <div className="text-center mb-6">
             <h2 className="text-2xl font-semibold text-indigo-800">
               WH ප්‍රශ්න ක්‍රියාකාරකම
@@ -149,20 +140,53 @@ const StudentWHGame = () => {
           </div>
 
           {/* Level tabs */}
-          <div className="flex justify-center gap-3 mb-4">
-            {["easy", "medium", "hard"].map((lvl) => (
-              <button
-                key={lvl}
-                onClick={() => handleLevel(lvl)}
-                className={`px-4 py-2 rounded font-semibold transition ${
-                  level === lvl
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {levelLabels[lvl]}
-              </button>
-            ))}
+          <div className="flex justify-center gap-3 mb-2 flex-wrap">
+            {ALL_LEVELS.map((lvl) => {
+              const isPermitted = allowedLevels.includes(lvl);
+              const isActive = level === lvl;
+              return (
+                <button
+                  key={lvl}
+                  onClick={() =>
+                    handleLevelClick(lvl, (l) => {
+                      setWhFilter("සියල්ල");
+                      fetchQuestion(l, seenIds[l], "සියල්ල");
+                    })
+                  }
+                  className={`relative px-5 py-2 rounded-full font-semibold text-sm border-2 transition-all duration-200
+                    ${
+                      isActive
+                        ? "bg-blue-500 text-white border-blue-500 shadow-md scale-105"
+                        : isPermitted
+                          ? "bg-white text-blue-600 border-blue-300 hover:bg-blue-50"
+                          : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
+                    }`}
+                >
+                  {levelLabels[lvl]}
+                  {isPermitted && (
+                    <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-400 border border-white" />
+                  )}
+                  {!isPermitted && (
+                    <span
+                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-amber-400 border border-white flex items-center justify-center text-white font-bold"
+                      style={{ fontSize: "8px" }}
+                    >
+                      !
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex justify-center gap-4 mb-4 text-xs text-gray-400">
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-green-400 inline-block" />
+              නිර්දේශිත
+            </span>
+            <span className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-amber-400 inline-block" />
+              නිර්දේශිත නොවේ
+            </span>
           </div>
 
           {/* WH filter */}
@@ -171,18 +195,13 @@ const StudentWHGame = () => {
               <button
                 key={wh}
                 onClick={() => handleWHFilter(wh)}
-                className={`px-3 py-1 rounded-full text-sm font-semibold border-2 transition ${
-                  whFilter === wh
-                    ? "bg-indigo-600 text-white border-indigo-600"
-                    : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"
-                }`}
+                className={`px-3 py-1 rounded-full text-sm font-semibold border-2 transition ${whFilter === wh ? "bg-indigo-600 text-white border-indigo-600" : "bg-white text-gray-600 border-gray-300 hover:border-indigo-400"}`}
               >
                 {wh}
               </button>
             ))}
           </div>
 
-          {/* Error */}
           {error && (
             <div className="text-center py-10">
               <p className="text-red-500 font-semibold">{error}</p>
@@ -194,21 +213,15 @@ const StudentWHGame = () => {
 
           {!error && question && (
             <div className="space-y-6">
-              {/* WH badge */}
               <div className="flex justify-center">
                 <span
-                  className={`px-6 py-2 rounded-full border-2 font-bold text-2xl ${
-                    WH_COLORS[question.wh_type] ||
-                    "bg-gray-100 text-gray-700 border-gray-300"
-                  }`}
+                  className={`px-6 py-2 rounded-full border-2 font-bold text-2xl ${WH_COLORS[question.wh_type] || "bg-gray-100 text-gray-700 border-gray-300"}`}
                 >
                   {question.wh_type} ?
                 </span>
               </div>
 
-              {/* Audio section */}
               <div className="bg-indigo-50 border border-indigo-200 rounded-2xl p-6 space-y-5">
-                {/* Scene audio — auto plays */}
                 <div className="text-center">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
                     1. දර්ශනය අසන්න
@@ -220,10 +233,7 @@ const StudentWHGame = () => {
                     autoPlay={true}
                   />
                 </div>
-
                 <div className="border-t border-indigo-200" />
-
-                {/* Question audio */}
                 <div className="text-center">
                   <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">
                     2. ප්‍රශ්නය අසන්න
@@ -241,24 +251,16 @@ const StudentWHGame = () => {
                 </div>
               </div>
 
-              {/* Text MCQ options */}
               <div>
                 <p className="text-center text-gray-600 font-medium mb-4">
                   නිවැරදි පිළිතුර තෝරන්න:
                 </p>
                 <div
-                  className={`grid gap-3 ${
-                    question.options.length === 2
-                      ? "grid-cols-2"
-                      : question.options.length === 3
-                        ? "grid-cols-3"
-                        : "grid-cols-2"
-                  }`}
+                  className={`grid gap-3 ${question.options.length === 2 ? "grid-cols-2" : question.options.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}
                 >
                   {question.options.map((opt, i) => {
                     const isSelected = selected === i;
                     const isCorrect = question.correct_index === i;
-
                     let cls =
                       "border-gray-300 bg-white text-gray-700 hover:border-indigo-500 hover:bg-indigo-50 cursor-pointer";
                     if (result) {
@@ -267,14 +269,13 @@ const StudentWHGame = () => {
                           "border-green-500 bg-green-100 text-green-800 cursor-default font-bold";
                       else if (isSelected)
                         cls =
-                          "border-red-400   bg-red-100   text-red-700   cursor-default";
+                          "border-red-400 bg-red-100 text-red-700 cursor-default";
                       else
                         cls =
-                          "border-gray-200  bg-gray-50   text-gray-400  cursor-default opacity-60";
+                          "border-gray-200 bg-gray-50 text-gray-400 cursor-default opacity-60";
                     } else if (isSelected) {
                       cls = "border-indigo-500 bg-indigo-50 text-indigo-700";
                     }
-
                     return (
                       <button
                         key={i}
@@ -299,22 +300,16 @@ const StudentWHGame = () => {
                 </div>
               </div>
 
-              {/* Result */}
               {result && (
                 <div
-                  className={`p-4 rounded-xl text-center font-semibold text-lg border ${
-                    result.correct
-                      ? "bg-green-100 text-green-800 border-green-300"
-                      : "bg-red-100   text-red-700   border-red-300"
-                  }`}
+                  className={`p-4 rounded-xl text-center font-semibold text-lg border ${result.correct ? "bg-green-100 text-green-800 border-green-300" : "bg-red-100 text-red-700 border-red-300"}`}
                 >
                   {result.correct
-                    ? "✅ නිවැරදියි! ශාබාෂ්!"
+                    ? "✅ නිවැරදියි!"
                     : `❌ වැරදියි! නිවැරදි පිළිතුර: ${question.options[result.correct_index].text}`}
                 </div>
               )}
 
-              {/* Next */}
               {result && (
                 <div className="flex justify-center gap-4 flex-wrap">
                   <button
@@ -323,21 +318,24 @@ const StudentWHGame = () => {
                   >
                     ඊළඟ ප්‍රශ්නය →
                   </button>
-                  {["easy", "medium", "hard"]
-                    .filter((l) => l !== level)
-                    .map((l) => (
-                      <button
-                        key={l}
-                        onClick={() => handleLevel(l)}
-                        className="py-2 px-5 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-lg transition"
-                      >
-                        {levelLabels[l]}
-                      </button>
-                    ))}
+                  {ALL_LEVELS.filter((l) => l !== level).map((l) => (
+                    <button
+                      key={l}
+                      onClick={() =>
+                        handleLevelClick(l, (lv) => {
+                          setWhFilter("සියල්ල");
+                          fetchQuestion(lv, seenIds[lv], "සියල්ල");
+                        })
+                      }
+                      className={`py-2 px-5 font-semibold rounded-lg transition ${allowedLevels.includes(l) ? "bg-gray-200 hover:bg-gray-300 text-gray-700" : "bg-amber-100 hover:bg-amber-200 text-amber-700"}`}
+                    >
+                      {levelLabels[l]}
+                      {!allowedLevels.includes(l) && " ⚠"}
+                    </button>
+                  ))}
                 </div>
               )}
 
-              {/* Score */}
               <div className="text-center text-indigo-700 font-semibold mt-2">
                 ලකුණු: {score} / {total}
               </div>
