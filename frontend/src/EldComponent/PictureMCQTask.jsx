@@ -52,7 +52,7 @@ const PictureMCQTask = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-indigo-200">
         <p className="text-lg font-semibold text-indigo-700">
-          Loading questions...
+          පූරණය වෙමින්...
         </p>
       </div>
     );
