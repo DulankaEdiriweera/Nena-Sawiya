@@ -76,7 +76,7 @@ const SequencingManage = () => {
           </button>
 
           <h2 className="text-3xl font-bold text-gray-800">
-            Story Completion Task Management
+            Sequence Completing Task Management
           </h2>
         </div>
 
