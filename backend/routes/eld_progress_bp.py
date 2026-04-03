@@ -43,3 +43,27 @@ def get_latest_progress():
         "previous_date": previous["created_at"],
         "latest_date": latest["created_at"]
     }), 200
+
+
+@eld_progress_bp.route("/latest_level", methods=["GET"])
+@jwt_required()
+def get_latest_level():
+
+    user_id = get_jwt_identity()
+
+    # Get latest assessment
+    latest = mongo.db.eld_assessments.find_one(
+        {"user_id": user_id},
+        sort=[("created_at", -1)]  # newest first
+    )
+
+    if not latest:
+        return jsonify({
+            "message": "No assessments found"
+        }), 404
+
+    return jsonify({
+        "latest_level": latest["eld_level"],   # Sinhala level
+        "latest_percentage": latest["overall_percentage"],
+        "date": latest["created_at"]
+    }), 200

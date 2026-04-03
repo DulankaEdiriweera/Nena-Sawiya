@@ -7,7 +7,7 @@ from database.db import init_db
 import pandas as pd
 from visualDiscrimination import preprocess_dataframe
 import json
-from datetime import datetime
+from datetime import timedelta
 import numpy as np
 from flask_jwt_extended import JWTManager
 from routes.auth_routes import auth_bp
@@ -45,6 +45,7 @@ from routes.vc_progress_bp import vc_progress_bp
 app = Flask(__name__)
 
 app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY")
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=60)
 jwt = JWTManager(app)
 
 CORS(app)  # allow all origins; for development only
