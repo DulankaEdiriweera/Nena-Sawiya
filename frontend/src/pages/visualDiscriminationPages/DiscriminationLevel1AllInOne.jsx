@@ -41,12 +41,12 @@ import Header from "../../Components/Header";
 
 
 const level1Questions = [
-  { questionImg: L1Q1, answers: [L1Q1A1, L1Q1A2, L1Q1A3, L1Q1A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },
-  { questionImg: L1Q2, answers: [L1Q2A1, L1Q2A2, L1Q2A3, L1Q2A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },
-  { questionImg: L1Q3, answers: [L1Q3A1, L1Q3A2, L1Q3A3, L1Q3A4], correctAnswer: 1, instruction: "🎨 නිවැරදි අකුර තෝරන්න" },
-  { questionImg: L1Q4, answers: [L1Q4A1, L1Q4A2, L1Q4A3, L1Q4A4], correctAnswer: 2, instruction: "🎨 නිවැරදි අංකය තෝරන්න" },
-  { questionImg: L1Q5Q5, answers: [L1Q5A1, L1Q5A2, L1Q5A3, L1Q5A4], correctAnswer: 1, instruction: "🎨 නිවැරදි හැඩතල තෝරන්න" },
-  { questionImg: L1Q6Q6, answers: [L1Q6A1, L1Q6A2, L1Q6A3, L1Q6A4], correctAnswer: 0, instruction: "🎨 නිවැරදි පිළිතුර තෝරන්න" },
+  { questionImg: L1Q1, answers: [L1Q1A1, L1Q1A2, L1Q1A3, L1Q1A4], correctAnswer: 2, instruction: "🎨 පහත පෙනෙන දිශාව වෙනස් කර ඇති අක්ශරයට අදාල  නිවැරදි   අක්ශරය තෝරන්න" },
+  { questionImg: L1Q2, answers: [L1Q2A1, L1Q2A2, L1Q2A3, L1Q2A4], correctAnswer: 2, instruction: "🎨 පහත පෙනෙන දිශාව වෙනස් කර ඇති අක්ශරයට අදාල  නිවැරදි   අක්ශරය තෝරන්න" },
+  { questionImg: L1Q3, answers: [L1Q3A1, L1Q3A2, L1Q3A3, L1Q3A4], correctAnswer: 1, instruction: "🎨 මෙම අකුරේ සරල ආකාරය කුමක්ද? (Select the simple form of this letter)" },
+  { questionImg: L1Q4, answers: [L1Q4A1, L1Q4A2, L1Q4A3, L1Q4A4], correctAnswer: 2, instruction: "🎨 පළමු පින්තූරයේ ඇති අංකයට සමාන අංකයක් තෝරන්න." },
+  { questionImg: L1Q5Q5, answers: [L1Q5A1, L1Q5A2, L1Q5A3, L1Q5A4], correctAnswer: 1, instruction: "🎨 ඊලගට එන හැඩය තෝරන්න" },
+  { questionImg: L1Q6Q6, answers: [L1Q6A1, L1Q6A2, L1Q6A3, L1Q6A4], correctAnswer: 0, instruction: "🎨 ඊලගට එන හැඩය තෝරන්න" },
 ];
 
 export default function DiscriminationQuestionLevel1() {
@@ -105,7 +105,7 @@ export default function DiscriminationQuestionLevel1() {
       <div>
         <div className="min-h-screen bg-gradient-to-br from-purple-100 via-blue-100 to-pink-100 flex items-center justify-center p-4">
       <div className="bg-white shadow-2xl rounded-3xl p-8 md:p-12 max-w-3xl w-full">
-        <h1 className="text-3xl font-bold text-blue-700 mb-2">🎯 Level 1 Discrimination Test</h1>
+        <h1 className="text-3xl font-bold text-blue-700 mb-2">🎯 මට්ටම 1 - දෘශ්‍ය විභේදන හැකියාව හදුනා ගැනීමේ පරීක්ෂණය </h1>
         <p className="text-xs text-gray-400 mb-4">
           ගැටළුව {currentIndex + 1} / {level1Questions.length}
         </p>

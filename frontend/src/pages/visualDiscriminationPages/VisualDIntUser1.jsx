@@ -3,6 +3,7 @@ import axios from "axios";
 import Header from "../../Components/Header";
 
 const API = "http://localhost:5000/api/vd_picture_mcq";
+const BASE = "http://localhost:5000";
 
 const LEVELS = [
   { id: "EASY",   label: "පහසු",   emoji: "🟢", color: "from-green-400 to-emerald-500",  bg: "bg-green-50",  border: "border-green-200",  ring: "ring-green-400" },
@@ -35,6 +36,25 @@ function GameInstructions() {
   );
 }
 
+// ── Popup Warning ──
+function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-7 max-w-sm w-full text-center border-4 border-amber-300">
+        <div className="text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-black text-gray-800 mb-2">මට්ටම් අවවාදය</h3>
+        <p className="text-gray-600 text-sm mb-6">
+          <span className="font-black text-purple-600">{recommended}</span> යනු නිර්දේශිත මට්ටමයි. ඔබට <span className="font-black text-amber-600">{selected}</span> සමඟ ඉදිරියට යාමට අවශ්‍යද?
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-3 border-2 border-gray-200 text-gray-600 font-black rounded-2xl hover:bg-gray-50">අවලංගු කරන්න</button>
+          <button onClick={onContinue} className="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black rounded-2xl hover:opacity-90">ඉදිරියට යන්න</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function UserVdPictureMCQ() {
   const [phase, setPhase] = useState("select");
   const [selectedLevel, setSelectedLevel] = useState(null);
@@ -44,6 +64,34 @@ export default function UserVdPictureMCQ() {
   const [loading, setLoading] = useState(false);
   const [currentQ, setCurrentQ] = useState(0);
   const [submitted, setSubmitted] = useState(false);
+
+  // ── Adaptive level state ──
+  const [recommendedLevel, setRecommendedLevel] = useState(null);
+  const [levelLoading, setLevelLoading]         = useState(true);
+  const [popup, setPopup]                       = useState(null);
+
+  useEffect(() => {
+    axios.get(`http://localhost:5000/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .then(r => setRecommendedLevel(r.data.recommended_level))
+      .catch(console.error)
+      .finally(() => setLevelLoading(false));
+  }, []);
+
+  const handleLevelClick = (lvl) => {
+    if (lvl.id === recommendedLevel) {
+      proceedWithLevel(lvl);
+    } else {
+      const recLevel = LEVELS.find(l => l.id === recommendedLevel);
+      setPopup({ lvl, recommended: recLevel?.label || recommendedLevel, selected: lvl.label });
+    }
+  };
+
+  const proceedWithLevel = (lvl) => {
+    axios.post(`http://localhost:5000/api/vd_levels/select_level`, { level: lvl.id }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .catch(console.error);
+    setPopup(null);
+    startChallenge(lvl);
+  };
 
   const startChallenge = async (level) => {
     setSelectedLevel(level);
@@ -87,25 +135,52 @@ export default function UserVdPictureMCQ() {
   const answeredCount = Object.keys(selectedAnswers).length;
   const nextLevel = getNextLevel(selectedLevel?.id);
 
-  // ── Level Select — NO instructions here ──
+  // ── Level Select ──
   if (phase === "select") return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
+      {popup && (
+        <LevelWarningPopup
+          recommended={popup.recommended}
+          selected={popup.selected}
+          onCancel={() => setPopup(null)}
+          onContinue={() => proceedWithLevel(popup.lvl)}
+        />
+      )}
       <div className="flex flex-col items-center p-6 pt-8">
         <div className="text-center mb-8">
           <div className="text-7xl mb-4 animate-bounce">👁️</div>
           <h1 className="text-4xl font-black text-purple-700 mb-2">වෙනස හොයමු!</h1>
           <p className="text-gray-500 text-lg">ඔබේ මට්ටම තෝරන්න</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-5">
-          {LEVELS.map(lvl => (
-            <button key={lvl.id} onClick={() => startChallenge(lvl)} disabled={loading}
-              className={`bg-gradient-to-br ${lvl.color} text-white font-black text-2xl px-10 py-8 rounded-3xl shadow-xl hover:scale-105 transition-transform flex flex-col items-center gap-2 disabled:opacity-60`}>
-              <span className="text-5xl">{lvl.emoji}</span>
-              {lvl.label}
-            </button>
-          ))}
-        </div>
+        {levelLoading ? (
+          <div className="text-purple-500 font-bold text-lg animate-pulse">මට්ටම් පූරණය වෙමින්...</div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-5">
+            {LEVELS.map(lvl => {
+              const isRecommended = lvl.id === recommendedLevel;
+              return (
+                <div key={lvl.id} className="relative">
+                  {isRecommended && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow">
+                      ⭐ නිර්දේශිතයි
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleLevelClick(lvl)}
+                    disabled={loading}
+                    className={`bg-gradient-to-br ${lvl.color} text-white font-black text-2xl px-10 py-8 rounded-3xl shadow-xl transition-transform flex flex-col items-center gap-2 disabled:opacity-60
+                      ${isRecommended ? "ring-4 ring-purple-400 scale-105 hover:scale-110" : "opacity-60 hover:opacity-80 hover:scale-105"}`}
+                  >
+                    <span className="text-5xl">{isRecommended ? lvl.emoji : "🔒"}</span>
+                    {lvl.label}
+                    {!isRecommended && <span className="text-xs font-bold opacity-80">නිර්දේශිත නොවේ</span>}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
         {loading && (
           <div className="mt-8 text-center">
             <div className="text-4xl animate-spin">🌀</div>
@@ -167,7 +242,7 @@ export default function UserVdPictureMCQ() {
     );
   }
 
-  // ── Playing Screen — instructions shown here ──
+  // ── Playing Screen ──
   const q = questions[currentQ];
   if (!q) return null;
   const isLast = currentQ === questions.length - 1;
@@ -175,8 +250,6 @@ export default function UserVdPictureMCQ() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
-
-      {/* Top bar */}
       <div className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center gap-4">
           <button onClick={() => setPhase("select")} className="p-2 rounded-xl text-gray-400 hover:bg-gray-100 transition">
@@ -195,11 +268,7 @@ export default function UserVdPictureMCQ() {
       </div>
 
       <div className="max-w-3xl mx-auto px-4 py-6">
-
-        {/* Instructions shown on game page */}
         <GameInstructions />
-
-        {/* Question card */}
         <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
           <p className="text-xl font-black text-gray-800 mb-4">{currentQ+1}. {q.question_text}</p>
           <div className="flex justify-center">
@@ -208,8 +277,6 @@ export default function UserVdPictureMCQ() {
               onError={e => e.target.src = "https://via.placeholder.com/300?text=No+Image"} />
           </div>
         </div>
-
-        {/* Answers */}
         <div className="bg-white rounded-3xl shadow-lg p-6 mb-4">
           <p className="text-sm font-bold text-gray-400 uppercase mb-4">🎯 නිවැරදි පිළිතුර තෝරන්න</p>
           <div className="grid grid-cols-5 gap-3">
@@ -242,8 +309,6 @@ export default function UserVdPictureMCQ() {
             })}
           </div>
         </div>
-
-        {/* Navigation */}
         <div className="flex justify-between items-center mb-4">
           <button onClick={() => setCurrentQ(c => Math.max(0, c-1))} disabled={currentQ === 0}
             className="bg-white border-2 border-gray-200 text-gray-600 font-bold px-5 py-3 rounded-2xl hover:bg-gray-50 disabled:opacity-40 transition">
@@ -261,8 +326,6 @@ export default function UserVdPictureMCQ() {
             </button>
           )}
         </div>
-
-        {/* Dots */}
         <div className="flex justify-center gap-2">
           {questions.map((_, qi) => (
             <button key={qi} onClick={() => setCurrentQ(qi)}
