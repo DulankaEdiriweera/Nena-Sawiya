@@ -7,11 +7,12 @@ from datetime import datetime
 # hard   -> 4 zones: left, right, top, bottom
 
 class RLD_Direction_Set:
-    def __init__(self, level, scene_image_url, question, options):
+    def __init__(self, level, scene_image_url, question, question_audio_url, options):
         self.category        = "Identify Direction - Drag Drop"
         self.level           = level            # "easy" | "medium" | "hard"
         self.scene_image_url = scene_image_url
         self.question        = question
+        self.question_audio_url = question_audio_url 
         self.options         = options          # [{ image_url, correct_zone }]
         self.created_at      = datetime.utcnow()
 
@@ -21,6 +22,7 @@ class RLD_Direction_Set:
             "level":           self.level,
             "scene_image_url": self.scene_image_url,
             "question":        self.question,
+            "question_audio_url":  self.question_audio_url,
             "options":         self.options,
             "created_at":      self.created_at,
         }

@@ -98,6 +98,9 @@ const DirectionalBody = ({ item }) => (
         {item.question}
       </p>
     )}
+    {item.question_audio_url && (
+      <audio controls src={item.question_audio_url} className="w-full h-9" />
+    )}
     <div className="space-y-1.5">
       {item.options?.map((o, i) => (
         <div

@@ -1,5 +1,4 @@
-// src/RldDirection/StudentDirectionGame.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import DirectionDragDrop from "./DirectionDragDrop";
 import Header from "../Components/Header";
@@ -8,6 +7,36 @@ import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
 const ALL_LEVELS = ["easy", "medium", "hard"];
 const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
 
+// ── AudioPlayer ───────────────────────────────────────────────────────────────
+const AudioPlayer = ({ src }) => {
+  const audioRef = useRef(null);
+  const [playing, setPlaying] = useState(false);
+
+  const toggle = () => {
+    if (!audioRef.current) return;
+    if (playing) {
+      audioRef.current.pause();
+      setPlaying(false);
+    } else {
+      audioRef.current.play();
+      setPlaying(true);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      <audio ref={audioRef} src={src} onEnded={() => setPlaying(false)} />
+      <button
+        onClick={toggle}
+        className={`w-9 h-9 flex items-center justify-center rounded-full shadow transition text-white text-lg ${playing ? "bg-indigo-700" : "bg-indigo-500 hover:bg-indigo-600"}`}
+      >
+        {playing ? "⏸" : "🔊"}
+      </button>
+    </div>
+  );
+};
+
+// ── Main Component ────────────────────────────────────────────────────────────
 const StudentDirectionGame = () => {
   const { allowedLevels, startLevel, handleLevelClick, ConfirmDialog } =
     useInterventionLevel();
@@ -22,7 +51,7 @@ const StudentDirectionGame = () => {
 
   useEffect(() => {
     fetchSet(startLevel);
-  }, []);
+  }, [startLevel]);
 
   const fetchSet = async (lvl) => {
     setLoading(true);
@@ -88,14 +117,13 @@ const StudentDirectionGame = () => {
                 <button
                   key={lvl}
                   onClick={() => handleLevelClick(lvl, fetchSet)}
-                  className={`relative px-5 py-2 rounded-full font-semibold text-sm border-2 transition-all duration-200
-                    ${
-                      isActive
-                        ? "bg-blue-500 text-white border-blue-500 shadow-md scale-105"
-                        : isPermitted
-                          ? "bg-white text-blue-600 border-blue-300 hover:bg-blue-50"
-                          : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
-                    }`}
+                  className={`relative px-5 py-2 rounded-full font-semibold text-sm border-2 transition-all duration-200 ${
+                    isActive
+                      ? "bg-blue-500 text-white border-blue-500 shadow-md scale-105"
+                      : isPermitted
+                        ? "bg-white text-blue-600 border-blue-300 hover:bg-blue-50"
+                        : "bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200"
+                  }`}
                 >
                   {levelLabels[lvl]}
                   {isPermitted && (
@@ -132,6 +160,19 @@ const StudentDirectionGame = () => {
 
           {!error && directionSet && (
             <div className="rounded-2xl p-6 border border-indigo-100 shadow-inner bg-gray-50">
+              {/* Question + Audio inline */}
+              <div className="flex items-center justify-center gap-3 mb-5">
+                <p className="text-base font-semibold text-gray-800 text-center">
+                  {directionSet.question}
+                </p>
+                {directionSet.question_audio_url && (
+                  <AudioPlayer
+                    key={`q-${directionSet.set_id}`}
+                    src={directionSet.question_audio_url}
+                  />
+                )}
+              </div>
+
               <DirectionDragDrop
                 key={level}
                 levelData={directionSet}
@@ -142,7 +183,15 @@ const StudentDirectionGame = () => {
           )}
 
           {result && (
-            <div className="mt-4 p-4 rounded bg-green-100 text-green-800 font-semibold text-center">
+            <div
+              className={`mt-4 p-4 rounded font-semibold text-center ${
+                result.score === 100
+                  ? "bg-green-100 text-green-800"
+                  : result.score >= 50
+                    ? "bg-yellow-100 text-yellow-800"
+                    : "bg-red-100 text-red-800"
+              }`}
+            >
               <p>මට්ටම: {levelLabels[level]}</p>
               <p>
                 ලකුණු: {result.score}% ({result.correct}/{result.total}{" "}

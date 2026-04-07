@@ -5,6 +5,11 @@ const LEVELS = ["easy", "medium", "hard"];
 const WH_TYPES = ["කවුද", "කොහේ", "මොකද", "කවදා", "ඇයි"];
 const ZONES = ["left", "right", "top", "bottom"];
 
+const isValidAudio = (file) => {
+  if (!file) return false;
+  return file.type?.startsWith("audio/") || file.type === "video/mp4";
+};
+
 const getId = (item) => item._id || item.set_id || item.question_id;
 
 // ── Shared atoms ──
@@ -22,36 +27,79 @@ export const EF = ({ label, children }) => (
   </div>
 );
 
-export const ImgFile = ({ url, onChange }) => (
-  <div className="space-y-1">
-    {url && (
-      <img
-        src={url}
-        className="h-16 rounded object-cover border border-gray-200"
-        alt=""
+export const AudioFile = ({ url, onChange }) => {
+  const [preview, setPreview] = useState(url || null);
+
+  const handleChange = (file) => {
+    if (!file) return;
+
+    // Validate audio type
+    if (!file.type.startsWith("audio/") && file.type !== "video/mp4") {
+      alert("Only audio files are allowed (MP3, WAV, etc.)");
+      return;
+    }
+
+    setPreview(URL.createObjectURL(file));
+    onChange(file);
+  };
+
+  return (
+    <div className="space-y-1">
+      {preview &&
+        (preview.endsWith(".mp4") ? (
+          <video controls src={preview} className="w-full h-32" />
+        ) : (
+          <audio controls src={preview} className="w-full h-8" />
+        ))}{" "}
+      <input
+        type="file"
+        accept="audio/*,video/mp4"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          if (
+            file &&
+            !file.type.startsWith("audio/") &&
+            file.type !== "video/mp4"
+          ) {
+            alert("Only audio (MP3/WAV) or MP4 video files are allowed");
+            e.target.value = "";
+            return;
+          }
+          handleChange(file);
+        }}
+        className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
       />
-    )}
-    <input
-      type="file"
-      accept="image/*"
-      onChange={(e) => onChange(e.target.files[0])}
-      className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
-    />
-  </div>
-);
+    </div>
+  );
+};
 
-export const AudioFile = ({ url, onChange }) => (
-  <div className="space-y-1">
-    {url && <audio controls src={url} className="w-full h-8" />}
-    <input
-      type="file"
-      accept="audio/*"
-      onChange={(e) => onChange(e.target.files[0])}
-      className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
-    />
-  </div>
-);
+export const ImgFile = ({ url, onChange }) => {
+  const [preview, setPreview] = useState(url || null);
 
+  const handleChange = (file) => {
+    if (!file) return;
+    setPreview(URL.createObjectURL(file));
+    onChange(file);
+  };
+
+  return (
+    <div className="space-y-1">
+      {preview && (
+        <img
+          src={preview}
+          className="h-16 rounded object-cover border border-gray-200"
+          alt=""
+        />
+      )}
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => handleChange(e.target.files[0])}
+        className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
+      />
+    </div>
+  );
+};
 const LevelSel = ({ value, onChange }) => (
   <EF label="Level">
     <select
@@ -124,6 +172,7 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
   const [level, setLevel] = useState(item.level || "easy");
   const [question, setQuestion] = useState(item.question || "");
   const [scene, setScene] = useState(null);
+  const [questionAudio, setQuestionAudio] = useState(null); // ← ADD THIS
   const [opts, setOpts] = useState(
     (item.options || []).map((o) => ({ ...o, newFile: null })),
   );
@@ -136,11 +185,17 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
   const save = async () => {
     setSaving(true);
     setErr("");
+    if (questionAudio && !isValidAudio(questionAudio)) {
+      setErr("Question audio must be a valid audio file.");
+      setSaving(false);
+      return;
+    }
     try {
       const fd = new FormData();
       fd.append("level", level);
       fd.append("question", question);
       if (scene) fd.append("scene_image", scene);
+      if (questionAudio) fd.append("question_audio", questionAudio); // ← ADD THIS
       fd.append(
         "options",
         JSON.stringify(
@@ -175,6 +230,9 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
       </EF>
       <EF label="Scene Image">
         <ImgFile url={item.scene_image_url} onChange={setScene} />
+      </EF>
+      <EF label="Question Audio">
+        <AudioFile url={item.question_audio_url} onChange={setQuestionAudio} />
       </EF>
       {opts.map((o, i) => (
         <div
@@ -492,6 +550,17 @@ export function WHEdit({ item, cat, onSaved, onCancel }) {
   const save = async () => {
     setSaving(true);
     setErr("");
+    if (sceneAudio && !isValidAudio(sceneAudio)) {
+      setErr("Scene audio must be a valid audio or mp4 file.");
+      setSaving(false);
+      return;
+    }
+
+    if (qAudio && !isValidAudio(qAudio)) {
+      setErr("Question audio must be a valid audio file.");
+      setSaving(false);
+      return;
+    }
     if (opts.some((o) => !o.trim())) {
       setErr("All 4 options required.");
       setSaving(false);
