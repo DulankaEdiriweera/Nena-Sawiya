@@ -3,7 +3,6 @@ import axios from "axios";
 
 const LEVELS = ["easy", "medium", "hard"];
 const WH_TYPES = ["කවුද", "කොහේ", "මොකද", "කවදා", "ඇයි"];
-const ZONES = ["left", "right", "top", "bottom"];
 const getZonesByLevel = (level) => {
   if (level === "easy") return ["left", "right"];
   return ["left", "right", "top", "bottom"];
