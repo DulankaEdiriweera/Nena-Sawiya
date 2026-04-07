@@ -43,8 +43,14 @@ const SequencingTask = () => {
   };
 
   const fetchActivities = async (level, n) => {
+    const token = localStorage.getItem("token");
     const res = await axios.get(
       `http://localhost:5000/api/sequencing_bp/level/${level}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
     const shuffled = shuffleArray(res.data);
     return shuffled.slice(0, n);
@@ -80,6 +86,7 @@ const SequencingTask = () => {
       } catch (err) {
         console.error("Error loading sequencing:", err);
         alert("ක්‍රියාකාරකම් ලබා ගැනීමේ දෝෂයක් ඇත");
+        window.location.href = "/login";
       } finally {
         setLoading(false);
       }
@@ -211,6 +218,18 @@ const SequencingTask = () => {
           <p className="text-center mb-6 font-semibold text-lg">
             ලකුණු: {score}
           </p>
+
+          {current.audio && (
+            <div className="flex justify-center mb-4">
+              <audio key={current.audio} controls className="w-full max-w-md">
+                <source
+                  src={`http://localhost:5000${current.audio}`}
+                  type="audio/mpeg"
+                />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          )}
 
           <h2 className="text-xl font-semibold text-center mb-4">
             {current.title}
