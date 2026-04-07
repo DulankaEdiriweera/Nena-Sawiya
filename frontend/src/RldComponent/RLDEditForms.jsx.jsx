@@ -4,6 +4,10 @@ import axios from "axios";
 const LEVELS = ["easy", "medium", "hard"];
 const WH_TYPES = ["කවුද", "කොහේ", "මොකද", "කවදා", "ඇයි"];
 const ZONES = ["left", "right", "top", "bottom"];
+const getZonesByLevel = (level) => {
+  if (level === "easy") return ["left", "right"];
+  return ["left", "right", "top", "bottom"];
+};
 
 const isValidAudio = (file) => {
   if (!file) return false;
@@ -247,7 +251,7 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
               onChange={(e) => upd(i, "correct_zone", e.target.value)}
               className={sel}
             >
-              {ZONES.map((z) => (
+              {getZonesByLevel(level).map((z) => (
                 <option key={z} value={z}>
                   {z}
                 </option>
