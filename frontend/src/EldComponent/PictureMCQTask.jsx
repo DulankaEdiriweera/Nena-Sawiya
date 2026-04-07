@@ -59,6 +59,7 @@ const PictureMCQTask = () => {
       } catch (err) {
         console.error("Error loading MCQs:", err);
         alert("ප්‍රශ්න ලබා ගැනීමේ දෝෂයක් ඇත");
+        window.location.href = "/login";
       } finally {
         setLoading(false);
       }
