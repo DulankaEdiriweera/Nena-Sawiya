@@ -32,44 +32,32 @@ export const EF = ({ label, children }) => (
 
 export const AudioFile = ({ url, onChange }) => {
   const [preview, setPreview] = useState(url || null);
+  const [isVideo, setIsVideo] = useState(false); // ✅ move inside component
 
   const handleChange = (file) => {
     if (!file) return;
-
-    // Validate audio type
     if (!file.type.startsWith("audio/") && file.type !== "video/mp4") {
-      alert("Only audio files are allowed (MP3, WAV, etc.)");
+      alert("Only audio (MP3/WAV) or MP4 video files are allowed");
       return;
     }
-
-    setPreview(URL.createObjectURL(file));
+    const url = URL.createObjectURL(file);
+    setPreview(url);
+    setIsVideo(file.type === "video/mp4"); // track if file is MP4
     onChange(file);
   };
 
   return (
     <div className="space-y-1">
       {preview &&
-        (preview.endsWith(".mp4") ? (
+        (isVideo ? (
           <video controls src={preview} className="w-full h-32" />
         ) : (
           <audio controls src={preview} className="w-full h-8" />
-        ))}{" "}
+        ))}
       <input
         type="file"
         accept="audio/*,video/mp4"
-        onChange={(e) => {
-          const file = e.target.files[0];
-          if (
-            file &&
-            !file.type.startsWith("audio/") &&
-            file.type !== "video/mp4"
-          ) {
-            alert("Only audio (MP3/WAV) or MP4 video files are allowed");
-            e.target.value = "";
-            return;
-          }
-          handleChange(file);
-        }}
+        onChange={(e) => handleChange(e.target.files[0])}
         className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
       />
     </div>
@@ -103,6 +91,7 @@ export const ImgFile = ({ url, onChange }) => {
     </div>
   );
 };
+
 const LevelSel = ({ value, onChange }) => (
   <EF label="Level">
     <select
@@ -175,7 +164,7 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
   const [level, setLevel] = useState(item.level || "easy");
   const [question, setQuestion] = useState(item.question || "");
   const [scene, setScene] = useState(null);
-  const [questionAudio, setQuestionAudio] = useState(null); // ← ADD THIS
+  const [questionAudio, setQuestionAudio] = useState(null);
   const [opts, setOpts] = useState(
     (item.options || []).map((o) => ({ ...o, newFile: null })),
   );
@@ -198,7 +187,7 @@ export function DirectionalEdit({ item, cat, onSaved, onCancel }) {
       fd.append("level", level);
       fd.append("question", question);
       if (scene) fd.append("scene_image", scene);
-      if (questionAudio) fd.append("question_audio", questionAudio); // ← ADD THIS
+      if (questionAudio) fd.append("question_audio", questionAudio);
       fd.append(
         "options",
         JSON.stringify(
@@ -446,6 +435,9 @@ export function CategorizeEdit({ item, cat, onSaved, onCancel }) {
 export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
   const [level, setLevel] = useState(item.level || "easy");
   const [passage, setPassage] = useState(item.passage || "");
+  const [audioFile, setAudioFile] = useState(null);
+  const [audioPreview, setAudioPreview] = useState(item.audio || null);
+  const [removeAudio, setRemoveAudio] = useState(false);
   const [qs, setQs] = useState(
     (item.questions || []).map((q) => ({
       question: q.question || "",
@@ -458,6 +450,19 @@ export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
   );
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState("");
+
+  const handleAudioChange = (file) => {
+    if (!file) return;
+    setAudioFile(file);
+    setAudioPreview(URL.createObjectURL(file));
+    setRemoveAudio(false);
+  };
+
+  const handleRemoveAudio = () => {
+    setAudioFile(null);
+    setAudioPreview(null);
+    setRemoveAudio(true);
+  };
 
   const updQ = (qi, f, v) =>
     setQs((p) => p.map((q, i) => (i === qi ? { ...q, [f]: v } : q)));
@@ -481,10 +486,17 @@ export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
       }
     }
     try {
-      await axios.put(`${cat.base}/${cat.update}/${item._id}`, {
-        level,
-        passage,
-        questions: qs,
+      const fd = new FormData();
+      fd.append("level", level);
+      fd.append("passage", passage);
+      fd.append("questions", JSON.stringify(qs));
+      if (audioFile) {
+        fd.append("audio", audioFile);
+      } else if (removeAudio) {
+        fd.append("remove_audio", "true");
+      }
+      await axios.put(`${cat.base}/${cat.update}/${getId(item)}`, fd, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
       onSaved();
     } catch (e) {
@@ -496,6 +508,7 @@ export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
   return (
     <div className="space-y-3 pt-1">
       <LevelSel value={level} onChange={setLevel} />
+
       <EF label="Passage">
         <textarea
           value={passage}
@@ -504,6 +517,47 @@ export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
           className={inp}
         />
       </EF>
+
+      {/* Passage Audio */}
+      <EF label="Passage Audio">
+        {audioPreview ? (
+          <div className="space-y-1.5">
+            <audio controls src={audioPreview} className="w-full h-9" />
+            <div className="flex gap-2">
+              <label className="flex-1 text-center text-xs py-1 px-2 border border-gray-200 rounded-lg cursor-pointer bg-white hover:bg-gray-50 text-gray-600">
+                Replace
+                <input
+                  type="file"
+                  accept="audio/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const f = e.target.files[0];
+                    if (f) handleAudioChange(f);
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                onClick={handleRemoveAudio}
+                className="flex-1 text-xs py-1 px-2 border border-red-200 rounded-lg text-red-500 hover:bg-red-50"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        ) : (
+          <input
+            type="file"
+            accept="audio/*"
+            onChange={(e) => {
+              const f = e.target.files[0];
+              if (f) handleAudioChange(f);
+            }}
+            className="w-full text-xs text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border file:border-gray-200 file:text-xs file:bg-gray-50"
+          />
+        )}
+      </EF>
+
       {qs.map((q, qi) => (
         <div
           key={qi}
@@ -528,6 +582,7 @@ export function ComprehensionEdit({ item, cat, onSaved, onCancel }) {
           ))}
         </div>
       ))}
+
       <Err msg={err} />
       <SaveRow onSave={save} onCancel={onCancel} saving={saving} />
     </div>
@@ -558,7 +613,6 @@ export function WHEdit({ item, cat, onSaved, onCancel }) {
       setSaving(false);
       return;
     }
-
     if (qAudio && !isValidAudio(qAudio)) {
       setErr("Question audio must be a valid audio file.");
       setSaving(false);

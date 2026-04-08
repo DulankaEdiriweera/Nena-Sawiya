@@ -6,8 +6,6 @@ rld_progress_bp = Blueprint("rld_progress_bp", __name__)
 
 # -------------------------------
 # Progress Checking Route (needs 2+ records)
-# -------------------------------
-
 @rld_progress_bp.route("/latest_rld_progress", methods=["GET"])
 @jwt_required()
 def get_latest_rld_progress():
