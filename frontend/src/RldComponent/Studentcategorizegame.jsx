@@ -1,5 +1,5 @@
 // src/RldCategorize/StudentCategorizeGame.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import Header from "../Components/Header";
 import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
@@ -21,6 +21,33 @@ const StudentCategorizeGame = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showWarning, setShowWarning] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef(null);
+
+  useEffect(() => {
+    const video = document.createElement("video");
+    video.src = "http://localhost:5000/rld_uploads/Categorization.mp4";
+    video.preload = "auto";
+    video.onended = () => setIsPlaying(false);
+    audioRef.current = video;
+    return () => {
+      video.pause();
+      audioRef.current = null;
+    };
+  }, []);
+
+  const handleAudioToggle = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+      audio.currentTime = 0;
+      setIsPlaying(false);
+    } else {
+      audio.play().catch((e) => console.error("Audio play failed:", e));
+      setIsPlaying(true);
+    }
+  };
 
   useEffect(() => {
     fetchSet(startLevel);
@@ -33,6 +60,11 @@ const StudentCategorizeGame = () => {
     setDropped({});
     setDragItem(null);
     setShowWarning(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
     try {
       const res = await axios.get(
         `http://localhost:5000/api/rld_categorize/get_set/${lvl}`,
@@ -112,8 +144,27 @@ const StudentCategorizeGame = () => {
             <h2 className="text-2xl font-semibold text-indigo-800">
               වර්ගීකරණ ක්‍රියාකාරකම
             </h2>
-            <p className="text-gray-500 mt-1 text-sm">
+            <p className="text-gray-500 mt-1 text-sm flex items-center justify-center gap-2">
               රූපය නිවැරදි බෑගයට ඇදගෙන දමන්න
+              <button
+                onClick={handleAudioToggle}
+                title={isPlaying ? "නවත්වන්න" : "ශ්‍රව්‍ය උපදෙස"}
+                className={`transition-colors focus:outline-none ${isPlaying ? "text-indigo-600 animate-pulse" : "text-indigo-400 hover:text-indigo-600"}`}
+                aria-label="Play instruction audio"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-8 h-8"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                >
+                  {isPlaying ? (
+                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
+                  ) : (
+                    <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 7.97v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77 0-4.28-2.99-7.86-7-8.77z" />
+                  )}
+                </svg>
+              </button>
             </p>
           </div>
 
