@@ -118,10 +118,6 @@ const DirectionDragDrop = ({ levelData, onSubmit, showResults = false }) => {
 
   return (
     <div>
-      <h4 className="text-lg font-semibold text-gray-800 mb-6 text-center">
-        {levelData.question}
-      </h4>
-
       {/* ── Central layout: zones around the scene image ── */}
       <div className="flex flex-col items-center gap-2">
         {/* Top zone */}

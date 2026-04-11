@@ -3,14 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
 
 const ACTIVITIES = [
-  {
-    path: "/vcJigsawList",
-    emoji: "🧩",
-    label: "රූප ප්‍රහේලිකා",
-    sub: "Jigsaw Puzzle",
-    bg: "from-yellow-200 to-amber-200",
-  },
-  {
+    {
     path: "/vcPicCom",
     emoji: "🖼️",
     label: "පිංතූර සම්පූර්ණ කරමු",
@@ -24,6 +17,14 @@ const ACTIVITIES = [
     sub: "Shadow Match",
     bg: "from-purple-200 to-pink-200",
   },
+  {
+    path: "/vcJigsawList",
+    emoji: "🧩",
+    label: "රූප ප්‍රහේලිකා",
+    sub: "Jigsaw Puzzle",
+    bg: "from-yellow-200 to-amber-200",
+  },
+
 ];
 
 export default function VCStudentDashboard() {

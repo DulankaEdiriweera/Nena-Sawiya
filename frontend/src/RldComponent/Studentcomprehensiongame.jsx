@@ -1,9 +1,9 @@
-// src/RldComprehension/StudentComprehensionGame.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Header from "../Components/Header";
 import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
 
+const BASE_URL = "http://localhost:5000";
 const ALL_LEVELS = ["easy", "medium", "hard"];
 const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
 const optionLabels = ["A", "B", "C", "D"];
@@ -13,6 +13,7 @@ const StudentComprehensionGame = () => {
     useInterventionLevel();
 
   const [passage, setPassage] = useState("");
+  const [passageAudio, setPassageAudio] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [passageId, setPassageId] = useState("");
   const [level, setLevel] = useState(startLevel);
@@ -34,14 +35,25 @@ const StudentComprehensionGame = () => {
     setError("");
     setSelected([]);
     setPassage("");
+    setPassageAudio(null);
     setQuestions([]);
     setShowWarning(false);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/rld_comprehension/get_passage/${lvl}`,
+        `${BASE_URL}/api/rld_comprehension/get_passage/${lvl}`,
       );
       setPassageId(res.data._id);
       setPassage(res.data.passage);
+
+      const audio = res.data.audio;
+      if (audio) {
+        setPassageAudio(
+          audio.startsWith("http") ? audio : `${BASE_URL}${audio}`,
+        );
+      } else {
+        setPassageAudio(null);
+      }
+
       setQuestions(res.data.questions);
       setSelected(Array(res.data.questions.length).fill(null));
       setLevel(lvl);
@@ -69,7 +81,7 @@ const StudentComprehensionGame = () => {
     }
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/rld_comprehension/check_answers",
+        `${BASE_URL}/api/rld_comprehension/check_answers`,
         { passage_id: passageId, answers: selected },
       );
       setResult(res.data);
@@ -100,7 +112,7 @@ const StudentComprehensionGame = () => {
               කියවීම් අවබෝධය
             </h2>
             <p className="text-gray-500 mt-1 text-sm">
-              Passage කියවා නිවැරදි පිළිතුර ක්ලික් කරන්න
+              ඡේදය කියවා නිවැරදි පිළිතුර ක්ලික් කරන්න
             </p>
           </div>
 
@@ -160,10 +172,26 @@ const StudentComprehensionGame = () => {
 
           {!error && passage && (
             <>
+              {/* Passage Card */}
               <div className="bg-amber-50 border border-amber-300 rounded-2xl p-5 mb-6">
                 <p className="text-xs text-amber-600 font-semibold mb-2 uppercase tracking-wide">
                   📖 කියවන්න
                 </p>
+
+                {/* Audio player — shown only when passage has audio */}
+                {passageAudio && (
+                  <div className="mb-3">
+                    <p className="text-xs text-amber-600 font-semibold mb-1.5 flex items-center gap-1">
+                      🔊 <span>ඡේදය ශ්‍රවණය කරන්න</span>
+                    </p>
+                    <audio
+                      controls
+                      src={passageAudio}
+                      className="w-full h-9 rounded-lg"
+                    />
+                  </div>
+                )}
+
                 <p className="text-base leading-relaxed text-gray-800 font-medium">
                   {passage}
                 </p>
@@ -171,7 +199,13 @@ const StudentComprehensionGame = () => {
 
               {result && (
                 <div
-                  className={`mb-6 p-4 rounded-xl text-center font-semibold border ${result.score === result.total ? "bg-green-100 text-green-800 border-green-300" : result.score >= result.total / 2 ? "bg-yellow-100 text-yellow-800 border-yellow-300" : "bg-red-100 text-red-700 border-red-300"}`}
+                  className={`mb-6 p-4 rounded-xl text-center font-semibold border ${
+                    result.score === result.total
+                      ? "bg-green-100 text-green-800 border-green-300"
+                      : result.score >= result.total / 2
+                        ? "bg-yellow-100 text-yellow-800 border-yellow-300"
+                        : "bg-red-100 text-red-700 border-red-300"
+                  }`}
                 >
                   <p className="text-lg">
                     {result.score === result.total
@@ -235,7 +269,17 @@ const StudentComprehensionGame = () => {
                               disabled={!!result}
                             >
                               <span
-                                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${result ? (isCorrect ? "bg-green-500 text-white" : isWrong ? "bg-red-500 text-white" : "bg-gray-200 text-gray-500") : isSelected ? "bg-indigo-500 text-white" : "bg-gray-100 text-gray-500"}`}
+                                className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                                  result
+                                    ? isCorrect
+                                      ? "bg-green-500 text-white"
+                                      : isWrong
+                                        ? "bg-red-500 text-white"
+                                        : "bg-gray-200 text-gray-500"
+                                    : isSelected
+                                      ? "bg-indigo-500 text-white"
+                                      : "bg-gray-100 text-gray-500"
+                                }`}
                               >
                                 {result
                                   ? isCorrect
@@ -266,7 +310,11 @@ const StudentComprehensionGame = () => {
                   <button
                     onClick={handleSubmit}
                     disabled={!allAnswered}
-                    className={`py-2 px-10 rounded-lg shadow-md font-semibold transition ${allAnswered ? "bg-indigo-600 hover:bg-indigo-700 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"}`}
+                    className={`py-2 px-10 rounded-lg shadow-md font-semibold transition ${
+                      allAnswered
+                        ? "bg-indigo-600 hover:bg-indigo-700 text-white"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                    }`}
                   >
                     ඉදිරිපත් කරන්න
                   </button>
@@ -285,7 +333,11 @@ const StudentComprehensionGame = () => {
                     <button
                       key={l}
                       onClick={() => handleLevelClick(l, fetchPassage)}
-                      className={`py-2 px-5 font-semibold rounded-lg transition ${allowedLevels.includes(l) ? "bg-gray-200 hover:bg-gray-300 text-gray-700" : "bg-amber-100 hover:bg-amber-200 text-amber-700"}`}
+                      className={`py-2 px-5 font-semibold rounded-lg transition ${
+                        allowedLevels.includes(l)
+                          ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+                          : "bg-amber-100 hover:bg-amber-200 text-amber-700"
+                      }`}
                     >
                       {levelLabels[l]}
                       {!allowedLevels.includes(l) && " ⚠"}
