@@ -23,9 +23,34 @@ const SequencingTask = () => {
     return shuffled;
   };
 
+  const fetchUserLevel = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get("http://localhost:5000/api/eld/latest_level", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data.latest_level;
+  };
+
+  const getAllowedLevels = (level) => {
+    if (level === "දුර්වල") return ["EASY", "MEDIUM", "HARD"];
+    if (level === "සාමාන්‍ය") return ["MEDIUM", "HARD"];
+    if (level === "ඉතා හොදයි") return ["HARD"];
+    return ["EASY", "MEDIUM", "HARD"];
+  };
+
   const fetchActivities = async (level, n) => {
+    const token = localStorage.getItem("token");
     const res = await axios.get(
       `http://localhost:5000/api/sequencing_bp/level/${level}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
     );
     const shuffled = shuffleArray(res.data);
     return shuffled.slice(0, n);
@@ -33,22 +58,38 @@ const SequencingTask = () => {
 
   useEffect(() => {
     const loadData = async () => {
-      setLoading(true);
+      try {
+        setLoading(true);
 
-      const easy = await fetchActivities("EASY", 2);
-      const medium = await fetchActivities("MEDIUM", 2);
-      const hard = await fetchActivities("HARD", 2);
+        //1. Get user level
+        const level = await fetchUserLevel();
 
-      const all = [...easy, ...medium, ...hard];
-      setActivities(all);
+        //2. Convert to allowed difficulty levels
+        const allowedLevels = getAllowedLevels(level);
 
-      if (all.length > 0) {
-        const shuffledImages = shuffleArray(all[0].images);
-        setAvailableImages(shuffledImages);
-        setPlacedImages(new Array(shuffledImages.length).fill(null));
+        //3. Fetch activities dynamically
+        let all = [];
+
+        for (let lvl of allowedLevels) {
+          const data = await fetchActivities(lvl, 2);
+          all = [...all, ...data];
+        }
+
+        setActivities(all);
+
+        // Setup first activity
+        if (all.length > 0) {
+          const shuffledImages = shuffleArray(all[0].images);
+          setAvailableImages(shuffledImages);
+          setPlacedImages(new Array(shuffledImages.length).fill(null));
+        }
+      } catch (err) {
+        console.error("Error loading sequencing:", err);
+        alert("ක්‍රියාකාරකම් ලබා ගැනීමේ දෝෂයක් ඇත");
+        window.location.href = "/login";
+      } finally {
+        setLoading(false);
       }
-
-      setLoading(false);
     };
 
     loadData();
@@ -141,6 +182,12 @@ const SequencingTask = () => {
     }
   };
 
+  const levelMapSinhala = {
+    EASY: "පහසු",
+    MEDIUM: "මධ්‍යම",
+    HARD: "අපහසු",
+  };
+
   return (
     <div>
       <div>
@@ -152,13 +199,37 @@ const SequencingTask = () => {
             නිවැරදි අනුපිළිවෙල තෝරා ගැනීමේ ක්‍රියාකාරකම
           </h1>
 
-          <p className="text-center mb-2 font-semibold text-indigo-600">
-            Level: {current.level}
-          </p>
+          <div className="flex justify-center mb-4">
+            <button
+              className={`text-sm px-4 py-1 rounded-full font-semibold shadow-md cursor-default
+      ${
+        current.level === "EASY"
+          ? "bg-green-200 text-green-800"
+          : current.level === "MEDIUM"
+            ? "bg-yellow-200 text-yellow-800"
+            : "bg-red-200 text-red-800"
+      }
+    `}
+            >
+              {levelMapSinhala[current.level] || current.level}
+            </button>
+          </div>
 
           <p className="text-center mb-6 font-semibold text-lg">
-            Score: {score}
+            ලකුණු: {score}
           </p>
+
+          {current.audio && (
+            <div className="flex justify-center mb-4">
+              <audio key={current.audio} controls className="w-full max-w-md">
+                <source
+                  src={`http://localhost:5000${current.audio}`}
+                  type="audio/mpeg"
+                />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          )}
 
           <h2 className="text-xl font-semibold text-center mb-4">
             {current.title}
@@ -191,7 +262,9 @@ const SequencingTask = () => {
                       className="w-full h-full object-cover rounded-lg"
                     />
                   ) : (
-                    <span className="text-gray-400 text-xl p-6">මෙතනට දාන්න</span>
+                    <span className="text-gray-400 text-xl p-6">
+                      මෙතනට දාන්න
+                    </span>
                   )}
                 </div>
               );

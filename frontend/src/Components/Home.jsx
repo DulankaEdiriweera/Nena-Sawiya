@@ -108,7 +108,7 @@ const Home = () => {
             <p className="text-base sm:text-lg md:text-xl text-gray-800 mb-4 leading-relaxed">
               🌟{" "}
               <strong className="text-purple-700">
-                අපේ වෙබ් අඩවිය විශේෂයි ඇයි?
+                අපේ වෙබ් අඩවිය විශේෂ ඇයි?
               </strong>
             </p>
             <p className="text-sm sm:text-base md:text-lg text-gray-700 mb-3 leading-relaxed">

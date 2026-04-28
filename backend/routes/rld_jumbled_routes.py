@@ -52,7 +52,7 @@ def add_jumbled_set():
 
 
 # GET /api/rld_jumbled/get_jumbled/<level>?seen=id1,id2,id3
-# ✅ Excludes ALL seen IDs so same student never gets a repeat in one session
+# Excludes ALL seen IDs so same student never gets a repeat in one session
 
 @rld_jumbled_bp.route("/get_jumbled/<level>", methods=["GET", "OPTIONS"])
 @cross_origin()

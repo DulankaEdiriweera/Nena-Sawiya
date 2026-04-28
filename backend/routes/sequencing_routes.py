@@ -19,7 +19,7 @@ def add_sequencing_activity():
     correct_order = list(map(int, correct_order_str.split(",")))
 
     images = request.files.getlist("images")  # multiple images
-
+    
     os.makedirs(current_app.config['UPLOAD_FOLDER'], exist_ok=True)
 
     image_list = []
@@ -39,10 +39,21 @@ def add_sequencing_activity():
 
         image_id += 1
 
+    audio = request.files.get("audio")
+    audio_url = None
+
+    if audio:
+        audio_filename = secure_filename(audio.filename)
+        audio_path = os.path.join(current_app.config['UPLOAD_FOLDER'], audio_filename)
+        audio.save(audio_path)
+
+        audio_url = f"/uploads/{audio_filename}"
+
     record = {
         "level": level.upper(),
         "title": title,
         "images": image_list,
+        "audio": audio_url,
         "correct_order": correct_order,
         "task_number": task_number,
         "created_at": datetime.utcnow()

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Header from "../Components/Header"
+import Header from "../Components/Header";
 
 const PictureMCQTask = () => {
   const [mcqs, setMcqs] = useState([]);
@@ -8,6 +8,25 @@ const PictureMCQTask = () => {
   const [score, setScore] = useState(0);
   const [selected, setSelected] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const fetchUserLevel = async () => {
+    const token = localStorage.getItem("token");
+
+    const res = await axios.get("http://localhost:5000/api/eld/latest_level", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return res.data.latest_level;
+  };
+
+  const getAllowedLevels = (level) => {
+    if (level === "දුර්වල") return ["EASY", "MEDIUM", "HARD"];
+    if (level === "සාමාන්‍ය") return ["MEDIUM", "HARD"];
+    if (level === "ඉතා හොදයි") return ["HARD"];
+    return ["EASY", "MEDIUM", "HARD"];
+  };
 
   const fetchMCQs = async (level) => {
     const res = await axios.get(
@@ -19,13 +38,33 @@ const PictureMCQTask = () => {
 
   useEffect(() => {
     const loadMCQs = async () => {
-      setLoading(true);
-      const easy = await fetchMCQs("EASY");
-      const medium = await fetchMCQs("MEDIUM");
-      const hard = await fetchMCQs("HARD");
-      setMcqs([...easy, ...medium, ...hard]);
-      setLoading(false);
+      try {
+        setLoading(true);
+
+        //1. Get user level
+        const level = await fetchUserLevel();
+
+        //2. Convert to difficulty levels
+        const allowedLevels = getAllowedLevels(level);
+
+        //3. Fetch MCQs dynamically
+        let allMCQs = [];
+
+        for (let lvl of allowedLevels) {
+          const data = await fetchMCQs(lvl);
+          allMCQs = [...allMCQs, ...data];
+        }
+
+        setMcqs(allMCQs);
+      } catch (err) {
+        console.error("Error loading MCQs:", err);
+        alert("ප්‍රශ්න ලබා ගැනීමේ දෝෂයක් ඇත");
+        window.location.href = "/login";
+      } finally {
+        setLoading(false);
+      }
     };
+
     loadMCQs();
   }, []);
 
@@ -51,13 +90,17 @@ const PictureMCQTask = () => {
   if (loading)
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-blue-100 to-indigo-200">
-        <p className="text-lg font-semibold text-indigo-700">
-          Loading questions...
-        </p>
+        <p className="text-lg font-semibold text-indigo-700">පූරණය වෙමින්...</p>
       </div>
     );
 
   const currentMCQ = mcqs[currentIndex];
+
+  const levelMapSinhala = {
+    EASY: "පහසු",
+    MEDIUM: "මධ්‍යම",
+    HARD: "අපහසු",
+  };
 
   return (
     <div>
@@ -76,9 +119,19 @@ const PictureMCQTask = () => {
               ප්‍රශ්නය {currentIndex + 1} of {mcqs.length}
             </p>
             <p className="mt-3 font-semibold text-indigo-700">ලකුණු: {score}</p>
-            <p className="text-sm text-gray-600 mt-1">
-              Level: {currentMCQ.level}
-            </p>
+            <button
+              className={`text-sm mt-1 px-4 py-1 rounded-full font-semibold shadow-md cursor-default
+    ${
+      currentMCQ.level === "EASY"
+        ? "bg-green-200 text-green-800"
+        : currentMCQ.level === "MEDIUM"
+          ? "bg-yellow-200 text-yellow-800"
+          : "bg-red-200 text-red-800"
+    }
+  `}
+            >
+              {levelMapSinhala[currentMCQ.level] || currentMCQ.level}
+            </button>
           </div>
 
           {/* Image Section */}
