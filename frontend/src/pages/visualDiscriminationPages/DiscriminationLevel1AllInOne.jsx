@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react"; //new
 import { useNavigate } from "react-router-dom";
+
 
 
 import L1Q1 from "../../Assets/visualD/L1Q1.png";
@@ -39,6 +40,7 @@ import L1Q6A3 from "../../Assets/visualD/L1Q6A3.jpg";
 import L1Q6A4 from "../../Assets/visualD/L1Q6A4.jpg";
 import Header from "../../Components/Header";
 
+import instructionAudio from "../../Assets/visualD/audio/L1.mp4";
 
 const level1Questions = [
   { questionImg: L1Q1, answers: [L1Q1A1, L1Q1A2, L1Q1A3, L1Q1A4], correctAnswer: 2, instruction: "🎨 පහත පෙනෙන දිශාව වෙනස් කර ඇති අක්ශරයට අදාල  නිවැරදි   අක්ශරය තෝරන්න" },
@@ -58,9 +60,43 @@ export default function DiscriminationQuestionLevel1() {
   const navigate = useNavigate();
   const current = level1Questions[currentIndex];
 
+  //new
+
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const handleSelect = (index) => setSelectedAnswer(index);
 
+  // voice instructions
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+
   const handleNext = () => {
+    if (audioRef.current) {
+  audioRef.current.pause();
+  audioRef.current.currentTime = 0;
+  setIsPlaying(false);
+}
     if (selectedAnswer === null) {
       alert("කරුණාකර පිළිතුරු තෝරන්න! 👆");
       return;
@@ -109,6 +145,40 @@ export default function DiscriminationQuestionLevel1() {
         <p className="text-xs text-gray-400 mb-4">
           ගැටළුව {currentIndex + 1} / {level1Questions.length}
         </p>
+        {/*audio ui*/}
+<div className="mb-4 flex flex-col items-center gap-3">
+  <div className="flex gap-3">
+    {!isPlaying ? (
+      <button
+        onClick={handlePlay}
+        className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+      >
+        ▶️ උපදෙස් වලට සවන් දෙන්න
+      </button>
+    ) : (
+      <button
+        onClick={handlePause}
+        className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+      >
+        ⏸ විරාම කරන්න
+      </button>
+    )}
+
+    <button
+      onClick={handleReplay}
+      className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+    >
+      🔁 උපදෙස් වලට නැවත සවන් දෙන්න
+    </button>
+  </div>
+
+  <audio
+    ref={audioRef}
+    onEnded={() => setIsPlaying(false)}
+  >
+    <source src={instructionAudio} type="audio/mpeg" />
+  </audio>
+</div>
         <p className="text-lg text-gray-700 mb-6">{current.instruction}</p>
 
         <div className="mb-6 flex justify-center">

@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Header from "../../Components/Header";
+import instructionAudio from "../../Assets/visualD/audio/spotdiff.mp4";
 
 const API = "http://localhost:5000/api/vd_picture_mcq";
 const BASE = "http://localhost:5000";
@@ -70,12 +71,47 @@ export default function UserVdPictureMCQ() {
   const [levelLoading, setLevelLoading]         = useState(true);
   const [popup, setPopup]                       = useState(null);
 
+  // 🔊 AUDIO STATE
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   useEffect(() => {
     axios.get(`http://localhost:5000/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
       .then(r => setRecommendedLevel(r.data.recommended_level))
       .catch(console.error)
       .finally(() => setLevelLoading(false));
   }, []);
+
+  // 🔊 STOP AUDIO when switching back to level select
+  useEffect(() => {
+    if (phase === "select") {
+      audioRef.current?.pause();
+      setIsPlaying(false);
+    }
+  }, [phase]);
+
+  // 🔊 AUDIO CONTROLS
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   const handleLevelClick = (lvl) => {
     if (lvl.id === recommendedLevel) {
@@ -94,6 +130,13 @@ export default function UserVdPictureMCQ() {
   };
 
   const startChallenge = async (level) => {
+    // 🔊 STOP AUDIO when game starts
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+
     setSelectedLevel(level);
     setLoading(true);
     try {
@@ -121,6 +164,12 @@ export default function UserVdPictureMCQ() {
   };
 
   const handleSubmit = () => {
+    // 🔊 STOP AUDIO when submit
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+
     let total = 0;
     questions.forEach((q, qi) => {
       const sel = selectedAnswers[qi];
@@ -153,6 +202,37 @@ export default function UserVdPictureMCQ() {
           <h1 className="text-4xl font-black text-purple-700 mb-2">වෙනස හොයමු!</h1>
           <p className="text-gray-500 text-lg">ඔබේ මට්ටම තෝරන්න</p>
         </div>
+
+        {/* 🔊 AUDIO SECTION */}
+        <div className="mb-4 flex flex-col items-center gap-3">
+          <div className="flex gap-3">
+            {!isPlaying ? (
+              <button
+                onClick={handlePlay}
+                className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+              >
+                ▶️ උපදෙස් වලට සවන් දෙන්න
+              </button>
+            ) : (
+              <button
+                onClick={handlePause}
+                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+              >
+                ⏸ විරාම කරන්න
+              </button>
+            )}
+            <button
+              onClick={handleReplay}
+              className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+            >
+              🔁 නැවත සවන් දෙන්න
+            </button>
+          </div>
+          <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+            <source src={instructionAudio} type="video/mp4" />
+          </audio>
+        </div>
+
         {levelLoading ? (
           <div className="text-purple-500 font-bold text-lg animate-pulse">මට්ටම් පූරණය වෙමින්...</div>
         ) : (

@@ -18,7 +18,7 @@ RECOMMEND_MAP = {
     "ඉතා හොඳයි": "HARD"
 }
 
-# ✅ 1. GET LEVELS
+
 @vd_levels_bp.route("/", methods=["GET"])
 @jwt_required()
 def get_vd_levels():
@@ -45,7 +45,7 @@ def get_vd_levels():
         "recommended_level": recommended_level
     })
 
-# ✅ 2. SELECT LEVEL (Optional override)
+
 @vd_levels_bp.route("/select_level", methods=["POST"])
 @jwt_required()
 def select_level():
@@ -84,7 +84,7 @@ def select_level():
         "warning": warning
     })
 
-# ✅ 3. UNLOCK NEXT LEVEL
+
 @vd_levels_bp.route("/unlock_next", methods=["POST"])
 @jwt_required()
 def unlock_next_level():

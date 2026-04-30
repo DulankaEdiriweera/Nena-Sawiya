@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Header from "../../Components/Header";
+import instructionAudio from "../../Assets/visualD/audio/objcount.mp4";
 
 const BASE = "http://localhost:5000";
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
@@ -68,7 +69,11 @@ export default function CountImageGame() {
   // ── Adaptive level state ──
   const [recommendedLevel, setRecommendedLevel] = useState(null);
   const [levelLoading, setLevelLoading]         = useState(true);
-  const [popup, setPopup]                       = useState(null); // { key, label, recommendedLabel }
+  const [popup, setPopup]                       = useState(null);
+
+  // 🔊 AUDIO STATE
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     axios.get(`${BASE}/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
@@ -76,6 +81,38 @@ export default function CountImageGame() {
       .catch(console.error)
       .finally(() => setLevelLoading(false));
   }, []);
+
+  // 🔊 STOP AUDIO when level is selected (user leaves level select screen)
+  useEffect(() => {
+    if (level && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  }, [level]);
+
+  // 🔊 AUDIO CONTROLS
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   const handleLevelClick = (l) => {
     if (l.key === recommendedLevel) {
@@ -141,6 +178,37 @@ export default function CountImageGame() {
           <h1 className="text-4xl font-black text-purple-700 mb-2">වස්තු ගණන් කිරීමේ ක්‍රීඩාව කරමු!</h1>
           <p className="text-gray-500 text-lg">ඔබේ මට්ටම තෝරන්න</p>
         </div>
+
+        {/* 🔊 AUDIO UI SECTION (LEVEL SELECTION INSTRUCTIONS) */}
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="flex gap-3">
+            {!isPlaying ? (
+              <button
+                onClick={handlePlay}
+                className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+              >
+                ▶️ උපදෙස් වලට සවන් දෙන්න
+              </button>
+            ) : (
+              <button
+                onClick={handlePause}
+                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+              >
+                ⏸ විරාම කරන්න
+              </button>
+            )}
+            <button
+              onClick={handleReplay}
+              className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+            >
+              🔁 නැවත සවන් දෙන්න
+            </button>
+          </div>
+          <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+            <source src={instructionAudio} type="video/mp4" />
+          </audio>
+        </div>
+
         {levelLoading ? (
           <div className="text-purple-500 font-bold text-lg animate-pulse">මට්ටම් පූරණය වෙමින්...</div>
         ) : (
