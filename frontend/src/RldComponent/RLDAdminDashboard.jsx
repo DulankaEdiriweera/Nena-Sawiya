@@ -98,6 +98,9 @@ const DirectionalBody = ({ item }) => (
         {item.question}
       </p>
     )}
+    {item.question_audio_url && (
+      <audio controls src={item.question_audio_url} className="w-full h-9" />
+    )}
     <div className="space-y-1.5">
       {item.options?.map((o, i) => (
         <div
@@ -218,22 +221,42 @@ const OptionRow = ({ index, text, isCorrect }) => (
 
 const ComprehensionBody = ({ item }) => (
   <div className="space-y-4">
+    {/* Passage Text */}
     {item.passage && (
       <p className="text-sm text-gray-700 bg-gray-50 rounded-lg px-3 py-2 leading-relaxed">
         {item.passage}
       </p>
     )}
+
+    {/*  Passage Audio */}
+    {item.audio && (
+      <div className="space-y-1">
+        <p className="text-xs font-semibold text-gray-400 uppercase">
+          Passage Audio
+        </p>
+        <audio
+          controls
+          src={`http://localhost:5000${item.audio}`}
+          className="w-full h-9"
+        />{" "}
+      </div>
+    )}
+
+    {/* Questions */}
     {item.questions?.map((q, qi) => (
       <div key={qi} className="space-y-1.5">
         <p className="text-sm font-semibold text-gray-800">
           Q{qi + 1}: {q.question}
         </p>
+
         {q.options?.map((opt, oi) => {
           const text = typeof opt === "string" ? opt : opt.text;
+
           const ok =
             opt.is_correct === true ||
             opt.is_correct === 1 ||
             oi === q.correct_index;
+
           return <OptionRow key={oi} index={oi} text={text} isCorrect={ok} />;
         })}
       </div>
@@ -379,7 +402,7 @@ export default function RLDAdminDashboard() {
     if (initialCat) {
       loadData(initialCat);
     }
-  }, []);
+  }, [initialCat]);
 
   const loadData = async (cat) => {
     setLoading(true);

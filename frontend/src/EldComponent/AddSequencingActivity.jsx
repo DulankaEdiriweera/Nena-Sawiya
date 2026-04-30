@@ -13,6 +13,7 @@ const AddSequencingActivity = () => {
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const navigate = useNavigate();
+  const [audio, setAudio] = useState(null);
 
   // Handle image selection
   const handleImageChange = (e) => {
@@ -26,60 +27,60 @@ const AddSequencingActivity = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (images.length < 2) {
-    Swal.fire({
-      icon: "warning",
-      title: "Minimum Images Required",
-      text: "Please upload at least 2 images.",
-      confirmButtonColor: "#6366F1",
-    });
-    return;
-  }
+    if (images.length < 2) {
+      Swal.fire({
+        icon: "warning",
+        title: "Minimum Images Required",
+        text: "Please upload at least 2 images.",
+        confirmButtonColor: "#6366F1",
+      });
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("level", level);
-  formData.append("title", title);
-  formData.append("task_number", taskNumber);
-  formData.append("correct_order", correctOrder);
+    const formData = new FormData();
+    formData.append("level", level);
+    formData.append("title", title);
+    formData.append("task_number", taskNumber);
+    formData.append("correct_order", correctOrder);
+    formData.append("audio", audio);
 
-  images.forEach((img) => formData.append("images", img));
+    images.forEach((img) => formData.append("images", img));
 
-  try {
-    await axios.post(
-      "http://localhost:5000/api/sequencing_bp/add",
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+    try {
+      await axios.post(
+        "http://localhost:5000/api/sequencing_bp/add",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
+      );
 
-    Swal.fire({
-      icon: "success",
-      title: "Success!",
-      text: "Sequencing activity added successfully.",
-      confirmButtonColor: "#16A34A",
-    }).then((result) => {
-      navigate('/sequencingManage')
-    });
+      Swal.fire({
+        icon: "success",
+        title: "Success!",
+        text: "Sequencing activity added successfully.",
+        confirmButtonColor: "#16A34A",
+      }).then((result) => {
+        navigate("/sequencingManage");
+      });
 
-    // Reset form
-    setLevel("EASY");
-    setTitle("");
-    setTaskNumber("");
-    setCorrectOrder("");
-    setImages([]);
+      // Reset form
+      setLevel("EASY");
+      setTitle("");
+      setTaskNumber("");
+      setCorrectOrder("");
+      setImages([]);
+    } catch (error) {
+      console.error(error);
 
-  } catch (error) {
-    console.error(error);
-
-    Swal.fire({
-      icon: "error",
-      title: "Upload Failed",
-      text: "Error adding activity.",
-      confirmButtonColor: "#DC2626",
-    });
-  }
-};
+      Swal.fire({
+        icon: "error",
+        title: "Upload Failed",
+        text: "Error adding activity.",
+        confirmButtonColor: "#DC2626",
+      });
+    }
+  };
 
   return (
     <div>
@@ -143,6 +144,24 @@ const AddSequencingActivity = () => {
               className="w-full border rounded-lg px-3 py-2"
               required
             />
+
+            <div>
+              <label className="block mb-2 font-medium text-gray-700">
+                Upload Audio
+              </label>
+              <input
+                type="file"
+                accept="audio/*"
+                onChange={(e) => setAudio(e.target.files[0])}
+                className="w-full border rounded-lg px-3 py-2"
+              />
+
+              {audio && (
+                <audio controls className="mt-3">
+                  <source src={URL.createObjectURL(audio)} type="audio/mpeg" />
+                </audio>
+              )}
+            </div>
 
             <div>
               <label className="block mb-2 font-medium text-gray-700">

@@ -21,6 +21,8 @@ const AdminComprehensionForm = () => {
   const [level, setLevel] = useState("easy");
   const [passage, setPassage] = useState("");
   const [questions, setQuestions] = useState([emptyQuestion()]);
+  const [audioFile, setAudioFile] = useState(null);
+  const [audioPreview, setAudioPreview] = useState(null);
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -31,6 +33,26 @@ const AdminComprehensionForm = () => {
   const handleLevelChange = (val) => {
     setLevel(val);
     setQuestions(Array(LEVEL_CONFIG[val].minQ).fill(null).map(emptyQuestion));
+  };
+
+  const handleAudioChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (!file.type.startsWith("audio/") && file.type !== "video/mp4") {
+      setMessage("Only audio files are allowed (MP4, WAV, OGG, etc.)");
+      setIsError(true);
+      e.target.value = "";
+      return;
+    }
+    setAudioFile(file);
+    setAudioPreview(URL.createObjectURL(file));
+    setMessage("");
+  };
+
+  const removeAudio = () => {
+    setAudioFile(null);
+    setAudioPreview(null);
+    setFormKey((k) => k + 1);
   };
 
   const updateQuestion = (qIdx, field, value) =>
@@ -87,13 +109,22 @@ const AdminComprehensionForm = () => {
 
     setLoading(true);
     try {
+      const formData = new FormData();
+      formData.append("level", level);
+      formData.append("passage", passage.trim());
+      formData.append("questions", JSON.stringify(questions));
+      if (audioFile) formData.append("audio", audioFile);
+
       const res = await axios.post(
         "http://localhost:5000/api/rld_comprehension/add_passage",
-        { level, passage: passage.trim(), questions },
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } },
       );
       setMessage(res.data.message || "Passage saved successfully.");
       setIsError(false);
       setPassage("");
+      setAudioFile(null);
+      setAudioPreview(null);
       setQuestions(Array(config.minQ).fill(null).map(emptyQuestion));
       setFormKey((k) => k + 1);
       navigate("/rld-admin-dashboard", {
@@ -137,7 +168,6 @@ const AdminComprehensionForm = () => {
 
           {/* Body */}
           <div className="px-8 py-7 pb-8">
-            {/* Alert */}
             {message && (
               <div
                 className={`flex items-start gap-2.5 px-4 py-3 rounded-lg text-sm font-medium mb-6 border ${
@@ -192,6 +222,43 @@ const AdminComprehensionForm = () => {
                 />
               </div>
 
+              {/* Passage Audio */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Passage Audio
+                  <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
+                    Optional — MP4, WAV, OGG
+                  </span>
+                </label>
+                {audioPreview ? (
+                  <div className="border border-slate-200 rounded-lg px-4 py-3 bg-slate-50 flex flex-col gap-2">
+                    <audio controls src={audioPreview} className="w-full h-9" />
+                    <button
+                      type="button"
+                      onClick={removeAudio}
+                      className="self-start text-xs font-semibold text-red-500 hover:text-red-700 transition-colors"
+                    >
+                      ✕ Remove Audio
+                    </button>
+                  </div>
+                ) : (
+                  <div className="border border-dashed border-slate-300 rounded-lg px-4 py-4 bg-slate-50 flex items-center gap-3">
+                    <span className="text-2xl">🎵</span>
+                    <div className="flex-1">
+                      <input
+                        type="file"
+                        accept="audio/*,video/mp4"
+                        onChange={handleAudioChange}
+                        className="w-full text-xs text-slate-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-md file:border file:border-slate-200 file:text-xs file:bg-white file:text-slate-600 file:font-medium hover:file:bg-slate-100 file:cursor-pointer"
+                      />
+                      <p className="text-xs text-slate-400 mt-1">
+                        Upload an audio recording of the passage
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Section Divider */}
               <div className="flex items-center gap-3 my-7">
                 <div className="flex-1 h-px bg-slate-100" />
@@ -207,7 +274,6 @@ const AdminComprehensionForm = () => {
                   key={qIdx}
                   className="border border-slate-200 rounded-xl overflow-hidden mb-3.5"
                 >
-                  {/* Question Header */}
                   <div className="flex items-center justify-between px-4 py-3 bg-slate-50 border-b border-slate-200">
                     <span className="text-xs font-bold tracking-widest uppercase text-indigo-400">
                       Question {qIdx + 1}
@@ -223,9 +289,7 @@ const AdminComprehensionForm = () => {
                     )}
                   </div>
 
-                  {/* Question Body */}
                   <div className="p-4 flex flex-col gap-3">
-                    {/* Question Text */}
                     <div>
                       <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1">
                         Question Text
@@ -245,7 +309,6 @@ const AdminComprehensionForm = () => {
                       />
                     </div>
 
-                    {/* Options */}
                     <div>
                       <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
                         Answer Options
@@ -294,7 +357,6 @@ const AdminComprehensionForm = () => {
                       </div>
                     </div>
 
-                    {/* Validation hint */}
                     {q.correct_index === null && (
                       <p className="text-xs text-yellow-600 font-medium px-0.5">
                         Mark the correct answer by clicking the option circle.
@@ -304,7 +366,6 @@ const AdminComprehensionForm = () => {
                 </div>
               ))}
 
-              {/* Add Question / Max Note */}
               {questions.length < config.maxQ ? (
                 <button
                   type="button"
@@ -319,7 +380,6 @@ const AdminComprehensionForm = () => {
                 </p>
               )}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}

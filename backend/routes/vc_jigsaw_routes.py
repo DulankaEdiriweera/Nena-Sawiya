@@ -115,15 +115,15 @@ def add_vc_jigsaw():
     original_path = os.path.join(puzzle_dir, f"raw_{original_name}")
     image.save(original_path)
 
-    # ✅ Create ONE processed base image (divisible by rows/cols)
+    # Create ONE processed base image (divisible by rows/cols)
     base_path, bw, bh = make_base_image(original_path, puzzle_dir, rows, cols)
 
-    # ✅ Slice pieces ONLY from base image
+    # Slice pieces ONLY from base image
     pieces, ow, oh, tw, th = split_image_to_grid(
         base_path, base_upload_dir, rows, cols, puzzle_id
     )
 
-    # ✅ Reference must point to base.png (NOT raw upload)
+    # Reference must point to base.png (NOT raw upload)
     original_url = f"/vc_uploads/{puzzle_id}/base.png"
 
     jigsaw = VCJigsawModel(
