@@ -2,6 +2,9 @@ import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Header from "../../Components/Header";
 
+//AUDIO FILE (Level selection instructions)
+import levelSelectAudio from "../../Assets/visualD/audio/draganddrop.mp4";
+
 const BASE = "http://localhost:5000";
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
 
@@ -26,6 +29,25 @@ function GameInstructions() {
   );
 }
 
+
+function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-7 max-w-sm w-full text-center border-4 border-amber-300">
+        <div className="text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-black text-gray-800 mb-2">මට්ටම් අවවාදය</h3>
+        <p className="text-gray-600 text-sm mb-6">
+          <span className="font-black text-violet-600">{recommended}</span> යනු නිර්දේශිත මට්ටමයි. ඔබට <span className="font-black text-amber-600">{selected}</span> සමඟ ඉදිරියට යාමට අවශ්‍යද?
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-3 border-2 border-gray-200 text-gray-600 font-black rounded-2xl hover:bg-gray-50">අවලංගු කරන්න</button>
+          <button onClick={onContinue} className="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black rounded-2xl hover:opacity-90">ඉදිරියට යන්න</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function UserVdDragTextImage() {
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [activities, setActivities]       = useState([]);
@@ -38,6 +60,67 @@ export default function UserVdDragTextImage() {
   const [dragging, setDragging]           = useState(null);
   const [finished, setFinished]           = useState(false);
   const totalMarks = useRef(0);
+
+  
+  const [recommendedLevel, setRecommendedLevel] = useState(null);
+  const [levelLoading, setLevelLoading]         = useState(true);
+  const [popup, setPopup]                       = useState(null);
+
+  
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${BASE}/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .then(r => setRecommendedLevel(r.data.recommended_level))
+      .catch(console.error)
+      .finally(() => setLevelLoading(false));
+  }, []);
+
+  
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleLevelClick = (key) => {
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+
+    if (key === recommendedLevel) {
+      proceedWithLevel(key);
+    } else {
+      setPopup({ selected: LEVELS[key].label, selectedKey: key, recommended: LEVELS[recommendedLevel]?.label || recommendedLevel });
+    }
+  };
+
+  const proceedWithLevel = (key) => {
+    axios.post(`${BASE}/api/vd_levels/select_level`, { level: key }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .catch(console.error);
+    setPopup(null);
+    setSelectedLevel(key);
+  };
 
   const activity  = activities[actIndex] || null;
   const nextLevel = getNextLevel(selectedLevel);
@@ -52,7 +135,6 @@ export default function UserVdDragTextImage() {
 
   useEffect(() => {
     if (!activity) return;
-    // ALL items (correct + distractors) go into the draggable pool
     setDraggableItems(shuffle(activity.items.map((item, i) => ({ ...item, id: `item-${i}` }))));
     const zones = {};
     activity.targets.forEach(t => { if (t !== "distractor") zones[t] = null; });
@@ -60,7 +142,6 @@ export default function UserVdDragTextImage() {
     setResults({});
     setScore(0);
     setFinished(false);
-    // Total marks = only correct-answer items (exclude distractors)
     totalMarks.current = activity.items
       .filter(it => it.group !== "distractor")
       .reduce((s, it) => s + (it.mark || 2), 0);
@@ -74,7 +155,7 @@ export default function UserVdDragTextImage() {
     if (!dragging) return;
     const prev = dropZones[target];
     setDraggableItems(cur => { let u = cur.filter(it => it.id !== dragging.id); if (prev) u = [...u, prev]; return u; });
-    const isCorrect = dragging.group === target; // distractors have group="distractor", never matches
+    const isCorrect = dragging.group === target;
     setScore(s => { let n = s; if (prev && results[prev.id] === "correct") n -= (prev.mark || 2); if (isCorrect) n += (dragging.mark || 2); return n; });
     setDropZones(z => ({ ...z, [target]: dragging }));
     setResults(r => { const n = { ...r }; if (prev) delete n[prev.id]; n[dragging.id] = isCorrect ? "correct" : "wrong"; return n; });
@@ -105,24 +186,82 @@ export default function UserVdDragTextImage() {
   const nextActivity = () => { if (actIndex < activities.length - 1) setActIndex(i => i + 1); else setSelectedLevel(null); };
   const goNextLevel  = () => { setActivities([]); setResults({}); setScore(0); setActIndex(0); setFinished(false); setSelectedLevel(nextLevel.key); };
 
-  // ── Level select ──
+ 
   if (!selectedLevel) return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
+      {popup && (
+        <LevelWarningPopup
+          recommended={popup.recommended}
+          selected={popup.selected}
+          onCancel={() => setPopup(null)}
+          onContinue={() => proceedWithLevel(popup.selectedKey)}
+        />
+      )}
       <div className="flex flex-col items-center justify-center p-6 pt-10">
         <div className="text-center mb-10">
           <div className="text-6xl mb-3">🧩</div>
           <h1 className="text-4xl font-black text-violet-700">අකුරු ගලපන්න!</h1>
           <p className="text-gray-500 mt-2 text-lg">ඔබේ මට්ටම තෝරන්න</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
-          {LEVELS_LIST.map(l => (
-            <button key={l.key} onClick={() => setSelectedLevel(l.key)}
-              className={`flex-1 py-7 rounded-3xl bg-gradient-to-br ${l.bg} text-white font-black text-xl shadow-xl hover:scale-105 transition-transform flex flex-col items-center gap-2`}>
-              <span className="text-5xl">{l.emoji}</span>{l.label}
+
+        {/* 🔊 AUDIO UI SECTION (LEVEL SELECTION INSTRUCTIONS) */}
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="flex gap-3">
+            {!isPlaying ? (
+              <button
+                onClick={handlePlay}
+                className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+              >
+                ▶️ උපදෙස් වලට සවන් දෙන්න
+              </button>
+            ) : (
+              <button
+                onClick={handlePause}
+                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+              >
+                ⏸ විරාම කරන්න
+              </button>
+            )}
+            <button
+              onClick={handleReplay}
+              className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+            >
+              🔁 නැවත සවන් දෙන්න
             </button>
-          ))}
+          </div>
+          <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+            <source src={levelSelectAudio} type="video/mp4" />
+          </audio>
         </div>
+
+        {levelLoading ? (
+          <div className="text-violet-500 font-bold text-lg animate-pulse">මට්ටම් පූරණය වෙමින්...</div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
+            {LEVELS_LIST.map(l => {
+              const isRecommended = l.key === recommendedLevel;
+              return (
+                <div key={l.key} className="flex-1 relative">
+                  {isRecommended && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-violet-600 text-white text-xs font-black px-3 py-1 rounded-full shadow">
+                      ⭐ නිර්දේශිතයි
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleLevelClick(l.key)}
+                    className={`w-full py-7 rounded-3xl bg-gradient-to-br ${l.bg} text-white font-black text-xl shadow-xl transition-transform flex flex-col items-center gap-2
+                      ${isRecommended ? "ring-4 ring-violet-400 scale-105 hover:scale-110" : "opacity-60 hover:opacity-80 hover:scale-105"}`}
+                  >
+                    <span className="text-5xl">{isRecommended ? l.emoji : "🔒"}</span>
+                    {l.label}
+                    {!isRecommended && <span className="text-xs font-bold opacity-80">නිර්දේශිත නොවේ</span>}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -215,7 +354,6 @@ export default function UserVdDragTextImage() {
         </div>
       </div>
 
-      {/* Drop zones — only real targets (not "distractor") */}
       <div className="flex flex-wrap justify-center gap-5 mb-8 max-w-3xl mx-auto">
         {Object.keys(dropZones).map(target => {
           const placed = dropZones[target]; const status = placed ? results[placed.id] : null;
@@ -240,7 +378,6 @@ export default function UserVdDragTextImage() {
         })}
       </div>
 
-      {/* Draggable pool — ALL images including distractors */}
       <div onDrop={handleDropToPool} onDragOver={handleDragOver}
         className="bg-white/70 backdrop-blur rounded-3xl border-2 border-violet-200 p-4 shadow-inner max-w-2xl mx-auto min-h-[130px]">
         <p className="text-center text-xs font-bold text-gray-400 mb-3 uppercase tracking-wide">
