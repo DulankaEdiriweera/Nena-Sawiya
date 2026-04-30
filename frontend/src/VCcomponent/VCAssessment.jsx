@@ -4,9 +4,9 @@ import { Timer, AlertCircle, CheckCircle, Star } from "lucide-react";
 import Header from "../Components/Header";
 
 // ADD AUDIO IMPORTS
-import level1Audio from "../Assets/VisualC/audio/level1.mp4";
-import level2Audio from "../Assets/VisualC/audio/level2.mp4";
-import level3Audio from "../Assets/VisualC/audio/level3.mp4";
+import level1Audio from "../Assets/VisualC/audio/level1.mp3";
+import level2Audio from "../Assets/VisualC/audio/level2.mp3";
+import level3Audio from "../Assets/VisualC/audio/level3.mp3";
 
 const VCAssessment = () => {
   const navigate = useNavigate();

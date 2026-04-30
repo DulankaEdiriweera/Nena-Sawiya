@@ -7,13 +7,13 @@ export default function VCJigsawPlay({ puzzleId }) {
   const apiBase = "http://localhost:5000";
   const nav = useNavigate();
 
-  const [meta, setMeta]           = useState(null);
-  const [tray, setTray]           = useState([]);
-  const [board, setBoard]         = useState({});
+  const [meta, setMeta] = useState(null);
+  const [tray, setTray] = useState([]);
+  const [board, setBoard] = useState({});
   const [dragPiece, setDragPiece] = useState(null);
 
-  const [attempts, setAttempts]   = useState(0);
-  const [startTs, setStartTs]     = useState(null);
+  const [attempts, setAttempts] = useState(0);
+  const [startTs, setStartTs] = useState(null);
   const [completed, setCompleted] = useState(false);
   const [seconds, setSeconds] = useState(null);
 
@@ -28,8 +28,13 @@ export default function VCJigsawPlay({ puzzleId }) {
 
   useEffect(() => {
     async function load() {
-      setMeta(null); setTray([]); setBoard({});
-      setAttempts(0); setCompleted(false); setSeconds(null); setDragPiece(null);
+      setMeta(null);
+      setTray([]);
+      setBoard({});
+      setAttempts(0);
+      setCompleted(false);
+      setSeconds(null);
+      setDragPiece(null);
       const res = await axios.get(`${apiBase}/api/vc_jigsaw/${puzzleId}`);
       setMeta(res.data);
       setTray(shuffle(res.data.pieces));
@@ -60,28 +65,45 @@ export default function VCJigsawPlay({ puzzleId }) {
     return true;
   };
 
-  const allowDrop   = (e) => e.preventDefault();
-  const stripMeta   = ({ from, fromKey, ...rest }) => rest;
+  const allowDrop = (e) => e.preventDefault();
+  const stripMeta = ({ from, fromKey, ...rest }) => rest;
 
-  const onDragStartFromTray  = (p)          => { if (!completed) setDragPiece({ ...p, from: "tray" }); };
-  const onDragStartFromBoard = (p, fromKey) => { if (!completed) setDragPiece({ ...p, from: "board", fromKey }); };
+  const onDragStartFromTray = (p) => {
+    if (!completed) setDragPiece({ ...p, from: "tray" });
+  };
+  const onDragStartFromBoard = (p, fromKey) => {
+    if (!completed) setDragPiece({ ...p, from: "board", fromKey });
+  };
 
   const dropToSlot = (slotKey) => {
     if (!dragPiece || completed) return;
     setAttempts((a) => a + 1);
     setBoard((prev) => {
-      const next     = { ...prev };
+      const next = { ...prev };
       const existing = next[slotKey];
-      next[slotKey]  = stripMeta(dragPiece);
+      next[slotKey] = stripMeta(dragPiece);
       if (dragPiece.from === "board") {
         if (existing) next[dragPiece.fromKey] = existing;
         else delete next[dragPiece.fromKey];
       } else {
         if (existing) setTray((t) => [...t, existing]);
       }
-      if (Object.keys(next).length === meta.rows * meta.cols && isSolved(next)) {
+      if (
+        Object.keys(next).length === meta.rows * meta.cols &&
+        isSolved(next)
+      ) {
         setCompleted(true);
         setSeconds(Math.round((Date.now() - startTs) / 1000));
+
+        const token = localStorage.getItem("token");
+
+        axios.post(
+          `http://localhost:5000/api/vc_adaptive/complete/jigsaw/${meta.ability_levels[0]}`,
+          {},
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
       }
       return next;
     });
@@ -95,9 +117,13 @@ export default function VCJigsawPlay({ puzzleId }) {
 
   const reset = () => {
     if (!meta) return;
-    setTray(shuffle(meta.pieces)); setBoard({});
-    setAttempts(0); setCompleted(false); setSeconds(null);
-    setStartTs(Date.now()); setDragPiece(null);
+    setTray(shuffle(meta.pieces));
+    setBoard({});
+    setAttempts(0);
+    setCompleted(false);
+    setSeconds(null);
+    setStartTs(Date.now());
+    setDragPiece(null);
   };
 
   if (!meta) {
@@ -107,7 +133,9 @@ export default function VCJigsawPlay({ puzzleId }) {
         style={{ fontFamily: "'Nunito', sans-serif" }}
       >
         <div className="text-6xl animate-bounce">🧩</div>
-        <p className="text-indigo-600 font-extrabold text-xl">Loading puzzle…</p>
+        <p className="text-indigo-600 font-extrabold text-xl">
+          Loading puzzle…
+        </p>
         <style>{`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');`}</style>
       </div>
     );
@@ -118,7 +146,10 @@ export default function VCJigsawPlay({ puzzleId }) {
 
   const MIN_TILE = 52;
   const MAX_TILE = 100;
-  const tileW = Math.max(MIN_TILE, Math.min(MAX_TILE, Math.floor(480 / meta.cols)));
+  const tileW = Math.max(
+    MIN_TILE,
+    Math.min(MAX_TILE, Math.floor(480 / meta.cols)),
+  );
   const tileH = Math.floor(tileW * tileAspect);
 
   const boardWidth = tileW * meta.cols;
@@ -132,7 +163,7 @@ export default function VCJigsawPlay({ puzzleId }) {
   const isLarge = totalPieces >= 36;
   const refWidth = isLarge ? Math.min(boardWidth, 260) : boardWidth;
   const refHeight = isLarge
-    ? Math.min(boardHeight, 260 * tileAspect * meta.rows / meta.cols)
+    ? Math.min(boardHeight, (260 * tileAspect * meta.rows) / meta.cols)
     : boardHeight;
 
   return (
@@ -164,10 +195,14 @@ export default function VCJigsawPlay({ puzzleId }) {
             </span>
             <span
               className={`font-bold px-4 py-1.5 rounded-full shadow text-sm ${
-                completed ? "bg-green-400 text-white" : "bg-white text-indigo-400"
+                completed
+                  ? "bg-green-400 text-white"
+                  : "bg-white text-indigo-400"
               }`}
             >
-              {completed ? `🎉 නිම කිරීමට ගත වූ කාලය ${seconds}s!` : "⏳ කරමින්…"}
+              {completed
+                ? `🎉 නිම කිරීමට ගත වූ කාලය ${seconds}s!`
+                : "⏳ කරමින්…"}
             </span>
             <span className="bg-white text-indigo-500 font-bold px-4 py-1.5 rounded-full shadow text-sm">
               🔲 {meta.rows}×{meta.cols} ({totalPieces} කැබලි)
@@ -180,7 +215,7 @@ export default function VCJigsawPlay({ puzzleId }) {
             <div className="text-4xl mb-1">🎊</div>
             <p className="font-extrabold text-xl">නියමයි! ඔයා ඒක විසඳුවා!</p>
             <p className="text-green-100 font-semibold mt-1">
-              කාලය: {seconds}s •  චලන ගණන: {attempts}
+              කාලය: {seconds}s • චලන ගණන: {attempts}
             </p>
           </div>
         )}
@@ -272,7 +307,7 @@ export default function VCJigsawPlay({ puzzleId }) {
               style={{ width: boardWidth + 16 }}
               className="mt-1 py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-base shadow transition-all flex items-center justify-center gap-2"
             >
-              🔄 නැවත උත්සාහ කරන්න 
+              🔄 නැවත උත්සාහ කරන්න
             </button>
           </div>
 
@@ -295,7 +330,10 @@ export default function VCJigsawPlay({ puzzleId }) {
               {tray.length === 0 ? (
                 <div
                   className="flex flex-col items-center justify-center text-indigo-300 font-bold text-sm gap-1"
-                  style={{ gridColumn: `span ${trayCols}`, height: trayTileH * 2 }}
+                  style={{
+                    gridColumn: `span ${trayCols}`,
+                    height: trayTileH * 2,
+                  }}
                 >
                   <span className="text-3xl">🎉</span>
                   සියල්ල සකසා ඇත!
