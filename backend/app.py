@@ -31,13 +31,14 @@ from routes.vd_picture_mcq_routes import vd_picture_bp
 from routes.vd_memory_image_routes import vd_memory_bp
 from routes.vd_count_image_routes import vd_count_bp
 from routes.vd_progress import vd_progress_bp
-
+from routes.vd_levels_routes import vd_levels_bp
 
 from routes.vc_jigsaw_routes import vc_jigsaw_bp
 from routes.vc_pic_com_routes import vc_pic_com_bp
 from routes.vc_sha_mat_routes import vc_sha_mat_bp
 from routes.rld_progress_bp import rld_progress_bp
 from routes.vc_progress_bp import vc_progress_bp
+from routes.vc_adaptive_routes import vc_adaptive_bp
 
 # -------------------------------
 # Flask App Setup
@@ -111,6 +112,7 @@ app.register_blueprint(vc_jigsaw_bp, url_prefix="/api/vc_jigsaw")
 app.register_blueprint(vc_pic_com_bp, url_prefix="/api/vc_pic_com")
 app.register_blueprint(vc_sha_mat_bp, url_prefix="/api/vc_sha_mat")
 app.register_blueprint(vc_progress_bp, url_prefix="/api/vc")
+app.register_blueprint(vc_adaptive_bp, url_prefix="/api/vc_adaptive")
 
 #VISUAL DISCRIMINATION
 app.register_blueprint(vd_bp)
@@ -119,6 +121,8 @@ app.register_blueprint(vd_picture_bp, url_prefix="/api/vd_picture_mcq")
 app.register_blueprint(vd_memory_bp, url_prefix="/api/vd_memory")
 app.register_blueprint(vd_count_bp, url_prefix="/api/vd_count")
 app.register_blueprint(vd_progress_bp, url_prefix="/api/vd")
+app.register_blueprint(vd_levels_bp, url_prefix="/api/vd_levels")
+
 
 
 

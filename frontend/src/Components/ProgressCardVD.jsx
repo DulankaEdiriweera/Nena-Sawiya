@@ -53,7 +53,7 @@ const ProgressCardVD = () => {
         {/* Pastel Pink Header — same structure as friend's green header */}
         <div className="rounded-xl p-4 mb-6 text-center" style={{ background: "#fce7f3" }}>
           <h2 className="text-xl md:text-2xl font-semibold" style={{ color: "#9d174d" }}>
-            දෘශ්‍ය විභේදන භාෂා ප්‍රගති විශ්ලේෂණය
+            දෘශ්‍ය විභේදන හා මතක ඇගයීමේ හැකියා ප්‍රගතිය විශ්ලේෂණය
           </h2>
         </div>
 
