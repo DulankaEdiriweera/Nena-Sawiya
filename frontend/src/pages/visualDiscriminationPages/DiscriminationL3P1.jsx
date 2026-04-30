@@ -1,12 +1,45 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+
 import { useNavigate } from "react-router-dom";
 import Header from "../../Components/Header";
+
+import instructionAudio from "../../Assets/visualD/audio/L3.mp4";
 
 export default function Level3ShapeMemory() {
   const [timeLeft, setTimeLeft] = useState(30);
   const [questionImage, setQuestionImage] = useState(null);
   const [flash, setFlash] = useState(false);
   const navigate = useNavigate();
+
+  //AUDIO STATE 
+  
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  
+  // AUDIO FUNCTIONS 
+  
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
 
   // Load the question image
   useEffect(() => {
@@ -25,6 +58,15 @@ export default function Level3ShapeMemory() {
   useEffect(() => {
     if (timeLeft <= 0) {
       setFlash(true);
+
+      // NEW: stop audio when time ends
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+        setIsPlaying(false);
+      }
+
+
       localStorage.setItem("L3Time", 30);
       setTimeout(() => {
         alert("🎉 කාලය ඉවරයි! දැන් ප්‍රශ්න වලට පිළිතුරු දෙන්න!");
@@ -41,6 +83,13 @@ export default function Level3ShapeMemory() {
   const handleNext = () => {
     localStorage.setItem("L3Time", 30 - timeLeft);
     localStorage.setItem("L3Score", 0);
+
+    // NEW: stop audio on next
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
     navigate("/discriminationL3p2");
   };
 
@@ -69,6 +118,41 @@ export default function Level3ShapeMemory() {
             Shape Memory Challenge - Level 3
           </h2>
         </div>
+
+        {/* 🔊 AUDIO UI SECTION (NEW) */}
+            {/* ========================= */}
+            <div className="mb-5 flex flex-col items-center gap-3">
+
+              <div className="flex gap-3">
+                {!isPlaying ? (
+                  <button
+                    onClick={handlePlay}
+                    className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+                  >
+                    ▶️ උපදෙස් වලට සවන් දෙන්න
+                  </button>
+                ) : (
+                  <button
+                    onClick={handlePause}
+                    className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+                  >
+                    ⏸ විරාම කරන්න
+                  </button>
+                )}
+
+                <button
+                  onClick={handleReplay}
+                  className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+                >
+                  🔁 නැවත සවන් දෙන්න
+                </button>
+              </div>
+
+              <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+                <source src={instructionAudio} type="video/mp4" />
+              </audio>
+
+            </div>
 
         
         <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-2xl p-5 mb-5 border-4 border-blue-300">
