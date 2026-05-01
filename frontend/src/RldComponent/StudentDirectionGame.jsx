@@ -7,7 +7,7 @@ import { useInterventionLevel } from "../RldComponent/useInterventionLevel.jsx";
 const ALL_LEVELS = ["easy", "medium", "hard"];
 const levelLabels = { easy: "පහසු", medium: "මධ්‍යම", hard: "අපහසු" };
 
-// ── AudioPlayer ───────────────────────────────────────────────────────────────
+// AudioPlayer
 const AudioPlayer = ({ src }) => {
   const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
@@ -36,7 +36,7 @@ const AudioPlayer = ({ src }) => {
   );
 };
 
-// ── Main Component ────────────────────────────────────────────────────────────
+//  Main Component
 const StudentDirectionGame = () => {
   const { allowedLevels, startLevel, handleLevelClick, ConfirmDialog } =
     useInterventionLevel();
