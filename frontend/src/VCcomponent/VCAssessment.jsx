@@ -1,19 +1,41 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Timer, AlertCircle, CheckCircle, Star } from "lucide-react";
 import Header from "../Components/Header";
 
+// ADD AUDIO IMPORTS
+import level1Audio from "../Assets/VisualC/audio/level1.mp3";
+import level2Audio from "../Assets/VisualC/audio/level2.mp3";
+import level3Audio from "../Assets/VisualC/audio/level3.mp3";
+
 const VCAssessment = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  // AUDIO REF
+  const audioRef = useRef(null);
+
+  // AUDIO MAP
+  const levelAudios = {
+    1: level1Audio,
+    2: level2Audio,
+    3: level3Audio,
+  };
+
+  // PLAY FUNCTION
+  const playAudio = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+    }
+  };
 
   // Timer state (per level)
   const [levelTimer, setLevelTimer] = useState(0);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  // Answers tracking (store 1-based option numbers to match backend: option1..option4)
-  const [answers, setAnswers] = useState({}); // { Q1: 1, Q2: 2, ... }
+  // Answers tracking
+  const [answers, setAnswers] = useState({});
 
   // Level summary for UI only
   const [levelSummary, setLevelSummary] = useState({
@@ -24,138 +46,49 @@ const VCAssessment = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Questions configuration (correctAnswer is 0-based for UI selection)
   const questions = useMemo(
     () => [
-      // Level 1
-      {
-        id: 1,
-        key: "Q1",
-        level: 1,
-        question: "පහත හැඩතල හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage1.jpg"),
-        options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"],
-        correctAnswer: 0,
-        marks: 1,
-      },
-      {
-        id: 2,
-        key: "Q2",
-        level: 1,
-        question: "පහත හැඩතල හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage2.jpg"),
-        options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"],
-        correctAnswer: 1,
-        marks: 1,
-      },
-      {
-        id: 3,
-        key: "Q3",
-        level: 1,
-        question: "පහත හැඩතල හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage3.jpg"),
-        options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "තරුවක්", "වෙනත්"],
-        correctAnswer: 2,
-        marks: 1,
-      },
 
-      // Level 2
-      {
-        id: 4,
-        key: "Q4",
-        level: 2,
-        question: "පහත රූප හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage4.jpg"),
-        options: ["බෝලයක්", "කෝප්පයක්", "සරුංගලයක්", "වෙනත්"],
-        correctAnswer: 1,
-        marks: 2,
-      },
-      {
-        id: 5,
-        key: "Q5",
-        level: 2,
-        question: "පහත රූප හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage5.jpg"),
-        options: ["අතක්", "කුරුල්ලෙක්", "කකුලක්", "වෙනත්"],
-        correctAnswer: 0,
-        marks: 2,
-      },
-      {
-        id: 6,
-        key: "Q6",
-        level: 2,
-        question: "පහත රූප හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage6.jpg"),
-        options: ["මුවෙක්", "බල්ලෙක්", "හරකෙක්", "වෙනත්"],
-        correctAnswer: 0,
-        marks: 3,
-      },
+      { id: 1, key: "Q1", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage1.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"], correctAnswer: 0, marks: 1 },
+      { id: 2, key: "Q2", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage2.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"], correctAnswer: 1, marks: 1 },
+      { id: 3, key: "Q3", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage3.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "තරුවක්", "වෙනත්"], correctAnswer: 2, marks: 1 },
 
-      // Level 3
-      {
-        id: 7,
-        key: "Q7",
-        level: 3,
-        question: "පහත අකුර හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage7.jpg"),
-        options: ["ස", "ත", "ක", "වෙනත්"],
-        correctAnswer: 2,
-        marks: 2,
-      },
-      {
-        id: 8,
-        key: "Q8",
-        level: 3,
-        question: "පහත වචනය හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage8.jpg"),
-        options: ["අක්කා", "අම්මා", "අයියා", "වෙනත්"],
-        correctAnswer: 1,
-        marks: 2,
-      },
-      {
-        id: 9,
-        key: "Q9",
-        level: 3,
-        question: "පහත වාක්‍යය හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage9.jpg"),
-        options: [
-          { type: "image", src: require("../Assets/VisualC/vcoption1.jpg") },
-          { type: "image", src: require("../Assets/VisualC/vcoption2.jpg") },
-        ],
-        correctAnswer: 0,
-        marks: 2,
-      },
-      {
-        id: 10,
-        key: "Q10",
-        level: 3,
-        question: "පහත ඉලක්කම හදුනා ගන්න",
-        image: require("../Assets/VisualC/vcimage10.jpg"),
-        options: ["3", "9", "8", "වෙනත්"],
-        correctAnswer: 2,
-        marks: 2,
-      },
+      { id: 4, key: "Q4", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage4.jpg"), options: ["බෝලයක්", "කෝප්පයක්", "සරුංගලයක්", "වෙනත්"], correctAnswer: 1, marks: 2 },
+      { id: 5, key: "Q5", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage5.jpg"), options: ["අතක්", "කුරුල්ලෙක්", "කකුලක්", "වෙනත්"], correctAnswer: 0, marks: 2 },
+      { id: 6, key: "Q6", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage6.jpg"), options: ["මුවෙක්", "බල්ලෙක්", "හරකෙක්", "වෙනත්"], correctAnswer: 0, marks: 3 },
+
+      { id: 7, key: "Q7", level: 3, question: "පහත අකුර හදුනා ගන්න", image: require("../Assets/VisualC/vcimage7.jpg"), options: ["ස", "ත", "ක", "වෙනත්"], correctAnswer: 2, marks: 2 },
+      { id: 8, key: "Q8", level: 3, question: "පහත වචනය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage8.jpg"), options: ["අක්කා", "අම්මා", "අයියා", "වෙනත්"], correctAnswer: 1, marks: 2 },
+      { id: 9, key: "Q9", level: 3, question: "පහත වාක්‍යය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage9.jpg"), options: [{ type: "image", src: require("../Assets/VisualC/vcoption1.jpg") }, { type: "image", src: require("../Assets/VisualC/vcoption2.jpg") }], correctAnswer: 0, marks: 2 },
+      { id: 10, key: "Q10", level: 3, question: "පහත ඉලක්කම හදුනා ගන්න", image: require("../Assets/VisualC/vcimage10.jpg"), options: ["3", "9", "8", "වෙනත්"], correctAnswer: 2, marks: 2 },
+      
     ],
     []
   );
 
   const currentQ = questions[currentQuestionIndex];
 
-  // Timer effect (reset when level changes)
+  // Timer
   useEffect(() => {
     setLevelTimer(0);
     const interval = setInterval(() => setLevelTimer((prev) => prev + 1), 1000);
     return () => clearInterval(interval);
   }, [currentLevel]);
 
-  // Format timer display
+  // RESET AUDIO WHEN LEVEL CHANGES
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+  }, [currentLevel]);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
-  // UI selection stores 1-based option number for backend
   const handleAnswer = (optionIndex0) => {
     const optionNumber1Based = optionIndex0 + 1;
     setAnswers((prev) => ({
@@ -285,6 +218,10 @@ const VCAssessment = () => {
   return (
     <div>
       <Header />
+
+      {/* AUDIO ELEMENT */}
+      <audio ref={audioRef} src={levelAudios[currentLevel]} />
+
       <div className="min-h-screen bg-gradient-to-br from-purple-200 via-pink-200 to-yellow-200 p-4">
         {/* Timer */}
         <div className="fixed top-4 right-4 bg-white rounded-lg shadow-lg p-3 border-4 border-purple-400 z-50">
@@ -331,7 +268,15 @@ const VCAssessment = () => {
             </div>
           </div>
         </div>
-
+        {/* AUDIO BUTTON */}
+        <div className="text-center mb-4">
+          <button
+            onClick={playAudio}
+            className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full shadow-md"
+          >
+            🔊 උපදෙස් අහන්න
+          </button>
+        </div>
         {/* Question */}
         <div className="max-w-4xl mx-auto">
           <div className="bg-white rounded-2xl shadow-2xl p-6 border-4 border-purple-300">

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react"; //new
 import { useNavigate } from "react-router-dom";
 
 
@@ -8,6 +8,9 @@ import L2A2 from "../../Assets/visualD/level2/L2A2.jpg";
 import L2A3 from "../../Assets/visualD/level2/L2A3.jpg";
 import L2A4 from "../../Assets/visualD/level2/L2A4.jpg";
 import Header from "../../Components/Header";
+
+// audio import
+import instructionAudio from "../../Assets/visualD/audio/L2.mp4";
 
 export default function ObjectCountingPageDiscrimination() {
   const navigate = useNavigate();
@@ -27,6 +30,10 @@ export default function ObjectCountingPageDiscrimination() {
   const loadedQuestionImage = L2Q1;
   const loadedAnswerImages = [L2A1, L2A2, L2A3, L2A4];
 
+  // AUDIO STATE
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
   const handleAnswerChange = (index, value) => {
     if (/^\d*$/.test(value)) {
       const updated = [...answers];
@@ -41,7 +48,39 @@ export default function ObjectCountingPageDiscrimination() {
     }
   };
 
+  // ✅ ADDED - AUDIO CONTROLS
+  // ============================
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
   const goNext = () => {
+    // STOP AUDIO ON NEXT
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+
     if (answers.some((ans) => ans === "")) {
       alert("⚠️ සියලුම පිළිතුරු පුරවන්න!");
       return;
@@ -101,6 +140,45 @@ export default function ObjectCountingPageDiscrimination() {
                 rows="2"
               />
             </div>
+
+            {/* 
+                AUDIO UI SECTION
+            */}
+              <div className="mb-4 flex flex-col items-center gap-3">
+
+                <div className="flex gap-3">
+                  {!isPlaying ? (
+                    <button
+                      onClick={handlePlay}
+                      className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+                    >
+                      ▶️ උපදෙස් වලට සවන් දෙන්න
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handlePause}
+                      className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+                    >
+                      ⏸ විරාම කරන්න
+                    </button>
+                  )}
+
+                  <button
+                    onClick={handleReplay}
+                    className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+                  >
+                    🔁 උපදෙස් වලට නැවත සවන් දෙන්න
+                  </button>
+                </div>
+
+                <audio
+                  ref={audioRef}
+                  onEnded={() => setIsPlaying(false)}
+                >
+                  <source src={instructionAudio} type="video/mp4" />
+                </audio>
+
+              </div>
 
             <div className="mb-4 p-3 bg-green-100 rounded-xl text-green-800 font-bold text-base shadow-md text-center">
               🎯 Level 2 සම්පූර්ණ ලකුණු: {totalScore} / 12
