@@ -12,24 +12,6 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, a
 import os
 import joblib  # for saving models
 
-# -------------------------------
-# NLP Libraries
-# -------------------------------
-#import spacy
-#import nltk
-#from nltk.corpus import stopwords
-#nltk.download('stopwords')
-
-# Load SpaCy multilingual model
-#nlp_eld = spacy.load("xx_ent_wiki_sm")  
-
-# Example Sinhala stopwords
-#sinhala_stopwords_eld = ["හා", "එය", "ඒ", "ම", "ඔබ", "ඇය", "ඇයි"]
-
-#def preprocess_text_eld(text):
-#    doc = nlp_eld(text)
-#    tokens = [token.lemma_ for token in doc if token.text not in sinhala_stopwords_eld and not token.is_punct]
-#    return " ".join(tokens)
 
 # -------------------------------
 # 1. Load Dataset
@@ -38,7 +20,7 @@ df_eld = pd.read_csv("ELDdata2.csv")
 
 # Features
 story_cols_eld = ["Story1_response", "Story2_response", "Story3_response", "Story4_response"]
-#df_eld["Percentage"] = (df_eld["Total_Score"] / 60) * 100
+
 X_text_eld = df_eld[story_cols_eld]
 
 # Labels
@@ -89,7 +71,7 @@ classifier_eld.fit(X_train_cls_eld, y_train_cls_eld)
 # Evaluate ELD Level
 y_pred_cls_eld = classifier_eld.predict(X_test_cls_eld)
 accuracy_score_eld = accuracy_score(y_test_cls_eld, y_pred_cls_eld)
-print(f"\n📊 ELD Level Accuracy: {accuracy_score_eld:.2f}")
+print(f"\nELD Level Accuracy: {accuracy_score_eld:.2f}")
 print("\nClassification Report for ELD Level:")
 print(classification_report(y_test_cls_eld, y_pred_cls_eld))
 
@@ -120,7 +102,7 @@ feedback_map_eld = {
 def predict_new_eld(story1_eld, story2_eld, story3_eld, story4_eld):
     vects_eld = joblib.load(os.path.join(folder_path, "vectorizers_eld.pkl"))
     
-    # 🔥 Ensure all stories are strings (replace None or NaN)
+    # Ensure all stories are strings (replace None or NaN)
     stories_eld = [story1_eld, story2_eld, story3_eld, story4_eld]
     stories_eld = [s if isinstance(s, str) else "" for s in stories_eld]
     
