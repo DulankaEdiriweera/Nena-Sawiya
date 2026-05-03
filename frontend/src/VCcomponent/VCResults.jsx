@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Trophy, Star, Clock, Award, CheckCircle, Home, Download } from "lucide-react";
+import { Trophy, Star, Award, CheckCircle, Home, Download } from "lucide-react";
 //import AlertTriangle  from "lucide-react";
 import Header from "../Components/Header";
 
@@ -44,20 +44,15 @@ const VCResults = () => {
     );
   }
 
-  // Backend fields (new)
+  // Backend fields 
   const {
     VC_Level,
-    // Confidence,
     Feedback,
     marks_level1,
     marks_level2,
     marks_level3,
     total_marks,
     final_marks_percent,
-    //rule_based_label,
-    //ml_label_en,
-    //ml_vs_rule_mismatch,
-    levelMarks, // UI summary from assessment
   } = results;
 
   // Color based on VC_Level Sinhala
@@ -92,21 +87,6 @@ const VCResults = () => {
 
   const colors = colorClasses[performanceColor];
   const shouldShowInterventionButton = VC_Level !== "ඉතා හොදයි";
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  // Prefer backend marks/time (marks are backend), time from UI summary if available
-  const lvl1Time = levelMarks?.level1?.timeTaken ?? 0;
-  const lvl2Time = levelMarks?.level2?.timeTaken ?? 0;
-  const lvl3Time = levelMarks?.level3?.timeTaken ?? 0;
-
-  const lvl1Correct = levelMarks?.level1?.correctCount ?? null;
-  const lvl2Correct = levelMarks?.level2?.correctCount ?? null;
-  const lvl3Correct = levelMarks?.level3?.correctCount ?? null;
 
   return (
     <div>
@@ -157,22 +137,6 @@ const VCResults = () => {
                 <p className="text-2xl font-semibold text-white">ලකුණු ({final_marks_percent}%)</p>
               </div>
 
-              {/* <div className="mt-4 bg-white bg-opacity-20 rounded-lg p-3">
-                <p className="text-white font-semibold flex items-center justify-center">
-                  <Star className="w-5 h-5 mr-2" />
-                  විශ්වාසනීයත්වය: {Confidence}%
-                </p>
-              </div> */}
-
-              {/* Optional: mismatch warning */}
-              {/* {ml_vs_rule_mismatch && (
-                <div className="mt-4 bg-white bg-opacity-25 rounded-lg p-3 border-2 border-white">
-                  <p className="text-white font-bold flex items-center justify-center">
-                    <AlertTriangle className="w-5 h-5 mr-2" />
-                    සටහන: (ML) {ml_label_en} සහ (Marks) {rule_based_label} අතර වෙනසක් ඇත.
-                  </p>
-                </div>
-              )} */}
             </div>
           </div>
 
@@ -204,24 +168,7 @@ const VCResults = () => {
                     <span className="text-2xl font-bold text-purple-700">{marks_level1}/5</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mt-3">
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-semibold text-gray-700">කාලය:</span>
-                    </div>
-                    <p className="text-lg font-bold text-blue-700 mt-1">{formatTime(lvl1Time)}</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      <span className="text-sm font-semibold text-gray-700">නිවැරදි:</span>
-                    </div>
-                    <p className="text-lg font-bold text-green-700 mt-1">
-                      {lvl1Correct !== null ? `${lvl1Correct}/3` : "—"}
-                    </p>
-                  </div>
-                </div>
+            
               </div>
 
               {/* Level 2 */}
@@ -233,24 +180,7 @@ const VCResults = () => {
                     <span className="text-2xl font-bold text-blue-700">{marks_level2}/10</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mt-3">
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-semibold text-gray-700">කාලය:</span>
-                    </div>
-                    <p className="text-lg font-bold text-blue-700 mt-1">{formatTime(lvl2Time)}</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      <span className="text-sm font-semibold text-gray-700">නිවැරදි:</span>
-                    </div>
-                    <p className="text-lg font-bold text-green-700 mt-1">
-                      {lvl2Correct !== null ? `${lvl2Correct}/3` : "—"}
-                    </p>
-                  </div>
-                </div>
+                
               </div>
 
               {/* Level 3 */}
@@ -262,24 +192,7 @@ const VCResults = () => {
                     <span className="text-2xl font-bold text-green-700">{marks_level3}/10</span>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mt-3">
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Clock className="w-5 h-5 text-blue-600" />
-                      <span className="text-sm font-semibold text-gray-700">කාලය:</span>
-                    </div>
-                    <p className="text-lg font-bold text-blue-700 mt-1">{formatTime(lvl3Time)}</p>
-                  </div>
-                  <div className="bg-white rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Star className="w-5 h-5 text-yellow-500" />
-                      <span className="text-sm font-semibold text-gray-700">නිවැරදි:</span>
-                    </div>
-                    <p className="text-lg font-bold text-green-700 mt-1">
-                      {lvl3Correct !== null ? `${lvl3Correct}/4` : "—"}
-                    </p>
-                  </div>
-                </div>
+                
               </div>
             </div>
           </div>

@@ -27,9 +27,7 @@ export default function VCShaMatList() {
 
   const nav = useNavigate();
 
-  // -----------------------------
   // FETCH ADAPTIVE
-  // -----------------------------
   const fetchAdaptive = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -51,9 +49,7 @@ export default function VCShaMatList() {
     }
   };
 
-  // -----------------------------
   // FETCH LIST
-  // -----------------------------
   const fetchList = async (lvl) => {
     setLoading(true);
     try {
@@ -78,9 +74,7 @@ export default function VCShaMatList() {
     }
   }, [adaptive, level]);
 
-  // -----------------------------
-  // LEVEL SELECT LOGIC
-  // -----------------------------
+// LEVEL SELECT LOGIC
   const handleSelectLevel = (lvl) => {
     if (!adaptive) return;
 

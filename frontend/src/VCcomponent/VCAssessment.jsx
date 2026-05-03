@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Timer, AlertCircle, CheckCircle, Star } from "lucide-react";
+import { Timer, AlertCircle, CheckCircle } from "lucide-react";
 import Header from "../Components/Header";
 
 // ADD AUDIO IMPORTS
@@ -37,30 +37,23 @@ const VCAssessment = () => {
   // Answers tracking
   const [answers, setAnswers] = useState({});
 
-  // Level summary for UI only
-  const [levelSummary, setLevelSummary] = useState({
-    level1: { marks: 0, timeTaken: 0, correctCount: 0 },
-    level2: { marks: 0, timeTaken: 0, correctCount: 0 },
-    level3: { marks: 0, timeTaken: 0, correctCount: 0 },
-  });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const questions = useMemo(
     () => [
 
-      { id: 1, key: "Q1", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage1.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"], correctAnswer: 0, marks: 1 },
-      { id: 2, key: "Q2", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage2.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"], correctAnswer: 1, marks: 1 },
-      { id: 3, key: "Q3", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage3.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "තරුවක්", "වෙනත්"], correctAnswer: 2, marks: 1 },
+      { id: 1, key: "Q1", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage1.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"] },
+      { id: 2, key: "Q2", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage2.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "සමචතුරස්රයක්", "වෙනත්"] },
+      { id: 3, key: "Q3", level: 1, question: "පහත හැඩතලය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage3.jpg"), options: ["වෘත්තයක්", "ත්‍රිකෝණයක්", "තරුවක්", "වෙනත්"] },
 
-      { id: 4, key: "Q4", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage4.jpg"), options: ["බෝලයක්", "කෝප්පයක්", "සරුංගලයක්", "වෙනත්"], correctAnswer: 1, marks: 2 },
-      { id: 5, key: "Q5", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage5.jpg"), options: ["අතක්", "කුරුල්ලෙක්", "කකුලක්", "වෙනත්"], correctAnswer: 0, marks: 2 },
-      { id: 6, key: "Q6", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage6.jpg"), options: ["මුවෙක්", "බල්ලෙක්", "හරකෙක්", "වෙනත්"], correctAnswer: 0, marks: 3 },
+      { id: 4, key: "Q4", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage4.jpg"), options: ["බෝලයක්", "කෝප්පයක්", "සරුංගලයක්", "වෙනත්"] },
+      { id: 5, key: "Q5", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage5.jpg"), options: ["අතක්", "කුරුල්ලෙක්", "කකුලක්", "වෙනත්"] },
+      { id: 6, key: "Q6", level: 2, question: "පහත රූපය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage6.jpg"), options: ["මුවෙක්", "බල්ලෙක්", "හරකෙක්", "වෙනත්"] },
 
-      { id: 7, key: "Q7", level: 3, question: "පහත අකුර හදුනා ගන්න", image: require("../Assets/VisualC/vcimage7.jpg"), options: ["ස", "ත", "ක", "වෙනත්"], correctAnswer: 2, marks: 2 },
-      { id: 8, key: "Q8", level: 3, question: "පහත වචනය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage8.jpg"), options: ["අක්කා", "අම්මා", "අයියා", "වෙනත්"], correctAnswer: 1, marks: 2 },
-      { id: 9, key: "Q9", level: 3, question: "පහත වාක්‍යය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage9.jpg"), options: [{ type: "image", src: require("../Assets/VisualC/vcoption1.jpg") }, { type: "image", src: require("../Assets/VisualC/vcoption2.jpg") }], correctAnswer: 0, marks: 2 },
-      { id: 10, key: "Q10", level: 3, question: "පහත ඉලක්කම හදුනා ගන්න", image: require("../Assets/VisualC/vcimage10.jpg"), options: ["3", "9", "8", "වෙනත්"], correctAnswer: 2, marks: 2 },
+      { id: 7, key: "Q7", level: 3, question: "පහත අකුර හදුනා ගන්න", image: require("../Assets/VisualC/vcimage7.jpg"), options: ["ස", "ත", "ක", "වෙනත්"] },
+      { id: 8, key: "Q8", level: 3, question: "පහත වචනය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage8.jpg"), options: ["අක්කා", "අම්මා", "අයියා", "වෙනත්"] },
+      { id: 9, key: "Q9", level: 3, question: "පහත වාක්‍යය හදුනා ගන්න", image: require("../Assets/VisualC/vcimage9.jpg"), options: [{ type: "image", src: require("../Assets/VisualC/vcoption1.jpg") }, { type: "image", src: require("../Assets/VisualC/vcoption2.jpg") }] },
+      { id: 10, key: "Q10", level: 3, question: "පහත ඉලක්කම හදුනා ගන්න", image: require("../Assets/VisualC/vcimage10.jpg"), options: ["3", "9", "8", "වෙනත්"] },
       
     ],
     []
@@ -68,12 +61,28 @@ const VCAssessment = () => {
 
   const currentQ = questions[currentQuestionIndex];
 
+  const [levelTimes, setLevelTimes] = useState({
+  1: 0,
+  2: 0,
+  3: 0,
+});
+
   // Timer
-  useEffect(() => {
-    setLevelTimer(0);
-    const interval = setInterval(() => setLevelTimer((prev) => prev + 1), 1000);
-    return () => clearInterval(interval);
-  }, [currentLevel]);
+useEffect(() => {
+  setLevelTimer(0);
+
+  const interval = setInterval(() => {
+    setLevelTimer((prev) => prev + 1);
+
+    // store live time for current level
+    setLevelTimes((prev) => ({
+      ...prev,
+      [currentLevel]: prev[currentLevel] + 1,
+    }));
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [currentLevel]);
 
   // RESET AUDIO WHEN LEVEL CHANGES
   useEffect(() => {
@@ -97,37 +106,6 @@ const VCAssessment = () => {
     }));
   };
 
-  // Calculate level marks (UI view only — backend will compute final marks too)
-  const calculateLevelSummary = (level, timeTakenSec) => {
-    const levelQuestions = questions.filter((q) => q.level === level);
-
-    let totalMarks = 0;
-    let correctCount = 0;
-
-    levelQuestions.forEach((q) => {
-      const selected1Based = answers[q.key];
-      const selected0Based = typeof selected1Based === "number" ? selected1Based - 1 : undefined;
-      if (selected0Based === q.correctAnswer) {
-        totalMarks += q.marks;
-        correctCount++;
-      }
-    });
-
-    // Time bonus rules (must have at least 1 correct)
-    if (correctCount > 0 && timeTakenSec <= 20) {
-      if (level === 1) totalMarks += 2;
-      if (level === 2) totalMarks += 3;
-      if (level === 3) totalMarks += 2;
-    }
-
-    // Caps
-    if (level === 1) totalMarks = Math.min(totalMarks, 5);
-    if (level === 2) totalMarks = Math.min(totalMarks, 10);
-    if (level === 3) totalMarks = Math.min(totalMarks, 10);
-
-    return { marks: totalMarks, timeTaken: timeTakenSec, correctCount };
-  };
-
   // Helpers: last question index per level
   const isLastQuestionOfLevel = () => {
     const levelQuestions = questions.filter((q) => q.level === currentLevel);
@@ -136,49 +114,29 @@ const VCAssessment = () => {
   };
 
   const handleNext = async () => {
-    // save current level summary if end of level
-    if (isLastQuestionOfLevel()) {
-      const summary = calculateLevelSummary(currentLevel, levelTimer);
-
-      setLevelSummary((prev) => ({
-        ...prev,
-        [`level${currentLevel}`]: summary,
-      }));
-
-      if (currentLevel < 3) {
-        // go to next level (and next question)
-        setCurrentLevel((prev) => prev + 1);
-        setCurrentQuestionIndex((prev) => prev + 1);
-      } else {
-        // submit at end of level 3
-        await submitResults(summary);
-      }
-    } else {
-      // next question
+  if (isLastQuestionOfLevel()) {
+    if (currentLevel < 3) {
+      setCurrentLevel((prev) => prev + 1);
       setCurrentQuestionIndex((prev) => prev + 1);
+    } else {
+      await submitResults();
     }
+  } else {
+    setCurrentQuestionIndex((prev) => prev + 1);
+  }
+};
+
+  const submitResults = async () => {
+  setIsSubmitting(true);
+
+  const payload = {
+    ...answers,
+    "Time Taken sec(level1)": levelTimes[1],
+    "Time Taken sec(level2)": levelTimes[2],
+    "Time Taken sec(level3)": levelTimes[3],
   };
 
-  const submitResults = async (level3Summary) => {
-    setIsSubmitting(true);
-
-    const finalSummary = {
-      ...levelSummary,
-      level3: level3Summary,
-    };
-
-    // Build payload expected by new backend:
-    // Q1..Q10 as 1-based option numbers + Time Taken sec(levelX)
-    const payload = {
-      ...answers,
-      "Time Taken sec(level1)": finalSummary.level1.timeTaken,
-      "Time Taken sec(level2)": finalSummary.level2.timeTaken,
-      "Time Taken sec(level3)": finalSummary.level3.timeTaken,
-    };
-
-    console.log("Submitting payload:", payload);
-
-    
+  console.log("Submitting payload:", payload);
 
     try {
       const response = await fetch("http://localhost:5000/predict_vc", {
@@ -187,30 +145,24 @@ const VCAssessment = () => {
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-      const result = await response.json();
-      console.log("Backend response:", result);
+    const result = await response.json();
 
-      // Store results (safe fallback for refresh)
-      const resultsData = {
-        ...result,
-        levelMarks: finalSummary, // UI summary
-        answers, // optional: can help debug
-      };
+    sessionStorage.removeItem("vcResults");
+    sessionStorage.setItem("vcResults", JSON.stringify(result));
 
-      sessionStorage.setItem("vcResults", JSON.stringify(resultsData));
+    navigate("/vcResults", {
+      state: result,
+      replace: true,
+    });
 
-      navigate("/vcResults", {
-        state: resultsData,
-        replace: true,
-      });
-    } catch (error) {
-      console.error("Error submitting results:", error);
-      alert("ප්‍රතිඵල ඉදිරිපත් කිරීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");
-      setIsSubmitting(false);
-    }
-  };
+  } catch (error) {
+    console.error("Error submitting results:", error);
+    alert("ප්‍රතිඵල ඉදිරිපත් කිරීමේදී දෝෂයක් ඇතිවිය. කරුණාකර නැවත උත්සාහ කරන්න.");
+    setIsSubmitting(false);
+  }
+};
 
   const isAnswered = answers[currentQ.key] !== undefined;
   const questionNumber = currentQuestionIndex + 1;
@@ -354,17 +306,6 @@ const VCAssessment = () => {
                   ? "මීළඟ මට්ටම 🚀"
                   : "මීළඟ ප්‍රශ්නය ➡️"}
               </button>
-            </div>
-          </div>
-
-          {/* Encouragement */}
-          <div className="mt-6 text-center">
-            <div className="inline-block bg-white rounded-full px-6 py-3 shadow-lg border-4 border-yellow-300">
-              <div className="flex items-center space-x-2">
-                <Star className="w-6 h-6 text-yellow-500 animate-pulse" />
-                <span className="text-lg font-bold text-purple-700">ඔබට හොඳින් කරන්න පුළුවන්! 💪</span>
-                <Star className="w-6 h-6 text-yellow-500 animate-pulse" />
-              </div>
             </div>
           </div>
         </div>

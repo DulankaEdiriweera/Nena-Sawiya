@@ -15,8 +15,7 @@ class VCModel:
         marks_level3: int,
         total_marks: int,
         final_marks_percent: float,
-        rule_based_label: str,
-        ml_vs_rule_mismatch: bool
+
     ):
 
         self.user_id = user_id
@@ -33,8 +32,6 @@ class VCModel:
         self.marks_level3 = marks_level3
         self.total_marks = total_marks
         self.final_marks_percent = final_marks_percent
-        self.rule_based_label = rule_based_label
-        self.ml_vs_rule_mismatch = ml_vs_rule_mismatch
 
         self.created_at = datetime.utcnow()
 
@@ -54,8 +51,6 @@ class VCModel:
             "marks_level3": self.marks_level3,
             "total_marks": self.total_marks,
             "final_marks_percent": self.final_marks_percent,
-            "rule_based_label": self.rule_based_label,
-            "ml_vs_rule_mismatch": self.ml_vs_rule_mismatch,
 
             "created_at": self.created_at
         }
