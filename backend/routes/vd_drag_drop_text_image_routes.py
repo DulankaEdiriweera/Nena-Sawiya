@@ -9,10 +9,10 @@ from models.vd_drag_text_model import vd_drag_text_schema, vd_drag_item_schema
 vd_drag_text_bp = Blueprint("vd_drag_text_bp", __name__)
 
 
-# -------------------------------------------------------
+
 # POST /api/vd_drag_text/add
 # Add a new activity (admin)
-# -------------------------------------------------------
+
 @vd_drag_text_bp.route("/add", methods=["POST"])
 def add_vd_drag_activity():
     try:
@@ -52,10 +52,10 @@ def add_vd_drag_activity():
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------------------------------
+
 # GET /api/vd_drag_text/all
 # Get all activities (admin manage page)
-# -------------------------------------------------------
+
 @vd_drag_text_bp.route("/all", methods=["GET"])
 def get_all_activities():
     try:
@@ -67,10 +67,10 @@ def get_all_activities():
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------------------------------
+
 # GET /api/vd_drag_text/level/<level>
 # Get activities by level (user side)
-# -------------------------------------------------------
+
 @vd_drag_text_bp.route("/level/<level>", methods=["GET"])
 def get_by_level(level):
     try:
@@ -82,10 +82,10 @@ def get_by_level(level):
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------------------------------
+
 # PUT /api/vd_drag_text/update/<id>
 # Update an activity (admin manage page)
-# -------------------------------------------------------
+
 @vd_drag_text_bp.route("/update/<id>", methods=["PUT"])
 def update_activity(id):
     try:
@@ -135,10 +135,10 @@ def update_activity(id):
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------------------------------
+
 # DELETE /api/vd_drag_text/delete/<id>
 # Delete an activity (admin manage page)
-# -------------------------------------------------------
+
 @vd_drag_text_bp.route("/delete/<id>", methods=["DELETE"])
 def delete_activity(id):
     try:

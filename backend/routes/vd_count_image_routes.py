@@ -13,7 +13,7 @@ def serialize(doc):
         doc["created_at"] = str(doc["created_at"])
     return doc
 
-# ── ADD GAME ──────────────────────────────────────────────
+# ADD GAME 
 @vd_count_bp.route("/add", methods=["POST"])
 def add_game():
     title         = request.form.get("title")
@@ -54,28 +54,28 @@ def add_game():
     return jsonify({"message": "ක්‍රීඩාව සාර්ථකව එකතු කරන ලදී"}), 201
 
 
-# ── GET ALL (ADMIN) ────────────────────────────────────────
+# GET ALL (ADMIN) 
 @vd_count_bp.route("/all", methods=["GET"])
 def get_all():
     data = [serialize(d) for d in mongo.db.vd_count_games.find()]
     return jsonify(data)
 
 
-# ── GET BY LEVEL (USER) ────────────────────────────────────
+#  GET BY LEVEL (USER) 
 @vd_count_bp.route("/level/<level>", methods=["GET"])
 def get_by_level(level):
     data = [serialize(d) for d in mongo.db.vd_count_games.find({"level": level.upper()})]
     return jsonify(data)
 
 
-# ── DELETE ─────────────────────────────────────────────────
+# DELETE
 @vd_count_bp.route("/delete/<game_id>", methods=["DELETE"])
 def delete_game(game_id):
     mongo.db.vd_count_games.delete_one({"_id": ObjectId(game_id)})
     return jsonify({"message": "ක්‍රීඩාව මකා දමන ලදී"})
 
 
-# ── UPDATE ─────────────────────────────────────────────────
+# UPDATE 
 @vd_count_bp.route("/update/<game_id>", methods=["PUT"])
 def update_game(game_id):
     title  = request.form.get("title")

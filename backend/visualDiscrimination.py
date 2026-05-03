@@ -8,18 +8,18 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 from datetime import datetime
 
-# -----------------------------
+
 # Model folder
-# -----------------------------
+
 MODEL_FOLDER = "visualD_models"
 os.makedirs(MODEL_FOLDER, exist_ok=True)
 
 MODEL_FILENAME = "VD_model.pkl"
 MODEL_PATH = os.path.join(MODEL_FOLDER, MODEL_FILENAME)
 
-# -----------------------------
+
 # Shared preprocessing
-# -----------------------------
+
 def str_to_avg(val):
     try:
         if isinstance(val, str) and ',' in val:
@@ -43,9 +43,9 @@ def preprocess_dataframe(df, has_target=False):
         df[col] = df[col].fillna(df[col].mean())
     return df
 
-# -----------------------------
+
 # Train model
-# -----------------------------
+
 def train_model(dataset_path, backup_old=True):
     data = pd.read_csv(dataset_path)
     data = preprocess_dataframe(data, has_target=True)
@@ -60,7 +60,7 @@ def train_model(dataset_path, backup_old=True):
         shuffle=True
     )
 
-    # ✅ FINAL BALANCED MODEL (~90–95%)
+    #   MODEL 
     VD_model = RandomForestClassifier(
         n_estimators=40,
         max_depth=2,
@@ -100,9 +100,9 @@ def train_model(dataset_path, backup_old=True):
     joblib.dump(VD_model, MODEL_PATH)
     print(f"\n💾 Model saved as {MODEL_PATH}")
 
-# -----------------------------
+
 # Evaluate model
-# -----------------------------
+
 def evaluate_model(dataset_path):
     if not os.path.exists(MODEL_PATH):
         print("❌ No model found. Train first.")
@@ -149,9 +149,9 @@ def predict_new(csv_path):
     print(data)
     print(f"\n📁 Saved as {output_path}")
 
-# -----------------------------
+
 # Command-line interface
-# -----------------------------
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         print("Usage: python visualDiscrimination.py [train|evaluate|predict] <dataset_path>")

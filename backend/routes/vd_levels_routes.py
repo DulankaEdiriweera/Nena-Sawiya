@@ -4,7 +4,7 @@ from database.db import mongo
 
 vd_levels_bp = Blueprint("vd_levels_bp", __name__)
 
-# Map predicted levels → suggested levels
+# Map predicted levels with suggested levels
 LEVEL_MAP = {
     "දුර්වල": ["EASY"],                # Weak student: EASY recommended
     "සාමාන්‍ය": ["MEDIUM", "HARD"],     # Normal student: MEDIUM recommended

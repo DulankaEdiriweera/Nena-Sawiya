@@ -12,48 +12,48 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
  
 vd_bp = Blueprint("vd_bp", __name__)
  
-# -------------------------------
+
 # Load VD Model
-# -------------------------------
+
 VD_MODEL_PATH = os.path.join("visualD_models", "VD_model.pkl")
 VD_model = joblib.load(VD_MODEL_PATH)
  
-# -------------------------------
+
 # Sinhala Level Mapping
-# -------------------------------
+
 visual_D = {
     0: "දුර්වල",
     1: "සාමාන්‍ය",
     2: "ඉතා හොඳයි"
 }
  
-# -------------------------------
+
 # Sinhala Advice Mapping
-# -------------------------------
+
 vd_feedback_map = {
     0: "ඔබේ දරුවාගේ දෘශ්‍ය පරතර හැකියාව දුර්වලයි. වැඩි මග පෙන්වීම හා පුහුණුව අවශ්‍ය වේ.",
     1: "ඔබේ දරුවාගේ දෘශ්‍ය පරතර හැකියාව සාමාන්‍ය මට්ටමක පවතියි. නිතර පුහුණුවෙන් වැඩි දියුණුවක් ලබා ගත හැක.",
     2: "ඔබේ දරුවාගේ දෘශ්‍ය පරතර හැකියාව ඉතා හොඳයි. නිතර පුහුණුව නංවූ වැඩිම දියුණුවක් ලබා ගත හැක."
 }
  
-# -------------------------------
+
 # Helper: Compute wrong answer ratio
-# -------------------------------
+
 def compute_wrong_ratio(df: pd.DataFrame) -> pd.Series:
     total_features = df.shape[1]
     wrong_answers = (df <= 0).sum(axis=1)
     return wrong_answers / total_features
  
-# -------------------------------
+
 # Helper: Generate stable hash
-# -------------------------------
+
 def generate_assessment_hash(payload: dict) -> str:
     payload_str = json.dumps(payload, sort_keys=True)
     return hashlib.sha256(payload_str.encode()).hexdigest()
  
-# -------------------------------
+
 # Prediction Route
-# -------------------------------
+
 @vd_bp.route("/predictVDH", methods=["POST"])
 #@vd_bp.route("/predict_vd", methods=["POST"])
 @jwt_required()  # Require login
@@ -66,9 +66,9 @@ def predict_vd():
         if not data:
             return jsonify({"error": "No JSON received"}), 400
  
-        # ---------------------------
+        
         # Get logged-in user's ID
-        # ---------------------------
+        
        
  
         # Convert JSON → DataFrame
@@ -88,9 +88,9 @@ def predict_vd():
         input_payload = data[0] if isinstance(data, list) else data
         assessment_hash = generate_assessment_hash(input_payload)
  
-        # -------------------------------
-        # HARD RULE: Total ≤ 5
-        # -------------------------------
+        
+        
+        
         if total_score <= 5:
             level = visual_D[0]
             advice = vd_feedback_map[0]
@@ -116,9 +116,9 @@ def predict_vd():
                 "Advice": advice
             })
  
-        # -------------------------------
-        # ML Prediction + Wrong-ratio rule
-        # -------------------------------
+        
+        
+        
         wrong_ratio = compute_wrong_ratio(df)
         ml_predictions = VD_model.predict(df)
  
@@ -132,9 +132,9 @@ def predict_vd():
         level = visual_D[final_predictions[0]]
         advice = vd_feedback_map[final_predictions[0]]
  
-        # -------------------------------
+        
         # Save to DB (duplicate-safe)
-        # -------------------------------
+        
         existing = mongo.db.vd_assessments.find_one({
             "assessment_hash": assessment_hash
         })
