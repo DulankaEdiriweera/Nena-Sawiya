@@ -22,9 +22,7 @@ LEVEL_TO_GRID = {
 }
 
 
-# -------------------------
 # Helpers
-# -------------------------
 def allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXT
 
@@ -84,14 +82,6 @@ def build_option_indices(rows: int, cols: int, missing_index: int, options_count
     return chosen
 
 
-# -------------------------------------------------
-# ADMIN: Add Picture Completion Activity (NO tile files)
-# POST /api/vc_pic_com/add
-# form-data:
-#   title, task_number, options_count(optional),
-#   levels[] (easy/medium/hard)   (store ONE main level)
-#   image(file)
-# -------------------------------------------------
 @vc_pic_com_bp.route("/add", methods=["POST"])
 def add_vc_pic_com():
     title = request.form.get("title", "VC Picture Completion")
@@ -170,10 +160,6 @@ def add_vc_pic_com():
     return jsonify({"message": "Picture completion activity added successfully", "activity_id": activity_id}), 201
 
 
-# ---------------------------------------------
-# USER/ADMIN: Get all
-# GET /api/vc_pic_com/all?level=easy
-# ---------------------------------------------
 @vc_pic_com_bp.route("/all", methods=["GET"])
 def get_all_vc_pic_com():
     level = request.args.get("level")
@@ -185,10 +171,6 @@ def get_all_vc_pic_com():
     return jsonify(docs), 200
 
 
-# ---------------------------------------------
-# USER: Get one by activity_id (meta)
-# GET /api/vc_pic_com/<activity_id>
-# ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>", methods=["GET"])
 def get_vc_pic_com(activity_id):
     doc = mongo.db.vc_pic_com.find_one({"activity_id": activity_id}, {"_id": 0})
@@ -197,10 +179,6 @@ def get_vc_pic_com(activity_id):
     return jsonify(doc), 200
 
 
-# ---------------------------------------------
-# DYNAMIC: Question Image
-# GET /api/vc_pic_com/<activity_id>/question
-# ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>/question", methods=["GET"])
 def get_question_image(activity_id):
     doc = mongo.db.vc_pic_com.find_one({"activity_id": activity_id}, {"_id": 0})
@@ -231,11 +209,6 @@ def get_question_image(activity_id):
     return send_file(bio, mimetype="image/png")
 
 
-# ---------------------------------------------
-# DYNAMIC: Tile or Thumbnail
-# GET /api/vc_pic_com/<activity_id>/tile/<index>
-#   ?thumb=1  -> returns padded thumbnail
-# ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>/tile/<int:index>", methods=["GET"])
 def get_tile_image(activity_id, index):
     doc = mongo.db.vc_pic_com.find_one({"activity_id": activity_id}, {"_id": 0})
@@ -268,10 +241,6 @@ def get_tile_image(activity_id, index):
     return send_file(bio, mimetype="image/png")
 
 
-# ---------------------------------------------
-# ADMIN: Delete activity (removes ONLY original folder)
-# DELETE /api/vc_pic_com/<activity_id>
-# ---------------------------------------------
 @vc_pic_com_bp.route("/<activity_id>", methods=["DELETE"])
 def delete_vc_pic_com(activity_id):
     base_upload_dir = current_app.config["VC_UPLOAD_FOLDER"]

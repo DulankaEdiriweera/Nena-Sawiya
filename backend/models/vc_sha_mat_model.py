@@ -4,11 +4,11 @@ class VCShaMatModel:
     def __init__(
         self,
         title,
-        levels,             # ["easy"] or ["easy","medium"] etc.
+        levels,             
         activity_id,
-        original_url,       # correct full image
-        shadow_url,         # generated shadow image
-        options,            # list of {id, url, is_correct}
+        original_url,       
+        shadow_url,         
+        options,            
         task_number=None
     ):
         self.title = title

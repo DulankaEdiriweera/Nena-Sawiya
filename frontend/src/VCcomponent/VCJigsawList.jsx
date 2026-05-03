@@ -27,9 +27,9 @@ export default function VCJigsawList() {
 
   const nav = useNavigate();
 
-  // -----------------------------
+
   // FETCH ADAPTIVE STATUS
-  // -----------------------------
+
   const fetchAdaptive = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -48,9 +48,8 @@ export default function VCJigsawList() {
     }
   };
 
-  // -----------------------------
+
   // FETCH PUZZLES
-  // -----------------------------
   const fetchList = async (ab) => {
     setLoading(true);
     try {
@@ -75,15 +74,14 @@ export default function VCJigsawList() {
     }
   }, [adaptive, ability]);
 
-  // -----------------------------
+
   // LEVEL SELECT LOGIC (FINAL)
-  // -----------------------------
   const handleSelectLevel = (level) => {
     if (!adaptive) return;
 
     const { ability: userAbility, unlocked_levels } = adaptive;
 
-    // 🔒 LOCK CHECK
+
     if (!unlocked_levels.includes(level)) {
       Swal.fire({
         icon: "error",
@@ -94,18 +92,14 @@ export default function VCJigsawList() {
       return;
     }
 
-    // =========================
     // WEAK STUDENT
-    // =========================
     if (userAbility === "Weak") {
       // No warning at all
       setAbility(level);
       return;
     }
 
-    // =========================
     // AVERAGE STUDENT
-    // =========================
     if (userAbility === "Average") {
       if (level === "Weak") {
         Swal.fire({
@@ -128,9 +122,7 @@ export default function VCJigsawList() {
       return;
     }
 
-    // =========================
     // HIGH STUDENT
-    // =========================
     if (userAbility === "High") {
       if (level === "Weak" || level === "Average") {
         Swal.fire({
