@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -7,14 +7,12 @@ const ZONES = {
   medium: ["left", "right", "top"],
   hard: ["left", "right", "top", "bottom"],
 };
-
 const ZONE_LABELS = {
   left: "Left — වමට",
   right: "Right — දකුණට",
   top: "Top — උඩ",
   bottom: "Bottom — යට",
 };
-
 const ZONE_COLORS = {
   left: {
     bg: "bg-indigo-50",
@@ -33,13 +31,170 @@ const ZONE_COLORS = {
   },
   bottom: { bg: "bg-red-50", border: "border-red-200", text: "text-red-700" },
 };
-
 const emptyOption = (zone) => ({
   image: null,
   preview: null,
   correct_zone: zone,
 });
 
+// ── AudioInput ────────────────────────────────────────────────────────────────
+const AudioInput = ({ label, hint, onFileReady, resetKey }) => {
+  const [mode, setMode] = useState("record");
+  const [recording, setRec] = useState(false);
+  const [audioURL, setAudioURL] = useState(null);
+  const [status, setStatus] = useState("");
+  const mrRef = useRef(null),
+    chunksRef = useRef([]),
+    fileRef = useRef(null);
+
+  useEffect(() => {
+    setAudioURL(null);
+    setStatus("");
+    setRec(false);
+  }, [resetKey]);
+
+  const start = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      chunksRef.current = [];
+      mrRef.current = new MediaRecorder(stream);
+      mrRef.current.ondataavailable = (e) => chunksRef.current.push(e.data);
+      mrRef.current.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        setAudioURL(URL.createObjectURL(blob));
+        onFileReady(
+          new File([blob], `rec_${Date.now()}.webm`, { type: "audio/webm" }),
+        );
+        stream.getTracks().forEach((t) => t.stop());
+        setStatus("Saved");
+      };
+      mrRef.current.start();
+      setRec(true);
+      setStatus("Recording…");
+    } catch {
+      alert("Microphone access denied.");
+    }
+  };
+
+  const stop = () => {
+    if (mrRef.current && recording) {
+      mrRef.current.stop();
+      setRec(false);
+    }
+  };
+
+  const onFile = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    //audio validation
+    const isValidAudio = f.type.startsWith("audio/") || f.type === "video/mp4";
+
+    if (!isValidAudio) {
+      alert("Please upload a valid audio file (MP3, WAV, MP4, etc.)");
+      e.target.value = "";
+      return;
+    }
+
+    setAudioURL(URL.createObjectURL(f));
+    setStatus(f.name);
+    onFileReady(f);
+  };
+
+  const clear = () => {
+    setAudioURL(null);
+    setStatus("");
+    onFileReady(null);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  return (
+    <div className="border border-slate-200 rounded-xl px-4 py-3.5 bg-slate-50">
+      <div className="flex items-center justify-between mb-3">
+        <div>
+          <p className="text-xs font-bold tracking-widest uppercase text-indigo-400 mb-0.5">
+            {label}
+          </p>
+          {hint && <p className="text-xs text-slate-400">{hint}</p>}
+        </div>
+        <div className="flex gap-1.5">
+          {["record", "upload"].map((m) => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`px-3 py-1 text-xs font-semibold rounded-md border-none cursor-pointer transition-colors ${
+                mode === m
+                  ? m === "record"
+                    ? "bg-red-600 text-white"
+                    : "bg-slate-900 text-white"
+                  : "bg-slate-200 text-indigo-400 hover:bg-slate-300"
+              }`}
+            >
+              {m.charAt(0).toUpperCase() + m.slice(1)}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {mode === "record" && (
+        <div className="flex items-center gap-2.5">
+          <button
+            type="button"
+            onClick={recording ? stop : start}
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-white text-sm font-semibold border-none cursor-pointer transition-colors ${recording ? "bg-slate-800" : "bg-red-600 hover:bg-red-700"}`}
+          >
+            <span
+              className={`w-2 h-2 bg-white ${recording ? "rounded-sm" : "rounded-full"}`}
+            />
+            {recording ? "Stop" : "Record"}
+          </button>
+          {status && (
+            <span
+              className={`text-xs font-medium ${recording ? "text-red-600" : "text-green-700"}`}
+            >
+              {status}
+            </span>
+          )}
+        </div>
+      )}
+
+      {mode === "upload" && (
+        <>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="audio/*"
+            onChange={onFile}
+            className="hidden"
+          />
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-700 rounded-lg text-white text-sm font-semibold border-none cursor-pointer"
+          >
+            Choose File
+          </button>
+          {status && <p className="text-xs text-green-700 mt-1.5">{status}</p>}
+        </>
+      )}
+
+      {audioURL && (
+        <div className="flex items-center gap-2.5 mt-3">
+          <audio controls src={audioURL} className="flex-1 h-8" />
+          <button
+            type="button"
+            onClick={clear}
+            className="bg-transparent border-none text-red-600 text-xs font-semibold cursor-pointer hover:text-red-800"
+          >
+            Remove
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── UploadZone ────────────────────────────────────────────────────────────────
 const UploadZone = ({ preview, fileName, label, onChange }) => (
   <div className="relative border border-dashed border-indigo-200 rounded-lg px-4 py-3.5 bg-slate-50 cursor-pointer hover:border-indigo-400 hover:bg-indigo-50 transition-colors">
     <input
@@ -82,12 +237,14 @@ const UploadZone = ({ preview, fileName, label, onChange }) => (
   </div>
 );
 
+// ── Main Form ─────────────────────────────────────────────────────────────────
 const AdminDirectionForm = () => {
   const navigate = useNavigate();
   const [level, setLevel] = useState("easy");
   const [sceneImage, setSceneImage] = useState(null);
   const [scenePreview, setScenePreview] = useState(null);
   const [question, setQuestion] = useState("");
+  const [questionAudio, setQuestionAudio] = useState(null);
   const [options, setOptions] = useState(ZONES.easy.map(emptyOption));
   const [message, setMessage] = useState("");
   const [isError, setIsError] = useState(false);
@@ -120,15 +277,24 @@ const AdminDirectionForm = () => {
     setSceneImage(null);
     setScenePreview(null);
     setQuestion("");
+    setQuestionAudio(null);
     setOptions(ZONES[currentLevel].map(emptyOption));
     setFormKey((k) => k + 1);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!sceneImage) {
       setMessage("Please upload the scene image.");
+      setIsError(true);
+      return;
+    }
+    if (
+      !questionAudio ||
+      (!questionAudio.type.startsWith("audio/") &&
+        questionAudio.type !== "video/mp4")
+    ) {
+      setMessage("Please upload a valid audio file (MP3, WAV, MP4).");
       setIsError(true);
       return;
     }
@@ -147,6 +313,7 @@ const AdminDirectionForm = () => {
     formData.append("level", level);
     formData.append("question", question);
     formData.append("scene_image", sceneImage);
+    formData.append("question_audio", questionAudio);
     formData.append(
       "options",
       JSON.stringify(options.map((o) => ({ correct_zone: o.correct_zone }))),
@@ -162,9 +329,7 @@ const AdminDirectionForm = () => {
       setMessage(res.data.message || "Direction set saved successfully.");
       setIsError(false);
       resetForm(level);
-      navigate("/rld-admin-dashboard", {
-        state: { activeCat: "Directional" },
-      });
+      navigate("/rld-admin-dashboard", { state: { activeCat: "Directional" } });
     } catch (err) {
       setMessage(
         err.response?.data?.error || "An error occurred. Please try again.",
@@ -186,7 +351,6 @@ const AdminDirectionForm = () => {
 
       <div className="dm-sans min-h-screen bg-slate-100 flex items-start justify-center px-4 py-10">
         <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-lg overflow-hidden">
-          {/* Header */}
           <div className="px-8 py-7 border-b border-slate-100">
             <p className="text-xs font-bold tracking-widest uppercase text-slate-400 mb-1">
               Admin Panel
@@ -199,21 +363,13 @@ const AdminDirectionForm = () => {
             </p>
           </div>
 
-          {/* Body */}
           <div className="px-8 py-7 pb-8">
-            {/* Alert */}
             {message && (
               <div
-                className={`flex items-start gap-2.5 px-4 py-3 rounded-lg text-sm font-medium mb-6 border ${
-                  isError
-                    ? "bg-red-50 border-red-200 text-red-700"
-                    : "bg-green-50 border-green-200 text-green-700"
-                }`}
+                className={`flex items-start gap-2.5 px-4 py-3 rounded-lg text-sm font-medium mb-6 border ${isError ? "bg-red-50 border-red-200 text-red-700" : "bg-green-50 border-green-200 text-green-700"}`}
               >
                 <div
-                  className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
-                    isError ? "bg-red-600" : "bg-green-500"
-                  }`}
+                  className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${isError ? "bg-red-600" : "bg-green-500"}`}
                 />
                 {message}
               </div>
@@ -243,7 +399,7 @@ const AdminDirectionForm = () => {
               {/* Scene Image */}
               <div className="mb-5">
                 <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
-                  Scene Image
+                  Scene Image{" "}
                   <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
                     e.g. a house, a room
                   </span>
@@ -256,10 +412,10 @@ const AdminDirectionForm = () => {
                 />
               </div>
 
-              {/* Question / Instruction */}
+              {/* Question Text */}
               <div className="mb-5">
                 <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
-                  Question / Instruction
+                  Question / Instruction{" "}
                   <span className="text-xs font-normal text-slate-400 normal-case tracking-normal ml-1.5">
                     Sinhala
                   </span>
@@ -274,7 +430,21 @@ const AdminDirectionForm = () => {
                 />
               </div>
 
-              {/* Section Divider */}
+              {/* Question Audio */}
+              <div className="mb-5">
+                <label className="block text-xs font-bold tracking-widest uppercase text-indigo-400 mb-1.5">
+                  Question Audio
+                </label>
+                <AudioInput
+                  key={`q-${formKey}`}
+                  resetKey={formKey}
+                  label="Question"
+                  hint="Record or upload the question audio"
+                  onFileReady={setQuestionAudio}
+                />
+              </div>
+
+              {/* Divider */}
               <div className="flex items-center gap-3 my-7">
                 <div className="flex-1 h-px bg-slate-100" />
                 <span className="text-xs font-bold tracking-widest uppercase text-slate-400 whitespace-nowrap">
@@ -308,15 +478,10 @@ const AdminDirectionForm = () => {
                 );
               })}
 
-              {/* Submit */}
               <button
                 type="submit"
                 disabled={loading}
-                className={`dm-sans w-full py-3.5 rounded-lg text-sm font-bold tracking-wide text-white border-none mt-7 transition-all ${
-                  loading
-                    ? "bg-slate-400 cursor-not-allowed"
-                    : "bg-slate-900 cursor-pointer hover:bg-slate-700 hover:-translate-y-px"
-                }`}
+                className={`dm-sans w-full py-3.5 rounded-lg text-sm font-bold tracking-wide text-white border-none mt-7 transition-all ${loading ? "bg-slate-400 cursor-not-allowed" : "bg-slate-900 cursor-pointer hover:bg-slate-700 hover:-translate-y-px"}`}
               >
                 {loading ? "Saving…" : "Save Direction Set"}
               </button>

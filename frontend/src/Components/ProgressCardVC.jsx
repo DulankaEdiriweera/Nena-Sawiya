@@ -55,15 +55,15 @@ export default function ProgressCardVC({ progress }) {
           <div className="flex justify-between">
             <span className="font-medium">පෙර මට්ටම:</span>
             <span>
-              {levelMap[progress.previous_rule_level] ||
-                progress.previous_rule_level}
+              {levelMap[progress.previous_vc_level_si] ||
+                progress.previous_vc_level_si}
             </span>
           </div>
 
           <div className="flex justify-between">
             <span className="font-medium">නවතම මට්ටම:</span>
             <span>
-              {levelMap[progress.latest_rule_level] || progress.latest_rule_level}
+              {levelMap[progress.latest_vc_level_si] || progress.latest_vc_level_si}
             </span>
           </div>
         </div>

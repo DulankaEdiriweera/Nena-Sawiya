@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Header from "../../Components/Header";
+import instructionAudio from "../../Assets/visualD/audio/memorygame.mp4";
 
 const BASE = "http://localhost:5000";
 const COUNTDOWN = 30;
@@ -33,6 +34,25 @@ function GameInstructions() {
   );
 }
 
+// Popup Warning 
+function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-7 max-w-sm w-full text-center border-4 border-amber-300">
+        <div className="text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-black text-gray-800 mb-2">මට්ටම් අවවාදය</h3>
+        <p className="text-gray-600 text-sm mb-6">
+          <span className="font-black text-indigo-600">{recommended}</span> යනු නිර්දේශිත මට්ටමයි. ඔබට <span className="font-black text-amber-600">{selected}</span> සමඟ ඉදිරියට යාමට අවශ්‍යද?
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-3 border-2 border-gray-200 text-gray-600 font-black rounded-2xl hover:bg-gray-50">අවලංගු කරන්න</button>
+          <button onClick={onContinue} className="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black rounded-2xl hover:opacity-90">ඉදිරියට යන්න</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function MemoryGamePage() {
   const [screen, setScreen] = useState("level");
   const [level, setLevel] = useState(null);
@@ -46,7 +66,78 @@ export default function MemoryGamePage() {
   const [totalMarks, setTotalMarks] = useState(0);
   const timerRef = useRef(null);
 
+  // Adaptive level state 
+  const [recommendedLevel, setRecommendedLevel] = useState(null);
+  const [levelLoading, setLevelLoading]         = useState(true);
+  const [popup, setPopup]                       = useState(null);
+
+  
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${BASE}/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .then(r => setRecommendedLevel(r.data.recommended_level))
+      .catch(console.error)
+      .finally(() => setLevelLoading(false));
+  }, []);
+
+  
+  useEffect(() => {
+    if (screen !== "level" && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  }, [screen]);
+
+  
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleLevelClick = (key) => {
+    if (key === recommendedLevel) {
+      proceedWithLevel(key);
+    } else {
+      const recCfg = levelConfig[recommendedLevel];
+      setPopup({ key, label: levelConfig[key].label, recommendedLabel: recCfg?.label || recommendedLevel });
+    }
+  };
+
+  const proceedWithLevel = (key) => {
+    axios.post(`${BASE}/api/vd_levels/select_level`, { level: key }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .catch(console.error);
+    setPopup(null);
+    startLevel(key);
+  };
+
   const startLevel = async (lvl) => {
+    
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+
     setLevel(lvl);
     setLoadingGame(true);
     setNoGame(false);
@@ -56,7 +147,6 @@ export default function MemoryGamePage() {
     try {
       const res = await axios.get(`${BASE}/api/vd_memory/level/${lvl}`);
       if (!res.data || res.data.length === 0) { setNoGame(true); setScreen("level"); setLoadingGame(false); return; }
-      // Randomly pick 1 game from the level's collection
       const shuffled = [...res.data].sort(() => Math.random() - 0.5);
       const picked = shuffled[0];
       setGame(picked);
@@ -121,13 +211,50 @@ export default function MemoryGamePage() {
       {screen === "level" && (
         <div>
           <Header />
+          {popup && (
+            <LevelWarningPopup
+              recommended={popup.recommendedLabel}
+              selected={popup.label}
+              onCancel={() => setPopup(null)}
+              onContinue={() => proceedWithLevel(popup.key)}
+            />
+          )}
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 24, paddingTop: 32 }}>
             <GameInstructions />
-
             <div className="pop-in" style={{ textAlign: "center", marginBottom: 32 }}>
               <div style={{ fontSize: "4rem" }}>🧠</div>
               <h1 style={{ fontWeight: 900, fontSize: "2.2rem", color: "#4f46e5", margin: "10px 0 4px" }}>දෘශ්‍ය ක්‍රීඩාව!</h1>
               <p style={{ color: "#9ca3af", fontWeight: 700, fontSize: "1.05rem" }}>ඔබේ මට්ටම තෝරන්න</p>
+            </div>
+
+            {/* 🔊 AUDIO UI SECTION (LEVEL SELECTION INSTRUCTIONS) */}
+            <div className="mb-6 flex flex-col items-center gap-3">
+              <div className="flex gap-3">
+                {!isPlaying ? (
+                  <button
+                    onClick={handlePlay}
+                    className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+                  >
+                    ▶️ උපදෙස් වලට සවන් දෙන්න
+                  </button>
+                ) : (
+                  <button
+                    onClick={handlePause}
+                    className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+                  >
+                    ⏸ විරාම කරන්න
+                  </button>
+                )}
+                <button
+                  onClick={handleReplay}
+                  className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+                >
+                  🔁 නැවත සවන් දෙන්න
+                </button>
+              </div>
+              <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+                <source src={instructionAudio} type="video/mp4" />
+              </audio>
             </div>
 
             {noGame && (
@@ -136,19 +263,47 @@ export default function MemoryGamePage() {
               </div>
             )}
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, width: "100%", maxWidth: 680 }}>
-              {Object.entries(levelConfig).map(([key, cfg], i) => (
-                <button key={key} onClick={() => startLevel(key)} disabled={loadingGame}
-                  style={{ background: cfg.gradient, border: `3px solid ${cfg.border}`, borderRadius: 24, padding: "32px 20px", cursor: "pointer", textAlign: "center", transition: "transform 0.2s, box-shadow 0.2s", boxShadow: "0 6px 24px rgba(0,0,0,0.08)" }}
-                  onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.06)"; e.currentTarget.style.boxShadow = "0 12px 36px rgba(0,0,0,0.15)"; }}
-                  onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.boxShadow = "0 6px 24px rgba(0,0,0,0.08)"; }}
-                >
-                  <div style={{ fontSize: "3.5rem", marginBottom: 10 }}>{cfg.emoji}</div>
-                  <div style={{ fontWeight: 900, fontSize: "1.4rem", color: "#1f2937", marginBottom: 6 }}>{cfg.label}</div>
-                  <div style={{ color: "#6b7280", fontWeight: 700, fontSize: "0.85rem" }}>{cfg.desc}</div>
-                </button>
-              ))}
-            </div>
+            {levelLoading ? (
+              <div style={{ color: "#6366f1", fontWeight: 700, fontSize: "1.1rem" }}>මට්ටම් පූරණය වෙමින්...</div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20, width: "100%", maxWidth: 680 }}>
+                {Object.entries(levelConfig).map(([key, cfg]) => {
+                  const isRecommended = key === recommendedLevel;
+                  return (
+                    <div key={key} style={{ position: "relative" }}>
+                      {isRecommended && (
+                        <div style={{ position: "absolute", top: -12, left: "50%", transform: "translateX(-50%)", background: "#4f46e5", color: "white", fontSize: "0.75rem", fontWeight: 900, padding: "3px 14px", borderRadius: 20, zIndex: 10, whiteSpace: "nowrap", boxShadow: "0 2px 8px rgba(0,0,0,0.15)" }}>
+                          ⭐ නිර්දේශිතයි
+                        </div>
+                      )}
+                      <button
+                        onClick={() => handleLevelClick(key)}
+                        disabled={loadingGame}
+                        style={{
+                          width: "100%",
+                          background: isRecommended ? cfg.gradient : "linear-gradient(135deg, #f3f4f6, #e5e7eb)",
+                          border: isRecommended ? `3px solid ${cfg.border}` : "3px solid #d1d5db",
+                          borderRadius: 24, padding: "32px 20px", cursor: "pointer", textAlign: "center",
+                          transition: "transform 0.2s, box-shadow 0.2s",
+                          boxShadow: isRecommended ? "0 6px 24px rgba(0,0,0,0.12)" : "0 2px 8px rgba(0,0,0,0.06)",
+                          opacity: isRecommended ? 1 : 0.65,
+                          outline: isRecommended ? `4px solid ${cfg.border}` : "none",
+                          outlineOffset: 2,
+                        }}
+                        onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.06)"; e.currentTarget.style.opacity = "1"; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; e.currentTarget.style.opacity = isRecommended ? "1" : "0.65"; }}
+                      >
+                        <div style={{ fontSize: "3.5rem", marginBottom: 10 }}>{isRecommended ? cfg.emoji : "🔒"}</div>
+                        <div style={{ fontWeight: 900, fontSize: "1.4rem", color: isRecommended ? "#1f2937" : "#9ca3af", marginBottom: 6 }}>{cfg.label}</div>
+                        <div style={{ color: isRecommended ? "#6b7280" : "#d1d5db", fontWeight: 700, fontSize: "0.85rem" }}>
+                          {isRecommended ? cfg.desc : "නිර්දේශිත නොවේ"}
+                        </div>
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -261,7 +416,6 @@ export default function MemoryGamePage() {
                 <div style={{ fontSize: "0.72rem", color: "#6366f1", fontWeight: 700 }}>ලකුණු 🏅</div>
               </div>
             </div>
-            {/* Buttons */}
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
               <div style={{ display: "flex", gap: 12 }}>
                 <button onClick={() => startLevel(level)}

@@ -2,24 +2,59 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../Components/Header";
+import jigsawAudio from "../Assets/VisualC/audio/jigsaw.mp3";
+import Swal from "sweetalert2";
 
 const ABILITY_CONFIG = {
-  Weak:    { label: "පහසු",   color: "bg-green-400",  ring: "ring-green-300",  text: "text-green-700"  },
-  Average: { label: "මධ්‍යම ", color: "bg-yellow-400", ring: "ring-yellow-300", text: "text-yellow-700" },
-  High:    { label: "දුෂ්කර",   color: "bg-rose-400",   ring: "ring-rose-300",   text: "text-rose-700"  },
+  Weak: { label: "පහසු", color: "bg-green-400", text: "text-green-700" },
+  Average: { label: "මධ්‍යම", color: "bg-yellow-400", text: "text-yellow-700" },
+  High: { label: "දුෂ්කර", color: "bg-rose-400", text: "text-rose-700" },
 };
 
 export default function VCJigsawList() {
-  const [ability, setAbility] = useState("Weak");
-  const [items, setItems]     = useState([]);
+  const [ability, setAbility] = useState(null);
+  const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [adaptive, setAdaptive] = useState(null);
+
+  const [audio] = useState(new Audio(jigsawAudio));
+
+  const playAudio = () => {
+    audio.pause(); // prevents overlap
+    audio.currentTime = 0;
+    audio.play();
+  };
+
   const nav = useNavigate();
 
+
+  // FETCH ADAPTIVE STATUS
+
+  const fetchAdaptive = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        "http://localhost:5000/api/vc_adaptive/status?activity=jigsaw",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      setAdaptive(res.data);
+      setAbility(res.data.recommended);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+  // FETCH PUZZLES
   const fetchList = async (ab) => {
     setLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:5000/api/vc_jigsaw/all?ability=${encodeURIComponent(ab)}`
+        `http://localhost:5000/api/vc_jigsaw/all?ability=${ab}`,
       );
       setItems(res.data);
     } catch (e) {
@@ -29,111 +64,161 @@ export default function VCJigsawList() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchList(ability); }, [ability]);
+  useEffect(() => {
+    fetchAdaptive();
+  }, []);
+
+  useEffect(() => {
+    if (adaptive && ability) {
+      fetchList(ability);
+    }
+  }, [adaptive, ability]);
+
+
+  // LEVEL SELECT LOGIC (FINAL)
+  const handleSelectLevel = (level) => {
+    if (!adaptive) return;
+
+    const { ability: userAbility, unlocked_levels } = adaptive;
+
+
+    if (!unlocked_levels.includes(level)) {
+      Swal.fire({
+        icon: "error",
+        title: "අගුළු දමා ඇත 🔒",
+        text: "පෙර මට්ටම මුලින්ම සම්පූර්ණ කරන්න!",
+        confirmButtonText: "හරි",
+      });
+      return;
+    }
+
+    // WEAK STUDENT
+    if (userAbility === "Weak") {
+      // No warning at all
+      setAbility(level);
+      return;
+    }
+
+    // AVERAGE STUDENT
+    if (userAbility === "Average") {
+      if (level === "Weak") {
+        Swal.fire({
+          icon: "warning",
+          title: "ඔබට විශ්වාසද?",
+          text: "මධ්‍යම මට්ටමෙන් ආරම්භ කිරීමට අපි ඔබට නිර්දේශ කරමු.",
+          showCancelButton: true,
+          confirmButtonText: "ඔව්, ඉදිරියට යන්න",
+          cancelButtonText: "අවලංගු කරන්න",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setAbility(level);
+          }
+        });
+        return;
+      }
+
+      // Medium → no warning
+      setAbility(level);
+      return;
+    }
+
+    // HIGH STUDENT
+    if (userAbility === "High") {
+      if (level === "Weak" || level === "Average") {
+        Swal.fire({
+          icon: "warning",
+          title: "ඔබට විශ්වාසද?",
+          text: "දුෂ්කර මට්ටමෙන් ආරම්භ කිරීමට අපි ඔබට නිර්දේශ කරමු.",
+          showCancelButton: true,
+          confirmButtonText: "ඔව්, ඉදිරියට යන්න",
+          cancelButtonText: "අවලංගු කරන්න",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            setAbility(level);
+          }
+        });
+        return;
+      }
+
+      // Hard → no warning
+      setAbility(level);
+      return;
+    }
+  };
 
   return (
     <div>
-      <div><Header/></div>
-          <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 px-4 py-8 font-['Nunito',sans-serif]">
+      <Header />
 
-      {/* Header */}
-      <div className="text-center mb-8">
-        <div className="text-5xl mb-2">🧩</div>
-        <h1 className="text-4xl font-extrabold text-indigo-700 drop-shadow-sm tracking-tight">
-          ප්‍රහේලිකාවක් තෝරාගෙන ක්‍රීඩා කරන්න
-        </h1>
-        {/* <p className="text-indigo-400 mt-1 text-lg font-semibold">Pick a puzzle and play!</p> */}
-        <div className="mt-4">
-    <button
-      onClick={() => nav("/vcStudentDashboard")}
-      className="px-5 py-2 rounded-xl bg-white text-indigo-600 font-bold shadow hover:shadow-md border border-indigo-200 transition"
-    >
-      ← Back to Activity Dashboard
-    </button>
-  </div>
-      </div>
+      <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 px-4 py-8">
+        <div className="text-center mb-8">
+          <div className="text-5xl mb-2">🧩</div>
+          <h1 className="text-4xl font-extrabold text-indigo-700">
+            රූප ප්‍රහේලිකාව සම්පූර්ණ කරන්න!
+          </h1>
 
-      {/* Difficulty Selector */}
-      <div className="flex justify-center gap-3 mb-8">
-        {Object.entries(ABILITY_CONFIG).map(([key, cfg]) => (
           <button
-            key={key}
-            onClick={() => setAbility(key)}
-            className={`
-              flex flex-col items-center px-5 py-3 rounded-2xl font-bold text-sm
-              border-4 transition-all duration-200
-              ${ability === key
-                ? `${cfg.color} border-white text-white shadow-lg scale-110`
-                : `bg-white border-transparent ${cfg.text} hover:scale-105`
-              }
-            `}
+            onClick={playAudio}
+            className="mt-3 px-5 py-2 rounded-xl bg-indigo-500 text-white font-bold shadow"
           >
-            <span className="text-2xl">{cfg.emoji}</span>
-            {cfg.label}
+            🔊 උපදෙස් අහන්න
           </button>
-        ))}
-      </div>
 
-      {/* Content */}
-      {loading ? (
-        <div className="flex flex-col items-center justify-center mt-16 gap-4">
-          <div className="text-6xl animate-bounce">🔍</div>
-          <p className="text-indigo-500 font-bold text-lg">Finding puzzles…</p>
-        </div>
-      ) : items.length === 0 ? (
-        <div className="flex flex-col items-center justify-center mt-16 gap-4">
-          <div className="text-6xl">😢</div>
-          <p className="text-indigo-500 font-bold text-lg">
-            No puzzles found for {ABILITY_CONFIG[ability].label}!
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
-          {items.map((it, i) => (
-            <div
-              key={it.puzzle_id}
-              className="bg-white rounded-3xl shadow-md p-4 flex flex-col gap-3 border-2 border-indigo-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-200"
-              style={{ animationDelay: `${i * 60}ms` }}
+          <div className="mt-4">
+            <button
+              onClick={() => nav("/vcStudentDashboard")}
+              className="px-5 py-2 rounded-xl bg-white text-indigo-600 font-bold shadow"
             >
-              {/* Puzzle image */}
-              <div className="w-full h-36 rounded-2xl overflow-hidden bg-indigo-50 border border-indigo-100">
-                <img
-                  src={`http://localhost:5000${it.original_url}`}
-                  alt={it.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+              ← Back
+            </button>
+          </div>
+        </div>
 
-              {/* Info */}
-              <div>
-                <p className="font-extrabold text-indigo-700 text-base leading-tight">{it.title}</p>
-                <div className="flex gap-2 mt-1 flex-wrap">
-                  <span className="bg-indigo-100 text-indigo-500 text-xs font-bold px-2 py-0.5 rounded-full">
-                    {it.rows}×{it.cols} grid
-                  </span>
-                  {it.task_number != null && (
-                    <span className="bg-yellow-100 text-yellow-600 text-xs font-bold px-2 py-0.5 rounded-full">
-                      Task {it.task_number}
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              {/* Start button */}
-              <button
-                onClick={() => nav(`/vcJigsaw/${it.puzzle_id}`)}
-                className="mt-auto w-full py-2.5 rounded-2xl bg-indigo-500 hover:bg-indigo-600 active:scale-95 text-white font-extrabold text-base shadow transition-all duration-150 flex items-center justify-center gap-2"
-              >
-                ▶ Start!
-              </button>
-            </div>
+        {/* LEVEL BUTTONS */}
+        <div className="flex justify-center gap-3 mb-8">
+          {Object.entries(ABILITY_CONFIG).map(([key, cfg]) => (
+            <button
+              key={key}
+              onClick={() => handleSelectLevel(key)}
+              className={`
+                px-5 py-3 rounded-xl font-bold
+                ${ability === key ? `${cfg.color} text-white` : `bg-white ${cfg.text}`}
+              `}
+            >
+              {cfg.label}
+            </button>
           ))}
         </div>
-      )}
 
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&display=swap');`}</style>
-    </div>
-    </div>
+        {/* PUZZLE LIST */}
+        {loading ? (
+          <p className="text-center font-bold">Loading...</p>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 max-w-2xl mx-auto">
+            {items.map((it) => (
+              <div
+                key={it.puzzle_id}
+                className="bg-white p-3 rounded-xl shadow"
+              >
+                <img
+                  src={`http://localhost:5000${it.original_url}`}
+                  alt=""
+                  className="h-32 w-full object-cover rounded"
+                />
 
+                <p className="font-bold mt-2">{it.title}</p>
+
+                <button
+                  onClick={() => nav(`/vcJigsaw/${it.puzzle_id}`)}
+                  className="mt-2 w-full bg-indigo-500 text-white py-2 rounded"
+                >
+                  ▶ Start
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

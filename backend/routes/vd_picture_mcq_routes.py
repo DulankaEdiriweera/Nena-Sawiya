@@ -14,9 +14,9 @@ from datetime import datetime
 vd_picture_bp = Blueprint("vd_picture_bp", __name__)
 
 
-# -------------------------------
+
 # Add new VD Picture MCQ
-# -------------------------------
+
 @vd_picture_bp.route("/add", methods=["POST"])
 def add_picture_mcq():
     try:
@@ -68,9 +68,9 @@ def add_picture_mcq():
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------
+
 # Get all questions (Admin)
-# -------------------------------
+
 @vd_picture_bp.route("/all", methods=["GET"])
 def get_all():
     try:
@@ -80,9 +80,9 @@ def get_all():
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------
+
 # Get MCQs by level (User)
-# -------------------------------
+
 @vd_picture_bp.route("/level/<level>", methods=["GET"])
 def get_mcqs_by_level(level):
     try:
@@ -92,9 +92,9 @@ def get_mcqs_by_level(level):
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------
+
 # Get single question by ID
-# -------------------------------
+
 @vd_picture_bp.route("/<question_id>", methods=["GET"])
 def get_single(question_id):
     try:
@@ -106,9 +106,9 @@ def get_single(question_id):
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------
+
 # Update question — supports image replacement via multipart/form-data
-# -------------------------------
+
 @vd_picture_bp.route("/update/<question_id>", methods=["PUT"])
 def update_picture_mcq(question_id):
     try:
@@ -176,9 +176,9 @@ def update_picture_mcq(question_id):
         return jsonify({"error": str(e)}), 500
 
 
-# -------------------------------
+
 # Delete question
-# -------------------------------
+
 @vd_picture_bp.route("/delete/<question_id>", methods=["DELETE"])
 def delete_picture_mcq(question_id):
     try:

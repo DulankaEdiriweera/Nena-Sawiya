@@ -84,11 +84,6 @@ def split_image_to_grid(base_image_path: str, base_upload_dir: str, rows: int, c
     return pieces, w, h, tile_w, tile_h
 
 
-# ---------------------------
-# ADMIN: Add Jigsaw (Upload)
-# POST /api/vc_jigsaw/add
-# form-data: title, rows, cols, task_number, ability_levels[], image(file)
-# ---------------------------
 @vc_jigsaw_bp.route("/add", methods=["POST"])
 def add_vc_jigsaw():
     title = request.form.get("title", "VC Jigsaw Puzzle")
@@ -115,15 +110,15 @@ def add_vc_jigsaw():
     original_path = os.path.join(puzzle_dir, f"raw_{original_name}")
     image.save(original_path)
 
-    # ✅ Create ONE processed base image (divisible by rows/cols)
+    # Create ONE processed base image (divisible by rows/cols)
     base_path, bw, bh = make_base_image(original_path, puzzle_dir, rows, cols)
 
-    # ✅ Slice pieces ONLY from base image
+    # Slice pieces ONLY from base image
     pieces, ow, oh, tw, th = split_image_to_grid(
         base_path, base_upload_dir, rows, cols, puzzle_id
     )
 
-    # ✅ Reference must point to base.png (NOT raw upload)
+    # Reference must point to base.png (NOT raw upload)
     original_url = f"/vc_uploads/{puzzle_id}/base.png"
 
     jigsaw = VCJigsawModel(
@@ -145,10 +140,6 @@ def add_vc_jigsaw():
     return jsonify({"message": "VC Jigsaw added successfully", "puzzle_id": puzzle_id}), 201
 
 
-# ---------------------------
-# USER/ADMIN: Get all
-# GET /api/vc_jigsaw/all?ability=Weak
-# ---------------------------
 @vc_jigsaw_bp.route("/all", methods=["GET"])
 def get_all_vc_jigsaws():
     ability = request.args.get("ability")
@@ -160,10 +151,7 @@ def get_all_vc_jigsaws():
     return jsonify(docs), 200
 
 
-# ---------------------------
-# USER: Get one
-# GET /api/vc_jigsaw/<puzzle_id>
-# ---------------------------
+
 @vc_jigsaw_bp.route("/<puzzle_id>", methods=["GET"])
 def get_vc_jigsaw(puzzle_id):
     doc = mongo.db.vc_jigsaws.find_one({"puzzle_id": puzzle_id}, {"_id": 0})
@@ -172,10 +160,7 @@ def get_vc_jigsaw(puzzle_id):
     return jsonify(doc), 200
 
 
-# ---------------------------
-# ADMIN: Delete puzzle
-# DELETE /api/vc_jigsaw/<puzzle_id>
-# ---------------------------
+
 @vc_jigsaw_bp.route("/<puzzle_id>", methods=["DELETE"])
 def delete_vc_jigsaw(puzzle_id):
     base_upload_dir = current_app.config["VC_UPLOAD_FOLDER"]

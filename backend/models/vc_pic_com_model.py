@@ -5,15 +5,15 @@ class VCPicComModel:
     def __init__(
         self,
         title,
-        levels,              # ["easy"] / ["medium"] / ["hard"]
+        levels,              
         rows,
         cols,
         activity_id,
-        original_url,        # saved file path in /vc_uploads/...
-        question_url,        # DYNAMIC endpoint: /api/vc_pic_com/<id>/question
+        original_url,        
+        question_url,        
         missing_index,
-        correct_piece,       # {index,row,col}
-        options,             # list {id,index,url,thumb_url,is_correct}
+        correct_piece,       
+        options,             
         task_number=None
     ):
         self.title = title

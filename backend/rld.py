@@ -1,6 +1,4 @@
-# ===============================
 # Python Script: Ridge Regression & Random Forest Classifier for RLD Assessment
-# ===============================
 
 import numpy as np
 import pandas as pd
@@ -13,9 +11,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score, a
 import os
 import joblib
 
-# -------------------------------
 # 1. Load Dataset
-# -------------------------------
 df_rld = pd.read_csv("RLD_Dataset_Cleaned.csv", encoding="utf-8-sig")
 
 question_cols_rld = [
@@ -29,9 +25,7 @@ X_text_rld = df_rld[question_cols_rld].fillna('')
 y_percentage_rld = df_rld["Percentage"]
 y_level_rld = df_rld["RLD_level"]
 
-# -------------------------------
 # 2. TF-IDF Vectorization
-# -------------------------------
 vectorizers_rld = []
 features_rld = []
 
@@ -43,9 +37,8 @@ for col in question_cols_rld:
 
 X_features_rld = hstack(features_rld)
 
-# -------------------------------
 # 3. Split Datasets
-# -------------------------------
+
 # Regression
 X_train_r, X_test_r, y_train_r, y_test_r = train_test_split(
     X_features_rld, y_percentage_rld, test_size=0.2, random_state=42
@@ -56,9 +49,8 @@ X_train_c, X_test_c, y_train_c, y_test_c = train_test_split(
     X_features_rld, y_level_rld, test_size=0.2, random_state=42, stratify=y_level_rld
 )
 
-# -------------------------------
+
 # 4. Train Ridge Regression (Percentage)
-# -------------------------------
 ridge_model = Ridge(alpha=1.0)
 ridge_model.fit(X_train_r, y_train_r)
 y_pred_ridge = ridge_model.predict(X_test_r)
@@ -74,9 +66,8 @@ os.makedirs(folder_path, exist_ok=True)
 
 joblib.dump(ridge_model,os.path.join(folder_path,"rld_ridge_percentage_model.pkl"))
 
-# -------------------------------
+
 # 5. Train Random Forest Classifier (RLD Level)
-# -------------------------------
 rf_clf = RandomForestClassifier(n_estimators=100, class_weight="balanced", random_state=42, n_jobs=-1)
 rf_clf.fit(X_train_c, y_train_c)
 y_pred_rf = rf_clf.predict(X_test_c)
@@ -87,24 +78,21 @@ print(classification_report(y_test_c, y_pred_rf))
 
 joblib.dump(rf_clf,os.path.join(folder_path, "rld_rf_level_model.pkl"))
 
-# -------------------------------
+
 # 6. Save Vectorizers
-# -------------------------------
 joblib.dump(vectorizers_rld,os.path.join(folder_path, "rld_vectorizers.pkl"))
 print("\n✅ Vectorizers and models saved successfully.")
 
-# -------------------------------
+
 # 7. Feedback Mapping
-# -------------------------------
 feedback_map_rld = {
     "Weak": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා අඩුයි. අඛණ්ඩ පුහුණු කිරීම අවශ්‍යයි.",
     "Average": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා සාමාන්‍ය මට්ටමක පවතී. වැඩිදියුණු කිරීමට මග පෙන්වීම් අවශ්‍යයි.",
     "Normal": "දරුවාගේ ප්‍රතිග්‍රාහක භාෂා කුසලතා සෞඛ්‍ය සම්පන්නයි. නිතර පුහුණු කිරීමෙන් තවත් ශක්තිමත් කළ හැක."
 }
 
-# -------------------------------
+
 # 8. Predict Function for New Student
-# -------------------------------
 def predict_new_rld(**responses):
     vects_rld = joblib.load(os.path.join(folder_path,"rld_vectorizers.pkl"))
     features_list_rld = []
@@ -130,9 +118,8 @@ def predict_new_rld(**responses):
         "Feedback": feedback
     }
 
-# -------------------------------
+
 # 9. Example Prediction
-# -------------------------------
 example_responses_rld = {
     "Q1_i": "වැස්ස",
     "Q1_ii": "කූඩුවට",

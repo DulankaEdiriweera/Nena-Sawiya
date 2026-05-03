@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import Header from "../../Components/Header";
+import instructionAudio from "../../Assets/visualD/audio/objcount.mp4";
 
 const BASE = "http://localhost:5000";
 const shuffle = (arr) => [...arr].sort(() => Math.random() - 0.5);
@@ -11,7 +12,6 @@ const LEVELS = [
   { key: "HARD",   label: "දුෂ්කර", emoji: "🔴", color: "from-red-400 to-pink-500"      },
 ];
 
-// Helper: get the next level key after current
 const getNextLevel = (currentKey) => {
   const idx = LEVELS.findIndex(l => l.key === currentKey);
   return idx !== -1 && idx < LEVELS.length - 1 ? LEVELS[idx + 1] : null;
@@ -38,6 +38,25 @@ function GameInstructions() {
   );
 }
 
+// Popup Warning 
+function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-3xl shadow-2xl p-7 max-w-sm w-full text-center border-4 border-amber-300">
+        <div className="text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-black text-gray-800 mb-2">මට්ටම් අවවාදය</h3>
+        <p className="text-gray-600 text-sm mb-6">
+          <span className="font-black text-purple-600">{recommended}</span> යනු නිර්දේශිත මට්ටමයි. ඔබට <span className="font-black text-amber-600">{selected}</span> සමඟ ඉදිරියට යාමට අවශ්‍යද?
+        </p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 py-3 border-2 border-gray-200 text-gray-600 font-black rounded-2xl hover:bg-gray-50">අවලංගු කරන්න</button>
+          <button onClick={onContinue} className="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 text-white font-black rounded-2xl hover:opacity-90">ඉදිරියට යන්න</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function CountImageGame() {
   const [level, setLevel] = useState(null);
   const [games, setGames] = useState([]);
@@ -47,6 +66,70 @@ export default function CountImageGame() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
 
+  // Adaptive level state 
+  const [recommendedLevel, setRecommendedLevel] = useState(null);
+  const [levelLoading, setLevelLoading]         = useState(true);
+  const [popup, setPopup]                       = useState(null);
+
+  // 🔊 AUDIO STATE
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    axios.get(`${BASE}/api/vd_levels/`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .then(r => setRecommendedLevel(r.data.recommended_level))
+      .catch(console.error)
+      .finally(() => setLevelLoading(false));
+  }, []);
+
+  // 🔊 STOP AUDIO when level is selected (user leaves level select screen)
+  useEffect(() => {
+    if (level && audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsPlaying(false);
+    }
+  }, [level]);
+
+  // 🔊 AUDIO CONTROLS
+  const handlePlay = () => {
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  const handleReplay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = 0;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleLevelClick = (l) => {
+    if (l.key === recommendedLevel) {
+      proceedWithLevel(l.key);
+    } else {
+      const recLevel = LEVELS.find(x => x.key === recommendedLevel);
+      setPopup({ key: l.key, label: l.label, recommendedLabel: recLevel?.label || recommendedLevel });
+    }
+  };
+
+  const proceedWithLevel = (key) => {
+    axios.post(`${BASE}/api/vd_levels/select_level`, { level: key }, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } })
+      .catch(console.error);
+    setPopup(null);
+    setLevel(key);
+  };
+
   useEffect(() => {
     if (!level) return;
     setLoading(true);
@@ -55,10 +138,7 @@ export default function CountImageGame() {
     setScore(0);
     setGameIdx(0);
     axios.get(`${BASE}/api/vd_count/level/${level}`)
-      .then(res => {
-        const randomGame = shuffle(res.data).slice(0, 1);
-        setGames(randomGame);
-      })
+      .then(res => { setGames(shuffle(res.data).slice(0, 1)); })
       .catch(console.error)
       .finally(() => setLoading(false));
   }, [level]);
@@ -80,24 +160,82 @@ export default function CountImageGame() {
   const reset = () => { setLevel(null); setGames([]); setAnswers({}); setSubmitted(false); setScore(0); setGameIdx(0); };
   const goNextLevel = () => { setGames([]); setAnswers({}); setSubmitted(false); setScore(0); setGameIdx(0); setLevel(nextLevel.key); };
 
-  // ── Level Select (Header only here) ──
+  // Level Select 
   if (!level) return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
+      {popup && (
+        <LevelWarningPopup
+          recommended={popup.recommendedLabel}
+          selected={popup.label}
+          onCancel={() => setPopup(null)}
+          onContinue={() => proceedWithLevel(popup.key)}
+        />
+      )}
       <div className="flex flex-col items-center justify-center p-6 pt-10">
         <div className="text-center mb-10">
           <div className="text-7xl mb-4 animate-bounce">🐾</div>
           <h1 className="text-4xl font-black text-purple-700 mb-2">වස්තු ගණන් කිරීමේ ක්‍රීඩාව කරමු!</h1>
           <p className="text-gray-500 text-lg">ඔබේ මට්ටම තෝරන්න</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-5">
-          {LEVELS.map(l => (
-            <button key={l.key} onClick={() => setLevel(l.key)}
-              className={`bg-gradient-to-br ${l.color} text-white font-black text-2xl px-10 py-8 rounded-3xl shadow-xl hover:scale-105 transition-transform flex flex-col items-center gap-2`}>
-              <span className="text-5xl">{l.emoji}</span>{l.label}
+
+        {/* 🔊 AUDIO UI SECTION (LEVEL SELECTION INSTRUCTIONS) */}
+        <div className="mb-6 flex flex-col items-center gap-3">
+          <div className="flex gap-3">
+            {!isPlaying ? (
+              <button
+                onClick={handlePlay}
+                className="px-5 py-2 bg-green-500 hover:bg-green-600 text-white rounded-full shadow"
+              >
+                ▶️ උපදෙස් වලට සවන් දෙන්න
+              </button>
+            ) : (
+              <button
+                onClick={handlePause}
+                className="px-5 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-full shadow"
+              >
+                ⏸ විරාම කරන්න
+              </button>
+            )}
+            <button
+              onClick={handleReplay}
+              className="px-5 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow"
+            >
+              🔁 නැවත සවන් දෙන්න
             </button>
-          ))}
+          </div>
+          <audio ref={audioRef} onEnded={() => setIsPlaying(false)}>
+            <source src={instructionAudio} type="video/mp4" />
+          </audio>
         </div>
+
+        {levelLoading ? (
+          <div className="text-purple-500 font-bold text-lg animate-pulse">මට්ටම් පූරණය වෙමින්...</div>
+        ) : (
+          <div className="flex flex-col sm:flex-row gap-5">
+            {LEVELS.map(l => {
+              const isRecommended = l.key === recommendedLevel;
+              return (
+                <div key={l.key} className="relative">
+                  {isRecommended && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10 bg-purple-600 text-white text-xs font-black px-3 py-1 rounded-full shadow whitespace-nowrap">
+                      ⭐ නිර්දේශිතයි
+                    </div>
+                  )}
+                  <button
+                    onClick={() => handleLevelClick(l)}
+                    className={`bg-gradient-to-br ${isRecommended ? l.color : "from-gray-300 to-gray-400"} text-white font-black text-2xl px-10 py-8 rounded-3xl shadow-xl transition-transform flex flex-col items-center gap-2
+                      ${isRecommended ? "ring-4 ring-purple-400 scale-105 hover:scale-110" : "opacity-60 hover:opacity-80 hover:scale-105"}`}
+                  >
+                    <span className="text-5xl">{isRecommended ? l.emoji : "🔒"}</span>
+                    {l.label}
+                    {!isRecommended && <span className="text-xs font-bold opacity-80">නිර්දේශිත නොවේ</span>}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -119,7 +257,7 @@ export default function CountImageGame() {
     </div>
   );
 
-  // ── All done ──
+  // All done 
   if (gameIdx >= games.length) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-indigo-200 p-6 text-center">
       <div className="text-8xl mb-4">🎉</div>
@@ -146,13 +284,11 @@ export default function CountImageGame() {
 
   const levelInfo = LEVELS.find(l => l.key === level);
 
-  // ── Main game (no Header) ──
+  // Main game
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 p-4">
       <GameInstructions />
-
       <div className="max-w-2xl mx-auto">
-        {/* Top bar */}
         <div className="flex items-center justify-between mb-4">
           <button onClick={reset} className="bg-white text-gray-600 font-bold px-4 py-2 rounded-2xl shadow hover:bg-gray-50 transition text-sm">← ආපසු</button>
           <div className="flex items-center gap-2">
@@ -163,22 +299,16 @@ export default function CountImageGame() {
           </div>
         </div>
 
-        {/* Game card */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
           <div className="bg-gradient-to-r from-purple-500 to-pink-500 p-5 text-white text-center">
             <h2 className="text-xl font-black">{game.title}</h2>
             <p className="text-purple-200 text-sm mt-1">රූපයේ ඇති වස්තූන් ගණන් කරන්න! 🔢</p>
           </div>
-
           <div className="p-4">
-            <img
-              src={`${BASE}${game.question_image_url}`}
-              alt="question"
+            <img src={`${BASE}${game.question_image_url}`} alt="question"
               className="w-full rounded-2xl shadow-md object-contain max-h-72"
-              onError={e => e.target.src = "https://via.placeholder.com/600x300?text=No+Image"}
-            />
+              onError={e => e.target.src = "https://via.placeholder.com/600x300?text=No+Image"} />
           </div>
-
           <div className="px-4 pb-4 space-y-3">
             <p className="text-center text-sm font-bold text-gray-500">⬇️ ගණන් ඇතුළු කරන්න</p>
             {game.items.map((item, idx) => {
@@ -198,17 +328,14 @@ export default function CountImageGame() {
                       </p>
                     )}
                   </div>
-                  <input
-                    type="number" min="0" disabled={submitted}
+                  <input type="number" min="0" disabled={submitted}
                     className={`w-20 text-center text-xl font-black border-2 rounded-2xl p-2 focus:outline-none transition ${correct ? "border-green-400 bg-green-100 text-green-700" : wrong ? "border-red-400 bg-red-100 text-red-700" : "border-purple-300 focus:border-purple-500"}`}
                     value={answers[item.label] ?? ""}
-                    onChange={e => setAnswers(prev => ({ ...prev, [item.label]: e.target.value }))}
-                  />
+                    onChange={e => setAnswers(prev => ({ ...prev, [item.label]: e.target.value }))} />
                 </div>
               );
             })}
           </div>
-
           <div className="p-4 pt-0">
             {submitted ? (
               <div className="text-center space-y-3">
