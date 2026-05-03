@@ -48,8 +48,8 @@ export default function ObjectCountingPageDiscrimination() {
     }
   };
 
-  // ✅ ADDED - AUDIO CONTROLS
-  // ============================
+  // ADDED - AUDIO CONTROLS
+  
   const handlePlay = () => {
     if (audioRef.current) {
       audioRef.current.play();

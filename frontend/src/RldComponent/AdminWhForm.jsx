@@ -11,7 +11,7 @@ const WH_HINTS = {
   ඇයි: "Why",
 };
 
-// ── AudioInput ────────────────────────────────────────────────────────────────
+//  AudioInput
 const AudioInput = ({
   label,
   hint,
@@ -198,7 +198,7 @@ const AudioInput = ({
   );
 };
 
-// ── Main Form ─────────────────────────────────────────────────────────────────
+//  Main Form
 const AdminWHForm = () => {
   const navigate = useNavigate();
   const [level, setLevel] = useState("easy");

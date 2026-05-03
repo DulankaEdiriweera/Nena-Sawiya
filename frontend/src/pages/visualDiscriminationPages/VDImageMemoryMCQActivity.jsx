@@ -34,7 +34,7 @@ function GameInstructions() {
   );
 }
 
-// ── Popup Warning ──
+// Popup Warning 
 function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -66,7 +66,7 @@ export default function MemoryGamePage() {
   const [totalMarks, setTotalMarks] = useState(0);
   const timerRef = useRef(null);
 
-  // ── Adaptive level state ──
+  // Adaptive level state 
   const [recommendedLevel, setRecommendedLevel] = useState(null);
   const [levelLoading, setLevelLoading]         = useState(true);
   const [popup, setPopup]                       = useState(null);

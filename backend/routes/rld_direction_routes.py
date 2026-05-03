@@ -8,7 +8,7 @@ from models.rld_direction_model import RLD_Direction_Set
 
 rld_direction_bp = Blueprint("rld_direction_bp", __name__)
 
-# ─────────────────────────────────────────────
+# save file
 def save_file(file):
     if not file:
         return None
@@ -19,7 +19,7 @@ def save_file(file):
     file.save(path)
     return f"http://localhost:5000/rld_uploads/{name}"
 
-# ─────────────────────────────────────────────
+# post
 @rld_direction_bp.route("/add_direction_set", methods=["POST"])
 @cross_origin()
 def add_direction_set():
@@ -48,7 +48,7 @@ def add_direction_set():
     except Exception as e:
         return jsonify({"error": str(e)}), 400
 
-# ─────────────────────────────────────────────
+# retrieve
 @rld_direction_bp.route("/get_direction_set/<level>", methods=["GET"])
 @cross_origin()
 def get_direction_set(level):
@@ -67,7 +67,7 @@ def get_direction_set(level):
         "options": [{"image_url": o["image_url"]} for o in s["options"]],
     })
 
-# ─────────────────────────────────────────────
+# add level
 @rld_direction_bp.route("/submit_direction_level", methods=["POST"])
 @cross_origin()
 def submit_direction_level():
@@ -90,7 +90,7 @@ def submit_direction_level():
         "level": s["level"],
     })
 
-# ─────────────────────────────────────────────
+# retrieve direction level
 @rld_direction_bp.route("/admin_get_sets/<level>", methods=["GET"])
 @cross_origin()
 def admin_get_sets(level):
@@ -104,14 +104,14 @@ def admin_get_sets(level):
         "options": s["options"],
     } for s in sets])
 
-# ─────────────────────────────────────────────
+# delete direction set
 @rld_direction_bp.route("/delete_set/<set_id>", methods=["DELETE"])
 @cross_origin()
 def delete_set(set_id):
     mongo.db.rld_direction_sets.delete_one({"_id": ObjectId(set_id)})
     return jsonify({"message": "Deleted"})
 
-# ─────────────────────────────────────────────
+# update direction set
 @rld_direction_bp.route("/update_set/<set_id>", methods=["PUT"])
 @cross_origin()
 def update_set(set_id):
