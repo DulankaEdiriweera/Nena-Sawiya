@@ -9,9 +9,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 rld_bp = Blueprint("rld_bp", __name__)
 
 
-# ==============================
+
 # Load ML Models
-# ==============================
 
 folder_path = "rld_models"
 
@@ -49,9 +48,8 @@ feedback_map_rld = {
     )
 }
 
-# ==============================
+
 # Prediction Logic
-# ==============================
 
 def predict_new_rld(responses: dict):
 
@@ -70,9 +68,8 @@ def predict_new_rld(responses: dict):
     return round(float(percentage), 2), level, feedback_map_rld.get(level)
 
 
-# ==============================
+
 # Prediction Route
-# ==============================
 
 @rld_bp.route("/predict_rld", methods=["POST"])
 @jwt_required()

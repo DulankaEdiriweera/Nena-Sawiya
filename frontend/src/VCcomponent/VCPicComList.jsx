@@ -42,9 +42,7 @@ export default function VCPicComList() {
 
   const nav = useNavigate();
 
-  // -----------------------------
   // FETCH ADAPTIVE
-  // -----------------------------
   const fetchAdaptive = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -66,9 +64,7 @@ export default function VCPicComList() {
     }
   };
 
-  // -----------------------------
   // FETCH LIST
-  // -----------------------------
   const fetchList = async (lvl) => {
     setLoading(true);
     try {
@@ -93,9 +89,7 @@ export default function VCPicComList() {
     }
   }, [adaptive, level]);
 
-  // -----------------------------
   // LEVEL SELECT LOGIC
-  // -----------------------------
   const handleSelectLevel = (lvl) => {
     if (!adaptive) return;
 

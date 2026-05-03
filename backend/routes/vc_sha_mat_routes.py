@@ -94,16 +94,6 @@ def make_shadow_image(correct_path: str, out_path: str):
     out.save(out_path, "PNG")
 
 
-# ---------------------------
-# ADMIN: Add Shadow Match
-# POST /api/vc_sha_mat/add
-# form-data:
-#   title
-#   task_number
-#   levels[]  (easy/medium/hard)
-#   correct_image (file)
-#   option_images[] (files)  (distractors)
-# ---------------------------
 @vc_sha_mat_bp.route("/add", methods=["POST"])
 def add_vc_sha_mat():
     title = request.form.get("title", "Shadow Match")
@@ -192,10 +182,6 @@ def add_vc_sha_mat():
     return jsonify({"message": "Shadow Match added successfully", "activity_id": activity_id}), 201
 
 
-# ---------------------------
-# USER/ADMIN: Get all
-# GET /api/vc_sha_mat/all?level=easy
-# ---------------------------
 @vc_sha_mat_bp.route("/all", methods=["GET"])
 def get_all_vc_sha_mats():
     level = request.args.get("level")
@@ -207,10 +193,7 @@ def get_all_vc_sha_mats():
     return jsonify(docs), 200
 
 
-# ---------------------------
 # USER: Get one
-# GET /api/vc_sha_mat/<activity_id>
-# ---------------------------
 @vc_sha_mat_bp.route("/<activity_id>", methods=["GET"])
 def get_vc_sha_mat(activity_id):
     doc = mongo.db.vc_sha_mats.find_one({"activity_id": activity_id}, {"_id": 0})
@@ -219,10 +202,7 @@ def get_vc_sha_mat(activity_id):
     return jsonify(doc), 200
 
 
-# ---------------------------
-# ADMIN: Delete
-# DELETE /api/vc_sha_mat/<activity_id>
-# ---------------------------
+
 @vc_sha_mat_bp.route("/<activity_id>", methods=["DELETE"])
 def delete_vc_sha_mat(activity_id):
     base_upload_dir = current_app.config["VC_UPLOAD_FOLDER"]

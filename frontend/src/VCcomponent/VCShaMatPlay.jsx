@@ -43,7 +43,7 @@ export default function VCShaMatPlay({ activityId }) {
       setSeconds(Math.round((Date.now() - startTs) / 1000));
       setFeedback({ ok: true });
 
-      // ✅ ADAPTIVE UPDATE
+      // ADAPTIVE UPDATE
       const token = localStorage.getItem("token");
 
       const levelMap = {

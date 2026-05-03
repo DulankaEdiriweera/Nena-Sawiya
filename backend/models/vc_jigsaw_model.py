@@ -13,7 +13,7 @@ class VCJigsawModel:
         # IMPORTANT: original_url should point to the PROCESSED BASE image (not raw upload)
         self.original_url = original_url
 
-        self.pieces = pieces  # list of {index,row,col,url}
+        self.pieces = pieces  
         self.task_number = task_number
         self.original_w = original_w
         self.original_h = original_h

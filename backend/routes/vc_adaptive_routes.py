@@ -4,10 +4,7 @@ from database.db import mongo
 
 vc_adaptive_bp = Blueprint("vc_adaptive_bp", __name__)
 
-# -----------------------------
 # TEMP MEMORY (SESSION-BASED)
-# -----------------------------
-
 user_progress_memory = {}
 
 
@@ -16,9 +13,7 @@ def get_token_key(user_id):
     return f"{user_id}_{auth_header}"
 
 
-# -----------------------------
 # GET USER PROGRESS (PER ACTIVITY)
-# -----------------------------
 def get_user_progress(token_key, activity):
     if token_key not in user_progress_memory:
         user_progress_memory[token_key] = {}
@@ -32,10 +27,7 @@ def get_user_progress(token_key, activity):
 
     return user_progress_memory[token_key][activity]
 
-
-# -----------------------------
 # UPDATE PROGRESS
-# -----------------------------
 def update_progress(token_key, activity, level):
     prog = get_user_progress(token_key, activity)
 
@@ -50,9 +42,7 @@ def update_progress(token_key, activity, level):
     return prog
 
 
-# -----------------------------
 # GET ADAPTIVE STATUS
-# -----------------------------
 @vc_adaptive_bp.route("/status", methods=["GET"])
 @jwt_required()
 def get_adaptive_status():
@@ -71,7 +61,7 @@ def get_adaptive_status():
     if not latest:
         return jsonify({"error": "No assessment found"}), 404
 
-    ability = latest.get("ml_label_en")  # Weak / Average / High
+    ability = latest.get("ml_label_en")  
     progress = get_user_progress(token_key, activity)
 
     unlocked = []
@@ -110,9 +100,7 @@ def get_adaptive_status():
     })
 
 
-# -----------------------------
 # COMPLETE LEVEL
-# -----------------------------
 @vc_adaptive_bp.route("/complete/<activity>/<level>", methods=["POST"])
 @jwt_required()
 def complete_level(activity, level):

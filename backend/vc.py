@@ -10,9 +10,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
 
 
-# =========================
 # CONFIG
-# =========================
 DATA_FILE = "VCData.csv"
 OUTPUT_DIR = "vc_models"
 RANDOM_STATE = 42
@@ -29,9 +27,7 @@ ANSWER_KEY = {
 TIME_COLS = ["Time Taken sec(level1)", "Time Taken sec(level2)", "Time Taken sec(level3)"]
 
 
-# =========================
 # FEATURE ENGINEERING
-# =========================
 def build_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     Build ML features from raw answers + time.
@@ -63,9 +59,7 @@ def build_features(df: pd.DataFrame) -> pd.DataFrame:
     return X
 
 
-# =========================
 # TRAIN + EVALUATE
-# =========================
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
 
