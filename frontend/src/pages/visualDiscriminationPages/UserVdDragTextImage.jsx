@@ -284,7 +284,7 @@ export default function UserVdDragTextImage() {
     </div>
   );
 
-  // ── Finished ──
+  // Finished 
   if (finished) {
     const percent = totalMarks.current > 0 ? Math.round((score / totalMarks.current) * 100) : 0;
     return (
@@ -330,7 +330,7 @@ export default function UserVdDragTextImage() {
     );
   }
 
-  // ── Main game ──
+  // Main game 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 select-none p-4 md:p-8">
       <GameInstructions />

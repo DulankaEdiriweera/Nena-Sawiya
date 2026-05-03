@@ -35,16 +35,7 @@ def get_latest_vc_progress():
         "latest_percentage": round(latest_percent, 2),
         "percentage_change": percentage_change,
 
-        # You can show either rule-based or ML level (I include both)
-        "previous_rule_level": previous.get("rule_based_label"),
-        "latest_rule_level": latest.get("rule_based_label"),
-
-        "previous_ml_level_en": previous.get("ml_label_en"),
-        "latest_ml_level_en": latest.get("ml_label_en"),
-
         "previous_vc_level_si": previous.get("vc_level"),
         "latest_vc_level_si": latest.get("vc_level"),
 
-        "previous_date": previous.get("created_at"),
-        "latest_date": latest.get("created_at")
     }), 200

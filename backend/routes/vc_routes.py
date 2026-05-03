@@ -12,9 +12,7 @@ import pandas as pd
 
 vc_bp = Blueprint("vc_bp", __name__)
 
-# -------------------------------
 # Load ML artifacts
-# -------------------------------
 VC_MODEL_DIR = "vc_models"
 
 vc_model = joblib.load(os.path.join(VC_MODEL_DIR, "visual_closure_model.pkl"))
@@ -42,13 +40,11 @@ vc_level_sinhala_map = {
     "High": "ඉතා හොදයි"
 }
 
-# -------------------------------
-# Helper: build features for ML
-# -------------------------------
+# Feature Builder
+
 def build_features_from_input(payload: dict) -> pd.DataFrame:
     X = {}
 
-    # correctness per question
     for q, correct_opt in ANSWER_KEY.items():
         given = payload.get(q, None)
         try:
@@ -57,14 +53,12 @@ def build_features_from_input(payload: dict) -> pd.DataFrame:
             given = -999
         X[f"{q}_correct"] = 1 if given == int(correct_opt) else 0
 
-    # time features
     for tcol in TIME_COLS:
         try:
             X[tcol] = float(payload.get(tcol, 0))
         except Exception:
             X[tcol] = 0.0
 
-    # aggregates
     X["level1_correct"] = X["Q1_correct"] + X["Q2_correct"] + X["Q3_correct"]
     X["level2_correct"] = X["Q4_correct"] + X["Q5_correct"] + X["Q6_correct"]
     X["level3_correct"] = X["Q7_correct"] + X["Q8_correct"] + X["Q9_correct"] + X["Q10_correct"]
@@ -76,16 +70,14 @@ def build_features_from_input(payload: dict) -> pd.DataFrame:
 
     df = pd.DataFrame([X])
 
-    # ensure correct column order
     for col in vc_feature_columns:
         if col not in df.columns:
             df[col] = 0
-    df = df[vc_feature_columns]
-    return df
 
-# -------------------------------
-# Helper: compute marks (rule-based)
-# -------------------------------
+    return df[vc_feature_columns]
+
+
+# Marks Calculation 
 def compute_marks(payload: dict):
     def ans(q):
         try:
@@ -103,19 +95,16 @@ def compute_marks(payload: dict):
     for q, correct_opt in ANSWER_KEY.items():
         c[q] = 1 if ans(q) == int(correct_opt) else 0
 
-    # Level 1
     l1_marks = c["Q1"] + c["Q2"] + c["Q3"]
     if t("Time Taken sec(level1)") <= 20 and (c["Q1"] + c["Q2"] + c["Q3"]) >= 1:
         l1_marks += 2
     l1_marks = min(l1_marks, 5)
 
-    # Level 2
     l2_marks = c["Q4"] * 2 + c["Q5"] * 2 + c["Q6"] * 3
     if t("Time Taken sec(level2)") <= 20 and (c["Q4"] + c["Q5"] + c["Q6"]) >= 1:
         l2_marks += 3
     l2_marks = min(l2_marks, 10)
 
-    # Level 3
     l3_marks = (c["Q7"] + c["Q8"] + c["Q9"] + c["Q10"]) * 2
     if t("Time Taken sec(level3)") <= 20 and (c["Q7"] + c["Q8"] + c["Q9"] + c["Q10"]) >= 1:
         l3_marks += 2
@@ -124,25 +113,16 @@ def compute_marks(payload: dict):
     total = l1_marks + l2_marks + l3_marks
     final_percent = round((total / 25) * 100, 2)
 
-    if final_percent >= 80:
-        rule_label = "High"
-    elif final_percent >= 60:
-        rule_label = "Average"
-    else:
-        rule_label = "Weak"
-
     return {
         "marks_level1": int(l1_marks),
         "marks_level2": int(l2_marks),
         "marks_level3": int(l3_marks),
         "total_marks": int(total),
-        "final_marks_percent": final_percent,
-        "rule_based_label": rule_label
+        "final_marks_percent": final_percent
     }
 
-# -------------------------------
-# Helper: ML prediction
-# -------------------------------
+
+# ML Prediction
 def predict_vc(payload: dict):
     X_new = build_features_from_input(payload)
 
@@ -161,9 +141,8 @@ def predict_vc(payload: dict):
         "Feedback": feedback
     }
 
-# -------------------------------
-# Route: predict + store
-# -------------------------------
+
+# Route
 @vc_bp.route("/predict_vc", methods=["POST"])
 @jwt_required()
 def predict_vc_route():
@@ -174,16 +153,13 @@ def predict_vc_route():
     ml_result = predict_vc(payload)
     marks_result = compute_marks(payload)
 
-    mismatch = (ml_result["ml_label_en"] != marks_result["rule_based_label"])
-
-    # Extract answers and times to store nicely
     answers = {q: payload.get(q) for q in ANSWER_KEY.keys()}
     times = {t: payload.get(t, 0) for t in TIME_COLS}
 
     vc_record = VCModel(
         answers=answers,
         times=times,
-        user_id=user_id, 
+        user_id=user_id,
 
         ml_label_en=ml_result["ml_label_en"],
         vc_level_si=ml_result["VC_Level"],
@@ -194,16 +170,12 @@ def predict_vc_route():
         marks_level2=marks_result["marks_level2"],
         marks_level3=marks_result["marks_level3"],
         total_marks=marks_result["total_marks"],
-        final_marks_percent=float(marks_result["final_marks_percent"]),
-        rule_based_label=marks_result["rule_based_label"],
-        ml_vs_rule_mismatch=bool(mismatch)
+        final_marks_percent=float(marks_result["final_marks_percent"])
     )
 
     mongo.db.vc_assessments.insert_one(vc_record.to_dict())
 
     return jsonify({
         **ml_result,
-        **marks_result,
-        "ml_vs_rule_mismatch": mismatch
+        **marks_result
     })
-
