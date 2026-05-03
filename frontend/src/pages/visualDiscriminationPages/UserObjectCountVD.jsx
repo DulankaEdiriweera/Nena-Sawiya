@@ -38,7 +38,7 @@ function GameInstructions() {
   );
 }
 
-// ── Popup Warning ──
+// Popup Warning 
 function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -66,7 +66,7 @@ export default function CountImageGame() {
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
 
-  // ── Adaptive level state ──
+  // Adaptive level state 
   const [recommendedLevel, setRecommendedLevel] = useState(null);
   const [levelLoading, setLevelLoading]         = useState(true);
   const [popup, setPopup]                       = useState(null);
@@ -160,7 +160,7 @@ export default function CountImageGame() {
   const reset = () => { setLevel(null); setGames([]); setAnswers({}); setSubmitted(false); setScore(0); setGameIdx(0); };
   const goNextLevel = () => { setGames([]); setAnswers({}); setSubmitted(false); setScore(0); setGameIdx(0); setLevel(nextLevel.key); };
 
-  // ── Level Select ──
+  // Level Select 
   if (!level) return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
@@ -257,7 +257,7 @@ export default function CountImageGame() {
     </div>
   );
 
-  // ── All done ──
+  // All done 
   if (gameIdx >= games.length) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-blue-100 to-indigo-200 p-6 text-center">
       <div className="text-8xl mb-4">🎉</div>
@@ -284,7 +284,7 @@ export default function CountImageGame() {
 
   const levelInfo = LEVELS.find(l => l.key === level);
 
-  // ── Main game ──
+  // Main game
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200 p-4">
       <GameInstructions />

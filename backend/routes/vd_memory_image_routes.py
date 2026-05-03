@@ -14,7 +14,7 @@ def serialize(doc):
     return doc
 
 
-# ---------------- ADD GAME ----------------
+# ADD GAME 
 @vd_memory_bp.route("/add", methods=["POST"])
 def add_game():
     try:
@@ -81,7 +81,7 @@ def add_game():
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- GET ALL GAMES ----------------
+# GET ALL GAMES 
 @vd_memory_bp.route("/all", methods=["GET"])
 def get_all_games():
     try:
@@ -91,7 +91,7 @@ def get_all_games():
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- GET GAMES BY LEVEL ----------------
+# GET GAMES BY LEVEL 
 @vd_memory_bp.route("/level/<level>", methods=["GET"])
 def get_games_by_level(level):
     try:
@@ -101,7 +101,7 @@ def get_games_by_level(level):
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- GET SINGLE GAME BY ID ----------------
+# GET SINGLE GAME BY ID 
 @vd_memory_bp.route("/<game_id>", methods=["GET"])
 def get_game(game_id):
     try:
@@ -113,7 +113,7 @@ def get_game(game_id):
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- UPDATE GAME BY ID ----------------
+# UPDATE GAME BY ID 
 @vd_memory_bp.route("/update/<game_id>", methods=["PUT"])
 def update_game(game_id):
     try:
@@ -161,7 +161,7 @@ def update_game(game_id):
         return jsonify({"error": str(e)}), 500
 
 
-# ---------------- DELETE GAME BY ID ----------------
+# DELETE GAME BY ID 
 @vd_memory_bp.route("/delete/<game_id>", methods=["DELETE"])
 def delete_game(game_id):
     try:

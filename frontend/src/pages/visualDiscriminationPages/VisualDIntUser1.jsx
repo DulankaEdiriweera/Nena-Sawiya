@@ -37,7 +37,7 @@ function GameInstructions() {
   );
 }
 
-// ── Popup Warning ──
+// Popup Warning 
 function LevelWarningPopup({ recommended, selected, onCancel, onContinue }) {
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -66,7 +66,7 @@ export default function UserVdPictureMCQ() {
   const [currentQ, setCurrentQ] = useState(0);
   const [submitted, setSubmitted] = useState(false);
 
-  // ── Adaptive level state ──
+  // Adaptive level state 
   const [recommendedLevel, setRecommendedLevel] = useState(null);
   const [levelLoading, setLevelLoading]         = useState(true);
   const [popup, setPopup]                       = useState(null);
@@ -184,7 +184,7 @@ export default function UserVdPictureMCQ() {
   const answeredCount = Object.keys(selectedAnswers).length;
   const nextLevel = getNextLevel(selectedLevel?.id);
 
-  // ── Level Select ──
+  // Level Select 
   if (phase === "select") return (
     <div className="min-h-screen bg-gradient-to-b from-blue-100 to-indigo-200">
       <Header />
@@ -271,7 +271,7 @@ export default function UserVdPictureMCQ() {
     </div>
   );
 
-  // ── Result Screen ──
+  // Result Screen 
   if (phase === "result") {
     const percent = totalPossible > 0 ? Math.round((score / totalPossible) * 100) : 0;
     const resultEmoji = percent === 100 ? "🏆" : percent >= 60 ? "😊" : "💪";
@@ -322,7 +322,7 @@ export default function UserVdPictureMCQ() {
     );
   }
 
-  // ── Playing Screen ──
+  // Playing Screen 
   const q = questions[currentQ];
   if (!q) return null;
   const isLast = currentQ === questions.length - 1;

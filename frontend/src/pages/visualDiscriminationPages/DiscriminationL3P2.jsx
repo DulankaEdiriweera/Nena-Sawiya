@@ -41,9 +41,9 @@ export default function DiscriminationL3p2() {
     setSelected(prev => prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]);
   };
 
-  // -----------------------
+  
   // Updated handleSubmit
-  // -----------------------
+  
   const handleSubmit = async () => {
     if (selected.length === 0) {
       alert("⚠️ කරුණාකර අයිතමයක්වත් තෝරන්න!");
@@ -71,9 +71,9 @@ export default function DiscriminationL3p2() {
     // Save submissionData locally
     localStorage.setItem("submissionData", JSON.stringify(submissionData));
 
-    // -----------------------
+    
     // Call backend /predictVDH
-    // -----------------------
+    
     const token = localStorage.getItem("token");
     const payload = [ { ...submissionData } ];
 
